@@ -1,5 +1,6 @@
 package com.leigq.quartz.simple;
 
+import com.leigq.quartz.job.BaseJob;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -18,7 +19,7 @@ import org.quartz.JobExecutionContext;
  * </p>
  */
 @Slf4j
-public class HelloQuartz implements Job {
+public class HelloQuartz implements BaseJob {
 
     @Override
     public void execute(JobExecutionContext context) {
