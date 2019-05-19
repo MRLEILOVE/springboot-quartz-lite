@@ -50,13 +50,14 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs")
-    public void addjob(String jobClassName, String jobGroupName, String cronExpression) throws Exception {
+    public void addJob(String jobClassName, String jobGroupName, String cronExpression, String jobDescription) throws Exception {
         // 利用反射获取任务实例，因为所有任务都是实现BaseJob的接口，所以这里使用BaseJob接收
         BaseJob baseJob = (BaseJob) Class.forName(jobClassName).newInstance();
 
         //构建job信息
         JobDetail jobDetail = JobBuilder.newJob(baseJob.getClass())
                 .withIdentity(jobClassName, jobGroupName)
+                .withDescription(jobDescription)
                 .build();
 
         //表达式调度构建器(即任务执行的时间)
@@ -93,7 +94,7 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/pause")
-    public void pausejob(String jobClassName, String jobGroupName) throws Exception {
+    public void pauseJob(String jobClassName, String jobGroupName) throws Exception {
         scheduler.pauseJob(JobKey.jobKey(jobClassName, jobGroupName));
     }
 
@@ -109,7 +110,7 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/resume")
-    public void resumejob(String jobClassName, String jobGroupName) throws Exception {
+    public void resumeJob(String jobClassName, String jobGroupName) throws Exception {
         scheduler.resumeJob(JobKey.jobKey(jobClassName, jobGroupName));
     }
 
@@ -157,7 +158,7 @@ public class JobController {
      * </p>
      */
     @DeleteMapping("/jobs")
-    public void deletejob(String jobClassName, String jobGroupName) throws Exception {
+    public void deleteJob(String jobClassName, String jobGroupName) throws Exception {
         scheduler.pauseTrigger(TriggerKey.triggerKey(jobClassName, jobGroupName));
         scheduler.unscheduleJob(TriggerKey.triggerKey(jobClassName, jobGroupName));
         scheduler.deleteJob(JobKey.jobKey(jobClassName, jobGroupName));

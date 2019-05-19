@@ -8,10 +8,14 @@
 		  jd.`job_name`,
 		  jd.`job_group`,
 		  jd.`job_class_name`,
+		  jd.`description` as jobDescription,
 		  t.`trigger_name`,
 		  t.`trigger_group`,
 		  ct.`cron_expression`,
-		  ct.`time_zone_id`
+		  ct.`time_zone_id`,
+		  from_unixtime(t.`prev_fire_time`/1000,'%Y-%m-%d %T') as prevFireTime,
+		  from_unixtime(t.`next_fire_time`/1000,'%Y-%m-%d %T') as nextFireTime,
+		  t.`trigger_state` as triggerState
 		from
 		  qrtz_job_details as jd,
 		  qrtz_triggers as t,

@@ -50,6 +50,12 @@
             </el-table-column>
 
             <el-table-column
+                    prop="jobDescription"
+                    label="任务描述"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
                     prop="jobClassName"
                     label="任务类名"
                     sortable>
@@ -65,6 +71,41 @@
                     prop="triggerGroup"
                     label="触发器所在组"
                     sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="prevFireTime"
+                    label="上次执行时间"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="nextFireTime"
+                    label="下次执行时间"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="triggerState"
+                    label="状态"
+                    sortable>
+                <template slot-scope="scope">
+                    <p style="color: yellow" v-if="scope.row.triggerState=='WAITING'">
+                        等待
+                    </p>
+                    <p style="color: red" v-else-if="scope.row.triggerState=='PAUSED'">
+                        暂停
+                    </p>
+                    <p style="color: green" v-else-if="scope.row.triggerState=='ACQUIRED'">
+                        正常执行
+                    </p>
+                    <p style="color: red" v-else-if="scope.row.triggerState=='BLOCKED'">
+                        阻塞
+                    </p>
+                    <p style="color: red" v-else-if="scope.row.triggerState=='ERROR'">
+                        错误
+                    </p>
+                </template>
             </el-table-column>
 
             <el-table-column
@@ -129,6 +170,9 @@
             <el-form-item label="任务分组" label-width="120px" style="width:35%">
                 <el-input v-model="form.jobGroup" auto-complete="off"></el-input>
             </el-form-item>
+            <el-form-item label="任务描述" label-width="120px" style="width:35%">
+                <el-input v-model="form.jobDescription" auto-complete="off"></el-input>
+            </el-form-item>
             <el-form-item label="表达式" label-width="120px" style="width:35%">
                 <el-input v-model="form.cronExpression" auto-complete="off"></el-input>
             </el-form-item>
@@ -189,6 +233,7 @@
             form: {
                 jobName: '',
                 jobGroup: '',
+                jobDescription: '',
                 cronExpression: '',
             },
 
@@ -204,11 +249,8 @@
             //从服务器读取数据
             loadData: function (pageNum, pageSize) {
                 this.$http.get('jobs?' + 'pageNum=' + pageNum + '&pageSize=' + pageSize).then(function (res) {
-                    console.log(res)
                     this.tableData = res.body.JobAndTrigger.list;
-                    console.log(res.body.JobAndTrigger.list)
                     this.totalCount = res.body.number;
-                    console.log(res.body.number)
                 }, function () {
                     console.log('failed');
                 });
@@ -216,10 +258,7 @@
 
             //单行删除
             handleDelete: function (index, row) {
-                this.$http.delete('jobs', {
-                    "jobClassName": row.jobName,
-                    "jobGroupName": row.jobGroup
-                }, {emulateJSON: true}).then(function (res) {
+                this.$http.delete('jobs?' + 'jobClassName=' + row.jobName + '&jobGroupName=' + row.jobGroup).then(function (res) {
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
@@ -265,6 +304,7 @@
                 this.$http.post('jobs', {
                     "jobClassName": this.form.jobName,
                     "jobGroupName": this.form.jobGroup,
+                    "jobDescription": this.form.jobDescription,
                     "cronExpression": this.form.cronExpression
                 }, {emulateJSON: true}).then(function (res) {
                     this.loadData(this.currentPage, this.pagesize);

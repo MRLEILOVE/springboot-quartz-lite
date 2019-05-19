@@ -21,12 +21,16 @@ public class JobAndTrigger {
 
 	private String jobName;
 	private String jobGroup;
+	private String jobDescription;
 	private String jobClassName;
 	private String triggerName;
 	private String triggerGroup;
 	private BigInteger repeatInterval;
 	private BigInteger timesTriggered;
+	private String prevFireTime;
+	private String nextFireTime;
 	private String cronExpression;
 	private String timeZoneId;
+	private String triggerState;
 	
 }

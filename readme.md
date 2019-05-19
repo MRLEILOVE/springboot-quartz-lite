@@ -4,7 +4,7 @@
 
 Quartz版本：2.3.0，目前稳定版
 
-SpringBoot版本：2.1.3.RELEASE
+SpringBoot版本：2.0.4.RELEASE
 
 
 

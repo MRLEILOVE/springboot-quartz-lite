@@ -33,6 +33,7 @@ public class SchedulerTest {
         JobDetail jobDetail = JobBuilder.newJob(HelloQuartz.class)
                 .withIdentity("helloJob", "helloJobGroup")
                 .usingJobData("jobDateKey", "jobDateValue")//定义属性
+                .withDescription("测试Quartz")
                 .build();
 
         //定义调度触发规则
