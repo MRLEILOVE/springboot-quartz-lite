@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.leigq</groupId>
-    <artifactId>quartz</artifactId>
+    <artifactId>springboot-quartz</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>quartz</name>
     <description>Quartz demo project for Spring Boot</description>
