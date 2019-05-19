@@ -15,8 +15,12 @@ import java.util.List;
 @Transactional
 public class JobAndTriggerService {
 
+	private final JobAndTriggerMapper jobAndTriggerMapper;
+
 	@Autowired
-	private JobAndTriggerMapper jobAndTriggerMapper;
+	public JobAndTriggerService(JobAndTriggerMapper jobAndTriggerMapper) {
+		this.jobAndTriggerMapper = jobAndTriggerMapper;
+	}
 
 	/**
 	 * 获取任务与触发器详细信息
