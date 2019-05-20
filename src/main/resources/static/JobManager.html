@@ -23,6 +23,7 @@
     <div id="top">
         <el-button type="text" @click="search" style="color:white">查询</el-button>
         <el-button type="text" @click="handleadd" style="color:white">添加</el-button>
+        <el-button type="text" @click="windowOpen('http://cron.qqe2.com')" style="color:white">在线Cron表达式生成</el-button>
         </span>
     </div>
 
@@ -164,7 +165,7 @@
 
     <el-dialog title="添加任务" :visible.sync="dialogFormVisible">
         <el-form :model="form">
-            <el-form-item label="任务名称" label-width="120px" style="width:35%">
+            <el-form-item label="任务全类名" label-width="120px" style="width:35%">
                 <el-input v-model="form.jobName" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="任务分组" label-width="120px" style="width:35%">
@@ -194,7 +195,6 @@
             <el-button type="primary" @click="update">确 定</el-button>
         </div>
     </el-dialog>
-
 </div>
 
 <footer align="center">
@@ -249,8 +249,8 @@
             //从服务器读取数据
             loadData: function (pageNum, pageSize) {
                 this.$http.get('jobs?' + 'pageNum=' + pageNum + '&pageSize=' + pageSize).then(function (res) {
-                    this.tableData = res.body.JobAndTrigger.list;
-                    this.totalCount = res.body.number;
+                    this.tableData = res.body.data.JobAndTrigger.list;
+                    this.totalCount = res.body.data.number;
                 }, function () {
                     console.log('failed');
                 });
@@ -259,6 +259,11 @@
             //单行删除
             handleDelete: function (index, row) {
                 this.$http.delete('jobs?' + 'jobClassName=' + row.jobName + '&jobGroupName=' + row.jobGroup).then(function (res) {
+                    this.$notify({
+                        title: '成功',
+                        message: res.body.meta.msg,
+                        type: 'success'
+                    });
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
@@ -271,6 +276,11 @@
                     "jobClassName": row.jobName,
                     "jobGroupName": row.jobGroup
                 }, {emulateJSON: true}).then(function (res) {
+                    this.$notify({
+                        title: '成功',
+                        message: res.body.meta.msg,
+                        type: 'success'
+                    });
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
@@ -283,6 +293,11 @@
                     "jobClassName": row.jobName,
                     "jobGroupName": row.jobGroup
                 }, {emulateJSON: true}).then(function (res) {
+                    this.$notify({
+                        title: '成功',
+                        message: res.body.meta.msg,
+                        type: 'success'
+                    });
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
@@ -299,6 +314,11 @@
                 this.dialogFormVisible = true;
             },
 
+            //打开新页面
+            windowOpen: function (url) {
+                window.open(url, "_blank");
+            },
+
             //添加
             add: function () {
                 this.$http.post('jobs', {
@@ -307,16 +327,31 @@
                     "jobDescription": this.form.jobDescription,
                     "cronExpression": this.form.cronExpression
                 }, {emulateJSON: true}).then(function (res) {
-                    this.loadData(this.currentPage, this.pagesize);
-                    this.dialogFormVisible = false;
+                    if (res.body.meta.code === '200') {
+                        this.$notify({
+                            title: '成功',
+                            message: res.body.meta.msg,
+                            type: 'success'
+                        });
+                        this.loadData(this.currentPage, this.pagesize);
+                        this.dialogFormVisible = false;
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: res.body.meta.msg,
+                            type: 'warning'
+                        });
+                    }
                 }, function () {
-                    console.log('failed');
+                    this.$notify.error({
+                        title: '错误',
+                        message: res.body.meta.msg
+                    });
                 });
             },
 
             //更新
             handleUpdate: function (index, row) {
-                console.log(row)
                 this.updateFormVisible = true;
                 this.updateform.jobName = row.jobClassName;
                 this.updateform.jobGroup = row.jobGroup;
@@ -331,10 +366,26 @@
                         "cronExpression": this.updateform.cronExpression
                     }, {emulateJSON: true}
                 ).then(function (res) {
-                    this.loadData(this.currentPage, this.pagesize);
-                    this.updateFormVisible = false;
+                    if (res.body.meta.code === '200') {
+                        this.$notify({
+                            title: '成功',
+                            message: res.body.meta.msg,
+                            type: 'success'
+                        });
+                        this.loadData(this.currentPage, this.pagesize);
+                        this.dialogFormVisible = false;
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: res.body.meta.msg,
+                            type: 'warning'
+                        });
+                    }
                 }, function () {
-                    console.log('failed');
+                    this.$notify.error({
+                        title: '错误',
+                        message: res.body.meta.msg
+                    });
                 });
 
             },

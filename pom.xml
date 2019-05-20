@@ -74,6 +74,14 @@
             <artifactId>pagehelper-spring-boot-starter</artifactId>
             <version>1.2.10</version>
         </dependency>
+
+        <!--编写更少量的代码：使用apache commons工具类库:
+        https://www.cnblogs.com/ITtangtang/p/3966955.html-->
+        <!--apache.commons.lang3-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
