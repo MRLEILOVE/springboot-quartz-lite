@@ -1,11 +1,16 @@
 package com.leigq.quartz.simple;
 
 import com.leigq.quartz.job.BaseJob;
+import com.leigq.quartz.service.JobAndTriggerService;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.io.Serializable;
 
 /**
  * 最简单的Quartz
@@ -19,7 +24,14 @@ import org.quartz.JobExecutionContext;
  * </p>
  */
 @Slf4j
-public class HelloQuartz implements BaseJob {
+@Component
+public class HelloQuartz implements BaseJob, Serializable {
+
+    // 实现序列化接口、防止重启应用出现quartz Couldn't retrieve job because a required class was not found 的问题
+    private static final long serialVersionUID = 8969855105016200770L;
+
+    @Autowired
+    private JobAndTriggerService service;
 
     @Override
     public void execute(JobExecutionContext context) {
@@ -28,5 +40,7 @@ public class HelloQuartz implements BaseJob {
         final JobDataMap jobDataMap = jobDetail.getJobDataMap();
         final String value = jobDataMap.getString("jobDateKey");
         log.warn("value:{}", value);
+        // 测试是否获取到 bean
+        log.error("service: {}", service);
     }
 }

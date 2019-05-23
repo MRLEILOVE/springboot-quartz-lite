@@ -3,6 +3,7 @@ package com.leigq.quartz.config;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
 import org.quartz.ee.servlet.QuartzInitializerListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +28,13 @@ import java.util.Properties;
 @Slf4j
 public class QuartzScheduledConfig {
 
+    @Autowired
+    private SpringJobFactory springJobFactory;
+
     /**
      * 读取quartz.properties 文件
      * 将值初始化
+     *
      * @return
      */
     @Bean
@@ -44,27 +49,35 @@ public class QuartzScheduledConfig {
 
     /**
      * 将配置文件的数据加载到SchedulerFactoryBean中
+     *
      * @return
      * @throws IOException
      */
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean() throws IOException {
-        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-        schedulerFactoryBean.setQuartzProperties(quartzProperties());
-        return schedulerFactoryBean;
+        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        factory.setQuartzProperties(quartzProperties());
+        factory.setAutoStartup(true);
+        // 延时n秒启动
+        factory.setStartupDelay(2);
+        // 注意这里是重点
+        factory.setJobFactory(springJobFactory);
+        return factory;
     }
 
     /**
      * 初始化监听器
+     *
      * @return
      */
     @Bean
-    public QuartzInitializerListener executorListener(){
+    public QuartzInitializerListener executorListener() {
         return new QuartzInitializerListener();
     }
 
     /**
      * 获得Scheduler 对象
+     *
      * @return
      * @throws IOException
      */
