@@ -5,24 +5,30 @@
 	<!--获取任务与触发器详细信息-->
     <select id="getJobAndTriggerDetails" resultType="com.leigq.quartz.domain.entity.JobAndTrigger">
 		select
-		  jd.`job_name`,
-		  jd.`job_group`,
-		  jd.`job_class_name`,
-		  jd.`description` as jobDescription,
-		  t.`trigger_name`,
-		  t.`trigger_group`,
-		  ct.`cron_expression`,
-		  ct.`time_zone_id`,
-		  from_unixtime(t.`prev_fire_time`/1000,'%Y-%m-%d %T') as prevFireTime,
-		  from_unixtime(t.`next_fire_time`/1000,'%Y-%m-%d %T') as nextFireTime,
-		  t.`trigger_state` as triggerState
+			jd.`JOB_NAME` as jobName,
+			jd.`JOB_GROUP` as jobGroup,
+			jd.`JOB_CLASS_NAME` as jobClassName,
+			jd.`DESCRIPTION` as jobDescription,
+			t.`TRIGGER_NAME` as triggerName,
+			t.`TRIGGER_GROUP` as triggerGroup,
+			ct.`CRON_EXPRESSION` as cronExpression,
+			ct.`TIME_ZONE_ID` as timeZoneId,
+			from_unixtime(
+					t.`PREV_FIRE_TIME` / 1000,
+					'%Y-%m-%d %T'
+			) as prevFireTime,
+			from_unixtime(
+					t.`NEXT_FIRE_TIME` / 1000,
+					'%Y-%m-%d %T'
+			) as nextFireTime,
+			t.`TRIGGER_STATE` as triggerState
 		from
-		  qrtz_job_details as jd,
-		  qrtz_triggers as t,
-		  qrtz_cron_triggers as ct
-		where jd.`job_name` = t.`job_name`
-		  and t.`trigger_name` = ct.`trigger_name`
-		  and t.`trigger_group` = ct.`trigger_group`
+			QRTZ_JOB_DETAILS as jd,
+			QRTZ_TRIGGERS as t,
+			QRTZ_CRON_TRIGGERS as ct
+		where jd.`JOB_NAME` = t.`JOB_NAME`
+			  and t.`TRIGGER_NAME` = ct.`TRIGGER_NAME`
+			  and t.`TRIGGER_GROUP` = ct.`TRIGGER_GROUP`
     </select>
     
 </mapper>
