@@ -21,10 +21,19 @@
 <div id="test">
 
     <div id="top">
-        <el-button type="text" @click="search" style="color:white">查询</el-button>
-        <el-button type="text" @click="handleadd" style="color:white">添加</el-button>
-        <el-button type="text" @click="windowOpen('http://cron.qqe2.com')" style="color:white">在线Cron表达式生成</el-button>
-        </span>
+        <el-button type="primary" @click="search" style="color:white">查询</el-button>
+        <el-button type="primary" @click="handleadd" style="color:white">添加</el-button>
+        <el-button type="primary" @click="windowOpen('http://cron.qqe2.com')" style="color:white">在线Cron表达式生成
+        </el-button>
+        <span style="color: white">自动刷新时间：</span>
+        <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime">
+            <el-option
+                    v-for="item in cycleTime"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+        </el-select>
     </div>
 
     <br/>
@@ -91,7 +100,7 @@
                     label="状态"
                     sortable>
                 <template slot-scope="scope">
-                    <p style="color: yellow" v-if="scope.row.triggerState=='WAITING'">
+                    <p style="color: #ff8203" v-if="scope.row.triggerState=='WAITING'">
                         等待
                     </p>
                     <p style="color: red" v-else-if="scope.row.triggerState=='PAUSED'">
@@ -242,18 +251,65 @@
                 jobGroup: '',
                 cronExpression: '',
             },
+            cycleTime: [
+                {
+                    //数组格式
+                    label: '关闭',
+                    value: 0
+                },
+                {
+                    //数组格式
+                    label: '1秒钟',
+                    value: 1
+                },
+                {
+                    //数组格式
+                    label: '5秒钟',
+                    value: 5
+                },
+                {
+                    //数组格式
+                    label: '10秒钟',
+                    value: 10
+                },
+                {
+                    //数组格式
+                    label: '15秒钟',
+                    value: 15
+                }
+            ],
+            value: 1,
+            timer: '',
         },
-
+        mounted() {
+            this.timer = setInterval(function() {
+                vue.loadData(vue.currentPage, vue.pagesize);
+            }, this.value * 1000);
+        },
         methods: {
 
+            // 自动刷新页面
+            autoRefreshTime(cycleTime) {
+                clearInterval(this.timer);
+                if (cycleTime === 0) {
+                    clearInterval(this.timer);
+                } else {
+                    var time = cycleTime * 1000;
+                    this.timer = setInterval(function() {
+                        vue.loadData(vue.currentPage, vue.pagesize);
+                    }, time);
+                }
+            },
+
             //从服务器读取数据
-            loadData: function (pageNum, pageSize) {
+            loadData(pageNum, pageSize) {
                 this.$http.get('jobs?' + 'pageNum=' + pageNum + '&pageSize=' + pageSize).then(function (res) {
                     this.tableData = res.body.data.JobAndTrigger.list;
                     this.totalCount = res.body.data.number;
                 }, function () {
                     console.log('failed');
                 });
+                console.log('从服务器读取数据')
             },
 
             //单行删除
@@ -359,7 +415,7 @@
 
             //更新任务
             update: function () {
-                this.$http.put('jobs',
+                this.$http.post('jobs/action/update',
                     {
                         "jobClassName": this.updateform.jobName,
                         "jobGroupName": this.updateform.jobGroup,
@@ -403,13 +459,12 @@
             },
 
         },
-
-
     });
 
     //载入数据
     vue.loadData(vue.currentPage, vue.pagesize);
 </script>
+
 
 </body>
 </html>
