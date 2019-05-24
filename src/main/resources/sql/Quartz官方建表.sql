@@ -9,6 +9,7 @@
 
 # 该SQL适用于2.x版本
 # 1.x版本：https://blog.csdn.net/zhu19774279/article/details/44946645
+# Quartz表结构说明:https://www.cnblogs.com/meet/p/Quartz-biao-jie-gou-shuo-ming.html
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
 DROP TABLE IF EXISTS QRTZ_SCHEDULER_STATE;
