@@ -25,7 +25,9 @@
         <el-button type="primary" @click="handleadd" style="color:white">添加</el-button>
         <el-button type="primary" @click="windowOpen('http://cron.qqe2.com')" style="color:white">在线Cron表达式生成
         </el-button>
-        <span style="color: white">自动刷新时间：</span>
+        <span style="color: white">系统时间：</span>
+        <span style="color: white">{{currentDate}}</span>
+        <span style="color: white; margin-left: 38%">自动刷新时间：</span>
         <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime">
             <el-option
                     v-for="item in cycleTime"
@@ -280,11 +282,16 @@
             ],
             value: 1,
             timer: '',
+            currentDate: new Date()
         },
         mounted() {
             this.timer = setInterval(function() {
                 vue.loadData(vue.currentPage, vue.pagesize);
             }, this.value * 1000);
+
+            setInterval(function() {
+                vue.currentDate = new Date(); // 修改数据date
+            }, 1000)
         },
         methods: {
 
@@ -309,7 +316,6 @@
                 }, function () {
                     console.log('failed');
                 });
-                console.log('从服务器读取数据')
             },
 
             //单行删除
