@@ -170,7 +170,7 @@ public class JobController {
      * 修改备注： <br>
      * </p>
      */
-    @PostMapping("/jobs/action/update")
+    @PutMapping("/jobs")
     public Response rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) {
         if (StringUtils.isBlank(cronExpression)) {
             return response.failure("表达式不能为空！");

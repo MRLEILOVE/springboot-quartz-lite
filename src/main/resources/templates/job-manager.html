@@ -421,7 +421,7 @@
 
             //更新任务
             update: function () {
-                this.$http.post('jobs/action/update',
+                this.$http.put('jobs',
                     {
                         "jobClassName": this.updateform.jobName,
                         "jobGroupName": this.updateform.jobGroup,
