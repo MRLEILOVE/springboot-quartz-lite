@@ -137,19 +137,19 @@
                     <el-button
                             size="small"
                             type="warning"
-                            @click="handlePause(scope.$index, scope.row)">暂停
+                            @click="handlePauseOrResumeOrDelete(scope.$index, scope.row, 1)">暂停
                     </el-button>
 
                     <el-button
                             size="small"
                             type="info"
-                            @click="handleResume(scope.$index, scope.row)">恢复
+                            @click="handlePauseOrResumeOrDelete(scope.$index, scope.row, 2)">恢复
                     </el-button>
 
                     <el-button
                             size="small"
                             type="danger"
-                            @click="handleDelete(scope.$index, scope.row)">删除
+                            @click="handlePauseOrResumeOrDelete(scope.$index, scope.row, 3)">删除
                     </el-button>
 
                     <el-button
@@ -174,19 +174,23 @@
         </div>
     </div>
 
+    <!--添加弹框-->
     <el-dialog title="添加任务" :visible.sync="dialogFormVisible">
-        <el-form :model="form">
+        <el-form :model="addform">
             <el-form-item label="任务全类名" label-width="120px" style="width:35%">
-                <el-input v-model="form.jobName" auto-complete="off"></el-input>
+                <el-input v-model="addform.jobName" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="任务分组" label-width="120px" style="width:35%">
-                <el-input v-model="form.jobGroup" auto-complete="off"></el-input>
+                <el-input v-model="addform.jobGroup" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="任务描述" label-width="120px" style="width:35%">
-                <el-input v-model="form.jobDescription" auto-complete="off"></el-input>
+                <el-input v-model="addform.jobDescription" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="表达式" label-width="120px" style="width:35%">
-                <el-input v-model="form.cronExpression" auto-complete="off"></el-input>
+                <el-input v-model="addform.cronExpression" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="密钥" label-width="120px" style="width:35%">
+                <el-input v-model="addform.secretKey" auto-complete="off"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -195,10 +199,14 @@
         </div>
     </el-dialog>
 
+    <!--修改弹框-->
     <el-dialog title="修改任务" :visible.sync="updateFormVisible">
         <el-form :model="updateform">
             <el-form-item label="表达式" label-width="120px" style="width:35%">
                 <el-input v-model="updateform.cronExpression" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="密钥" label-width="120px" style="width:35%">
+                <el-input v-model="updateform.secretKey" auto-complete="off"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -206,6 +214,20 @@
             <el-button type="primary" @click="update">确 定</el-button>
         </div>
     </el-dialog>
+
+    <!--暂停 恢复 删除弹框-->
+    <el-dialog title="请输入密钥" :visible.sync="pauseOrResumeOrDeleteFormVisible">
+        <el-form :model="form">
+            <el-form-item label="密钥" label-width="120px" style="width:35%">
+                <el-input v-model="form.secretKey" auto-complete="off"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="pauseOrResumeOrDeleteFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="commitPauseOrResumeOrDeleteForm">确 定</el-button>
+        </div>
+    </el-dialog>
+
 </div>
 
 <footer align="center">
@@ -240,18 +262,30 @@
             //修改对话框默认可见性
             updateFormVisible: false,
 
+            //暂停 恢复 删除弹框默认可见性
+            pauseOrResumeOrDeleteFormVisible: false,
+
             //提交的表单
-            form: {
+            addform: {
                 jobName: '',
                 jobGroup: '',
                 jobDescription: '',
                 cronExpression: '',
+                secretKey: '',
             },
-
+            //修改表单
             updateform: {
                 jobName: '',
                 jobGroup: '',
                 cronExpression: '',
+                secretKey: '',
+            },
+            //暂停|恢复|删除表单
+            form: {
+                index: '',
+                row: '',
+                type: '',
+                secretKey: '',
             },
             cycleTime: [
                 {
@@ -320,12 +354,23 @@
 
             //单行删除
             handleDelete: function (index, row) {
-                this.$http.delete('jobs?' + 'jobClassName=' + row.jobName + '&jobGroupName=' + row.jobGroup).then(function (res) {
-                    this.$notify({
-                        title: '成功',
-                        message: res.body.meta.msg,
-                        type: 'success'
-                    });
+                this.$http.delete('jobs/'+ row.jobName + '/' + row.jobGroup + '?secretKey=' + this.form.secretKey)
+                    .then(function (res) {
+                    if (res.body.meta.code === '200') {
+                        this.$notify({
+                            title: '成功',
+                            message: res.body.meta.msg,
+                            type: 'success'
+                        });
+                        this.loadData(this.currentPage, this.pagesize);
+                        this.pauseOrResumeOrDeleteFormVisible = false;
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: res.body.meta.msg,
+                            type: 'warning'
+                        });
+                    }
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
@@ -336,13 +381,24 @@
             handlePause: function (index, row) {
                 this.$http.post('jobs/action/pause', {
                     "jobClassName": row.jobName,
-                    "jobGroupName": row.jobGroup
+                    "jobGroupName": row.jobGroup,
+                    "secretKey": this.form.secretKey,
                 }, {emulateJSON: true}).then(function (res) {
-                    this.$notify({
-                        title: '成功',
-                        message: res.body.meta.msg,
-                        type: 'success'
-                    });
+                    if (res.body.meta.code === '200') {
+                        this.$notify({
+                            title: '成功',
+                            message: res.body.meta.msg,
+                            type: 'success'
+                        });
+                        this.loadData(this.currentPage, this.pagesize);
+                        this.pauseOrResumeOrDeleteFormVisible = false;
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: res.body.meta.msg,
+                            type: 'warning'
+                        });
+                    }
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
@@ -353,25 +409,62 @@
             handleResume: function (index, row) {
                 this.$http.post('jobs/action/resume', {
                     "jobClassName": row.jobName,
-                    "jobGroupName": row.jobGroup
+                    "jobGroupName": row.jobGroup,
+                    "secretKey": this.form.secretKey,
                 }, {emulateJSON: true}).then(function (res) {
-                    this.$notify({
-                        title: '成功',
-                        message: res.body.meta.msg,
-                        type: 'success'
-                    });
+                    if (res.body.meta.code === '200') {
+                        this.$notify({
+                            title: '成功',
+                            message: res.body.meta.msg,
+                            type: 'success'
+                        });
+                        this.loadData(this.currentPage, this.pagesize);
+                        this.pauseOrResumeOrDeleteFormVisible = false;
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: res.body.meta.msg,
+                            type: 'warning'
+                        });
+                    }
                     this.loadData(this.currentPage, this.pagesize);
                 }, function () {
                     console.log('failed');
                 });
             },
 
+            // 弹出暂停|恢复|删除对话框
+            handlePauseOrResumeOrDelete: function(index, row, type){
+                this.form.index = index;
+                this.form.row = row;
+                this.form.type = type;
+                this.pauseOrResumeOrDeleteFormVisible = true;
+            },
+
+            //处理暂停|恢复|删除表单提交
+            commitPauseOrResumeOrDeleteForm: function () {
+                var type = this.form.type;
+                switch (type) {
+                    case 1:
+                        this.handlePause(this.form.index,this.form.row);
+                        break;
+                    case 2:
+                        this.handleResume(this.form.index,this.form.row);
+                        break;
+                    case 3:
+                        this.handleDelete(this.form.index,this.form.row);
+                        break;
+                }
+                this.form.secretKey = '';
+            },
+
+
             //搜索
             search: function () {
                 this.loadData(this.currentPage, this.pagesize);
             },
 
-            //弹出对话框
+            //弹出添加对话框
             handleadd: function () {
                 this.dialogFormVisible = true;
             },
@@ -384,10 +477,11 @@
             //添加
             add: function () {
                 this.$http.post('jobs', {
-                    "jobClassName": this.form.jobName,
-                    "jobGroupName": this.form.jobGroup,
-                    "jobDescription": this.form.jobDescription,
-                    "cronExpression": this.form.cronExpression
+                    "jobClassName": this.addform.jobName,
+                    "jobGroupName": this.addform.jobGroup,
+                    "jobDescription": this.addform.jobDescription,
+                    "cronExpression": this.addform.cronExpression,
+                    "secretKey": this.addform.secretKey,
                 }, {emulateJSON: true}).then(function (res) {
                     if (res.body.meta.code === '200') {
                         this.$notify({
@@ -404,6 +498,7 @@
                             type: 'warning'
                         });
                     }
+                    this.addform.secretKey = '';
                 }, function () {
                     this.$notify.error({
                         title: '错误',
@@ -412,11 +507,12 @@
                 });
             },
 
-            //更新
+            //弹出更新对话框
             handleUpdate: function (index, row) {
                 this.updateFormVisible = true;
                 this.updateform.jobName = row.jobClassName;
                 this.updateform.jobGroup = row.jobGroup;
+                this.updateform.cronExpression = row.cronExpression;
             },
 
             //更新任务
@@ -425,7 +521,8 @@
                     {
                         "jobClassName": this.updateform.jobName,
                         "jobGroupName": this.updateform.jobGroup,
-                        "cronExpression": this.updateform.cronExpression
+                        "cronExpression": this.updateform.cronExpression,
+                        "secretKey": this.updateform.secretKey,
                     }, {emulateJSON: true}
                 ).then(function (res) {
                     if (res.body.meta.code === '200') {
@@ -435,7 +532,7 @@
                             type: 'success'
                         });
                         this.loadData(this.currentPage, this.pagesize);
-                        this.dialogFormVisible = false;
+                        this.updateFormVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
@@ -443,6 +540,7 @@
                             type: 'warning'
                         });
                     }
+                    this.updateform.secretKey = '';
                 }, function () {
                     this.$notify.error({
                         title: '错误',

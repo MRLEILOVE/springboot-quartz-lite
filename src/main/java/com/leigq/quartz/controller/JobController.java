@@ -30,6 +30,9 @@ import java.util.Objects;
 @RestController
 public class JobController {
 
+    // 密钥应该从数据库查询出来比对，这里暂时写死
+    private static final String SECRET_KEY = "111111";
+
     private final JobAndTriggerService jobAndTriggerService;
     private final Scheduler scheduler;
     private final Response response;
@@ -54,7 +57,8 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs")
-    public Response addJob(String jobClassName, String jobGroupName, String cronExpression, String jobDescription) {
+    public Response addJob(String jobClassName, String jobGroupName, String cronExpression,
+                           String jobDescription, String secretKey) {
         if (StringUtils.isBlank(jobClassName)) {
             return response.failure("全类名不能为空！");
         }
@@ -63,18 +67,29 @@ public class JobController {
             return response.failure("任务分组不能为空！");
         }
 
-        if (StringUtils.isBlank(cronExpression)) {
-            return response.failure("表达式不能为空！");
-        }
-
         if (StringUtils.isBlank(jobDescription)) {
             return response.failure("任务描述不能为空！");
+        }
+
+        if (StringUtils.isBlank(cronExpression)) {
+            return response.failure("表达式不能为空！");
         }
 
         // 验证表达式格式
         if (!CronExpression.isValidExpression(cronExpression)) {
             return response.failure("表达式格式错误！");
         }
+
+
+        if (StringUtils.isBlank(secretKey)) {
+            return response.failure("密钥不能为空！");
+        }
+
+
+        if (!Objects.equals(SECRET_KEY, secretKey)) {
+            return response.failure("密钥错误！");
+        }
+
 
         BaseJob baseJob;
         try {
@@ -125,7 +140,13 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/pause")
-    public Response pauseJob(String jobClassName, String jobGroupName) {
+    public Response pauseJob(String jobClassName, String jobGroupName, String secretKey) {
+        if (StringUtils.isBlank(secretKey)) {
+            return response.failure("密钥不能为空！");
+        }
+        if (!Objects.equals(SECRET_KEY, secretKey)) {
+            return response.failure("密钥错误！");
+        }
         try {
             scheduler.pauseJob(JobKey.jobKey(jobClassName, jobGroupName));
             return response.success("暂停任务成功！");
@@ -147,7 +168,13 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/resume")
-    public Response resumeJob(String jobClassName, String jobGroupName) {
+    public Response resumeJob(String jobClassName, String jobGroupName, String secretKey) {
+        if (StringUtils.isBlank(secretKey)) {
+            return response.failure("密钥不能为空！");
+        }
+        if (!Objects.equals(SECRET_KEY, secretKey)) {
+            return response.failure("密钥错误！");
+        }
         try {
             scheduler.resumeJob(JobKey.jobKey(jobClassName, jobGroupName));
             return response.success("恢复任务成功！");
@@ -171,13 +198,23 @@ public class JobController {
      * </p>
      */
     @PutMapping("/jobs")
-    public Response rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) {
+    public Response rescheduleJob(String jobClassName, String jobGroupName,
+                                  String cronExpression, String secretKey) {
         if (StringUtils.isBlank(cronExpression)) {
             return response.failure("表达式不能为空！");
         }
         // 验证表达式格式
         if (!CronExpression.isValidExpression(cronExpression)) {
             return response.failure("表达式格式错误！");
+        }
+
+        if (StringUtils.isBlank(secretKey)) {
+            return response.failure("密钥不能为空！");
+        }
+
+        // 密钥应该从数据库查询出来比对，这里暂时写死
+        if (!Objects.equals(SECRET_KEY, secretKey)) {
+            return response.failure("密钥错误！");
         }
         try {
             TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
@@ -210,8 +247,18 @@ public class JobController {
      * 修改备注： <br>
      * </p>
      */
-    @DeleteMapping("/jobs")
-    public Response deleteJob(String jobClassName, String jobGroupName) {
+    @DeleteMapping("/jobs/{jobClassName}/{jobGroupName}")
+    public Response deleteJob(@PathVariable("jobClassName") String jobClassName,
+                              @PathVariable("jobGroupName") String jobGroupName,
+                              String secretKey) {
+        if (StringUtils.isBlank(secretKey)) {
+            return response.failure("密钥不能为空！");
+        }
+
+        // 密钥应该从数据库查询出来比对，这里暂时写死
+        if (!Objects.equals(SECRET_KEY, secretKey)) {
+            return response.failure("密钥错误！");
+        }
         try {
             scheduler.pauseTrigger(TriggerKey.triggerKey(jobClassName, jobGroupName));
             scheduler.unscheduleJob(TriggerKey.triggerKey(jobClassName, jobGroupName));

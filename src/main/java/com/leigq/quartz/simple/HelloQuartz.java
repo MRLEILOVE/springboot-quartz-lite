@@ -33,6 +33,7 @@ public class HelloQuartz implements BaseJob, Serializable {
     @Autowired
     private JobAndTriggerService service;
 
+    // */2 * * * * ?
     @Override
     public void execute(JobExecutionContext context) {
         log.warn(">>>>>>>>>Hello Quartz start!");
