@@ -1,7 +1,7 @@
 package com.leigq.quartz.domain.mapper;
 
 import com.leigq.quartz.domain.entity.JobAndTrigger;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Mapper;import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +18,6 @@ public interface JobAndTriggerMapper {
 	 * </p>
 	 */
 	List<JobAndTrigger> getJobAndTriggerDetails();
+
+
 }

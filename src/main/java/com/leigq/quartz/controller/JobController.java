@@ -5,6 +5,8 @@ import com.leigq.quartz.bean.Response;
 import com.leigq.quartz.domain.entity.JobAndTrigger;
 import com.leigq.quartz.job.BaseJob;
 import com.leigq.quartz.service.JobAndTriggerService;
+import com.leigq.quartz.service.JobService;
+import com.leigq.quartz.simple.HelloQuartz;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
@@ -34,14 +36,14 @@ public class JobController {
     private static final String SECRET_KEY = "111111";
 
     private final JobAndTriggerService jobAndTriggerService;
-    private final Scheduler scheduler;
     private final Response response;
+    private final JobService jobService;
 
     @Autowired
-    public JobController(JobAndTriggerService jobAndTriggerService, Scheduler scheduler, Response response) {
+    public JobController(JobAndTriggerService jobAndTriggerService, Response response, JobService jobService) {
         this.jobAndTriggerService = jobAndTriggerService;
-        this.scheduler = scheduler;
         this.response = response;
+        this.jobService = jobService;
     }
 
 
@@ -75,56 +77,18 @@ public class JobController {
             return response.failure("表达式不能为空！");
         }
 
-        // 验证表达式格式
-        if (!CronExpression.isValidExpression(cronExpression)) {
-            return response.failure("表达式格式错误！");
-        }
-
-
         if (StringUtils.isBlank(secretKey)) {
             return response.failure("密钥不能为空！");
         }
-
 
         if (!Objects.equals(SECRET_KEY, secretKey)) {
             return response.failure("密钥错误！");
         }
 
-
-        BaseJob baseJob;
-        try {
-            // 利用反射获取任务实例，因为所有任务都是实现BaseJob的接口，所以这里使用BaseJob接收
-            baseJob = (BaseJob) Class.forName(jobClassName).newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            return response.failure("全类名错误！");
-        }
-
-        //构建job信息
-        JobDetail jobDetail = JobBuilder.newJob(baseJob.getClass())
-                .withIdentity(baseJob.getClass().getSimpleName(), jobGroupName)
-                .withDescription(jobDescription)
-                .build();
-
-        //表达式调度构建器(即任务执行的时间)
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
-
-        //按新的cronExpression表达式构建一个新的trigger
-        CronTrigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(jobClassName, jobGroupName)
-                .withSchedule(scheduleBuilder)
-                .startNow()
-                .build();
-
-        try {
-            // 把job和触发器注册到任务调度中
-            scheduler.scheduleJob(jobDetail, trigger);
-            // 启动调度器
-            scheduler.start();
+        if (jobService.addJob(jobClassName, jobGroupName, cronExpression, jobDescription)) {
             return response.success("创建定时任务成功！");
-        } catch (SchedulerException e) {
-            log.error("创建定时任务失败:", e);
-            return response.failure("创建定时任务失败！");
         }
+        return response.failure("创建定时任务失败！");
     }
 
 
@@ -147,13 +111,10 @@ public class JobController {
         if (!Objects.equals(SECRET_KEY, secretKey)) {
             return response.failure("密钥错误！");
         }
-        try {
-            scheduler.pauseJob(JobKey.jobKey(jobClassName, jobGroupName));
+        if (jobService.pauseJob(jobClassName, jobGroupName)) {
             return response.success("暂停任务成功！");
-        } catch (SchedulerException e) {
-            log.error("暂停任务异常", e);
-            return response.failure("暂停任务失败！");
         }
+        return response.failure("暂停任务失败！");
     }
 
     /**
@@ -175,14 +136,10 @@ public class JobController {
         if (!Objects.equals(SECRET_KEY, secretKey)) {
             return response.failure("密钥错误！");
         }
-        try {
-            scheduler.resumeJob(JobKey.jobKey(jobClassName, jobGroupName));
+        if (jobService.resumeJob(jobClassName, jobGroupName)) {
             return response.success("恢复任务成功！");
-        } catch (SchedulerException e) {
-            log.error("恢复任务异常", e);
-            return response.failure("恢复任务失败！");
         }
-
+        return response.failure("恢复任务失败！");
     }
 
 
@@ -216,24 +173,11 @@ public class JobController {
         if (!Objects.equals(SECRET_KEY, secretKey)) {
             return response.failure("密钥错误！");
         }
-        try {
-            TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
 
-            // 表达式调度构建器
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
-
-            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
-
-            // 按新的cronExpression表达式重新构建trigger
-            trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
-
-            // 按新的trigger重新设置job执行
-            scheduler.rescheduleJob(triggerKey, trigger);
+        if (jobService.rescheduleJob(jobClassName, jobGroupName, cronExpression)) {
             return response.success("更新任务成功！");
-        } catch (SchedulerException e) {
-            log.error("更新任务失败", e);
-            return response.failure("更新任务失败！");
         }
+        return response.failure("更新任务失败！");
     }
 
     /**
@@ -259,16 +203,10 @@ public class JobController {
         if (!Objects.equals(SECRET_KEY, secretKey)) {
             return response.failure("密钥错误！");
         }
-        try {
-            scheduler.pauseTrigger(TriggerKey.triggerKey(jobClassName, jobGroupName));
-            scheduler.unscheduleJob(TriggerKey.triggerKey(jobClassName, jobGroupName));
-            scheduler.deleteJob(JobKey.jobKey(jobClassName, jobGroupName));
+        if (jobService.deleteJob(jobClassName, jobGroupName)) {
             return response.success("删除任务成功！");
-        } catch (SchedulerException e) {
-            log.error("删除任务异常", e);
-            return response.failure("删除任务失败！");
         }
-
+        return response.failure("删除任务失败！");
     }
 
     /**
