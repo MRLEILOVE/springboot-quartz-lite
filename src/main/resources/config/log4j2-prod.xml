@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    主标签，有两个log4j2的关键属性：
+    status：设置log4j2的自身log级别。日志级别： OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL，
+    其中 off 表示关闭日志输出，fatal 表示严重错误。
+    monitorInterval：Log4j2能够自动检测配置文件变化，并使用新的配置，这个单位是秒。
+-->
+<!--设置log4j2的自身log级别为warn -->
+<Configuration status="warn">
+
+    <Appenders>
+        <!-- 配置mongdb appender -->
+        <NoSql name="MongoAppender">
+            <!--参数分别是：数据库名，集合名，服务器ip，端口。还可以指定其他参数或升级版本，详情请看：http://logging.apache.org/log4j/2.x/manual/appenders.html#NoSQLAppender-->
+            <MongoDb databaseName="test" collectionName="log" server="127.0.0.1" port="27017"/>
+        </NoSql>
+    </Appenders>
+
+    <!--然后定义logger，只有定义了logger并引入上面定义的appender，appender才会生效 -->
+    <Loggers>
+        <!--过滤掉spring等框架的无用日志信息，也可以在springboot的logging.level.org.springframework=FATAL设置-->
+        <logger name="org.springframework" level="warn"/>
+
+        <!--建立一个默认的Root的logger，记录>=level的信息，如果这里的level高于Appenders中的，则Appenders中也是以此等级为起点。
+            比如，这里level="fatal"，则Appenders中只出现fatal信息。
+            温馨提示：prodlevel建议设置为warn
+        -->
+        <Root level="info">
+            <!-- 输出器，可选上面定义的任何项组合，或全选-->
+            <appender-ref ref="MongoAppender" />
+        </Root>
+    </Loggers>
+
+</Configuration>
