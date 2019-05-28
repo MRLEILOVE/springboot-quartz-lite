@@ -160,10 +160,6 @@ public class JobController {
         if (StringUtils.isBlank(cronExpression)) {
             return response.failure("表达式不能为空！");
         }
-        // 验证表达式格式
-        if (!CronExpression.isValidExpression(cronExpression)) {
-            return response.failure("表达式格式错误！");
-        }
 
         if (StringUtils.isBlank(secretKey)) {
             return response.failure("密钥不能为空！");
