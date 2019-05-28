@@ -103,7 +103,7 @@ public class JobService {
      * 修改备注： <br>
      * </p>
      *
-     * @param cls 任务全类名，可使用类.class获得
+     * @param cls 任务类，可用 类名.class 获得
      * @return true 成功, false 失败
      */
     public Boolean pauseJob(Class<?> cls) {
@@ -146,7 +146,7 @@ public class JobService {
      * 修改备注： <br>
      * </p>
      *
-     * @param cls 任务全类名，可使用类.class获得
+     * @param cls 任务类，可用 类名.class 获得
      * @return true 成功, false 失败
      */
     public Boolean resumeJob(Class<?> cls) {
