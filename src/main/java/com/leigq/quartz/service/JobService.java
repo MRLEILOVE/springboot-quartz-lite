@@ -203,7 +203,10 @@ public class JobService {
         try {
             TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
             // 表达式调度构建器
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
+            // 增加：withMisfireHandlingInstructionDoNothing()方法 参考：https://blog.csdn.net/zhouhao1256/article/details/53486748?tdsourcetag=s_pctim_aiomsg
+            // 1，不触发立即执行
+            // 2，等待下次Cron触发频率到达时刻开始按照Cron频率依次执行
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing();
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
             // 按新的cronExpression表达式重新构建trigger
             trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
