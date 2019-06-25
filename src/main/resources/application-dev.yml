@@ -30,7 +30,7 @@ spring:
         validationQuery: SELECT 1 FROM DUAL
     data:
       mongodb:
-        uri: mongodb://192.168.0.146/dev
+        uri: mongodb://localhost/dev
         port: 27017
 logging:
   config: classpath:config/log4j2-dev.xml
