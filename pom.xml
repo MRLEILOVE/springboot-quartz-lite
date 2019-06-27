@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.leigq</groupId>
     <artifactId>springboot-quartz</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>quartz</name>
     <description>Quartz demo project for Spring Boot</description>
 
@@ -134,11 +134,71 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!--自定义字段-->
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profiles.active>test</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profiles.active>prod</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!--docker 插件，将项目打包成镜像，推送至阿里镜像仓库-->
+            <!-- docker 插件使用参考：https://www.jianshu.com/p/3b91b8958c3e -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.12</version>
+                <configuration>
+                    <!-- 注意imageName一定要是符合正则[a-z0-9-_.]的，否则构建不会成功 -->
+                    <!-- 详见：https://github.com/spotify/docker-maven-plugin    Invalid repository name ... only [a-z0-9-_.] are allowed-->
+                    <imageName>registry.cn-shenzhen.aliyuncs.com/leigq/${project.build.finalName}-${profiles.active}</imageName>
+                    <baseImage>java:8-alpine</baseImage>
+                    <entryPoint>["java", "-jar","-Dspring.profiles.active=${profiles.active}", "/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <!--对应 Maven 的 setting.xml 中的 server-id -->
+                    <!-- Maven 的 setting.xml 密码加密参考：https://blog.csdn.net/taiyangdao/article/details/79500507-->
+                    <serverId>docker-hub-leigq</serverId>
+                    <registryUrl>https://registry.cn-shenzhen.aliyuncs.com</registryUrl>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
