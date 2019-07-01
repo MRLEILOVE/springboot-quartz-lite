@@ -1,5 +1,6 @@
 package com.leigq.quartz.bean;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.context.annotation.Scope;
@@ -30,7 +31,7 @@ public class Response {
     /**
      * 默认成功响应码
      */
-    private static final String DEAFAULT_SUCCESS_CODE = HttpStatus.OK.toString();
+    private static final Integer DEAFAULT_SUCCESS_CODE = HttpStatus.OK.value();
     /**
      * 默认成功响应信息
      */
@@ -38,7 +39,7 @@ public class Response {
     /**
      * 默认失败响应码
      */
-    private static final String DEAFAULT_FAILURE_CODE = HttpStatus.INTERNAL_SERVER_ERROR.toString();
+    private static final Integer DEAFAULT_FAILURE_CODE = HttpStatus.INTERNAL_SERVER_ERROR.value();
     /**
      * 默认失败响应信息
      */
@@ -111,7 +112,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(HttpStatus httpStatus, String msg, Object data) {
-        this.meta = new Meta(httpStatus.toString(), msg);
+        this.meta = new Meta(httpStatus.value(), msg);
         this.data = data;
         return this;
     }
@@ -177,7 +178,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(HttpStatus httpStatus, String msg, Object data) {
-        this.meta = new Meta(httpStatus.toString(), msg);
+        this.meta = new Meta(httpStatus.value(), msg);
         this.data = data;
         return this;
     }
@@ -194,23 +195,18 @@ public class Response {
      * </p>
      */
     @Data
+    @AllArgsConstructor
     public class Meta {
 
         /**
          * 处理结果代码，与 HTTP 状态响应码对应
          */
-        private String code;
+        private Integer code;
 
         /**
          * 处理结果信息
          */
         private String msg;
-
-        Meta(String code, String msg) {
-            super();
-            this.code = code;
-            this.msg = msg;
-        }
     }
 
 }
