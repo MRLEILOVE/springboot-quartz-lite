@@ -1,6 +1,7 @@
 package com.leigq.quartz.bean;
 
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
+@SuppressWarnings(value = "all")
 public class Response {
 
     /**
@@ -42,7 +44,10 @@ public class Response {
      */
     private static final String DEAFAULT_FAILURE_MSG = "请求/处理失败！";
 
+    @Getter
     private Meta meta;
+
+    @Getter
     private Object data;
 
 
@@ -97,7 +102,7 @@ public class Response {
     /**
      * 处理成功响应，返回自定义响应码、信息和数据。
      *
-     * @param code HTTP 响应码
+     * @param httpStatus HTTP 响应码
      * @param msg  处理结果信息
      * @param data 返回数据
      * @return 响应对象
@@ -163,7 +168,7 @@ public class Response {
     /**
      * 处理失败响应，返回自定义响应码、信息和数据。
      *
-     * @param code HTTP 响应码
+     * @param httpStatus HTTP 响应码
      * @param msg  处理结果信息
      * @param data 返回数据
      * @return 响应对象
@@ -175,14 +180,6 @@ public class Response {
         this.meta = new Meta(httpStatus.toString(), msg);
         this.data = data;
         return this;
-    }
-
-    public Meta getMeta() {
-        return meta;
-    }
-
-    public Object getData() {
-        return data;
     }
 
     /**
