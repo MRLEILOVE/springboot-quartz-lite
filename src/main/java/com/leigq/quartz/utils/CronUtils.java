@@ -10,6 +10,8 @@ import java.util.Date;
 /**
  * 该类提供Quartz的cron表达式与Date之间的转换
  * <br/>
+ * 参考：https://blog.csdn.net/zhglance/article/details/52130131
+ * <br/>
  *
  * @author ：leigq
  * @date ：2019/7/4 19:28
