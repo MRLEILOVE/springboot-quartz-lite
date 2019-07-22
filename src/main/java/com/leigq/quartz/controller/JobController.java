@@ -91,6 +91,31 @@ public class JobController {
         return response.failure("创建定时任务失败！");
     }
 
+    /**
+     * 执行任务
+     * <p>
+     * 创建人：LeiGQ <br>
+     * 创建时间：2019/5/19 13:48 <br>
+     * <p>
+     * 修改人： <br>
+     * 修改时间： <br>
+     * 修改备注： <br>
+     * </p>
+     */
+    @PostMapping("/jobs/action/execute")
+    public Response executeJob(String jobClassName, String jobGroupName, String secretKey) {
+        if (StringUtils.isBlank(secretKey)) {
+            return response.failure("密钥不能为空！");
+        }
+        if (!Objects.equals(SECRET_KEY, secretKey)) {
+            return response.failure("密钥错误！");
+        }
+        if (jobService.executeJob(jobClassName, jobGroupName)) {
+            return response.success("执行任务成功！");
+        }
+        return response.failure("执行任务失败！");
+    }
+
 
     /**
      * 暂停任务

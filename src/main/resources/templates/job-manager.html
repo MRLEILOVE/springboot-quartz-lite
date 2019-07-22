@@ -86,18 +86,21 @@
             </el-table-column>
 
             <el-table-column
+                    width="160"
                     prop="prevFireTime"
                     label="上次执行时间"
                     sortable>
             </el-table-column>
 
             <el-table-column
+                    width="160"
                     prop="nextFireTime"
                     label="下次执行时间"
                     sortable>
             </el-table-column>
 
             <el-table-column
+                    width="80"
                     prop="triggerState"
                     label="状态"
                     sortable>
@@ -132,24 +135,30 @@
                     sortable>
             </el-table-column>
 
-            <el-table-column label="操作" width="300">
+            <el-table-column label="操作" width="400">
                 <template scope="scope">
                     <el-button
                             size="small"
+                            type="success"
+                            @click="handlePauseOrResumeOrDeleteOrExecute(scope.$index, scope.row, 4)">立即执行
+                    </el-button>
+
+                    <el-button
+                            size="small"
                             type="warning"
-                            @click="handlePauseOrResumeOrDelete(scope.$index, scope.row, 1)">暂停
+                            @click="handlePauseOrResumeOrDeleteOrExecute(scope.$index, scope.row, 1)">暂停
                     </el-button>
 
                     <el-button
                             size="small"
                             type="info"
-                            @click="handlePauseOrResumeOrDelete(scope.$index, scope.row, 2)">恢复
+                            @click="handlePauseOrResumeOrDeleteOrExecute(scope.$index, scope.row, 2)">恢复
                     </el-button>
 
                     <el-button
                             size="small"
                             type="danger"
-                            @click="handlePauseOrResumeOrDelete(scope.$index, scope.row, 3)">删除
+                            @click="handlePauseOrResumeOrDeleteOrExecute(scope.$index, scope.row, 3)">删除
                     </el-button>
 
                     <el-button
@@ -215,16 +224,16 @@
         </div>
     </el-dialog>
 
-    <!--暂停 恢复 删除弹框-->
-    <el-dialog title="请输入密钥" :visible.sync="pauseOrResumeOrDeleteFormVisible">
+    <!--暂停 恢复 删除 立即执行 弹框-->
+    <el-dialog title="请输入密钥" :visible.sync="pauseOrResumeOrDeleteOrExecuteFormVisible">
         <el-form :model="form">
             <el-form-item label="密钥" label-width="120px" style="width:35%">
                 <el-input v-model="form.secretKey" auto-complete="off"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="pauseOrResumeOrDeleteFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="commitPauseOrResumeOrDeleteForm">确 定</el-button>
+            <el-button @click="pauseOrResumeOrDeleteOrExecuteFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="commitPauseOrResumeOrDeleteOrExecuteForm">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -262,8 +271,8 @@
             //修改对话框默认可见性
             updateFormVisible: false,
 
-            //暂停 恢复 删除弹框默认可见性
-            pauseOrResumeOrDeleteFormVisible: false,
+            //暂停 恢复 删除 立即执行 弹框默认可见性
+            pauseOrResumeOrDeleteOrExecuteFormVisible: false,
 
             //提交的表单
             addform: {
@@ -356,14 +365,14 @@
             handleDelete: function (index, row) {
                 this.$http.delete('jobs/'+ row.jobName + '/' + row.jobGroup + '?secretKey=' + this.form.secretKey)
                     .then(function (res) {
-                    if (res.body.meta.code === '200') {
+                    if (res.body.meta.code === 200) {
                         this.$notify({
                             title: '成功',
                             message: res.body.meta.msg,
                             type: 'success'
                         });
                         this.loadData(this.currentPage, this.pagesize);
-                        this.pauseOrResumeOrDeleteFormVisible = false;
+                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
@@ -384,14 +393,14 @@
                     "jobGroupName": row.jobGroup,
                     "secretKey": this.form.secretKey,
                 }, {emulateJSON: true}).then(function (res) {
-                    if (res.body.meta.code === '200') {
+                    if (res.body.meta.code === 200) {
                         this.$notify({
                             title: '成功',
                             message: res.body.meta.msg,
                             type: 'success'
                         });
                         this.loadData(this.currentPage, this.pagesize);
-                        this.pauseOrResumeOrDeleteFormVisible = false;
+                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
@@ -412,14 +421,14 @@
                     "jobGroupName": row.jobGroup,
                     "secretKey": this.form.secretKey,
                 }, {emulateJSON: true}).then(function (res) {
-                    if (res.body.meta.code === '200') {
+                    if (res.body.meta.code === 200) {
                         this.$notify({
                             title: '成功',
                             message: res.body.meta.msg,
                             type: 'success'
                         });
                         this.loadData(this.currentPage, this.pagesize);
-                        this.pauseOrResumeOrDeleteFormVisible = false;
+                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
@@ -433,16 +442,44 @@
                 });
             },
 
-            // 弹出暂停|恢复|删除对话框
-            handlePauseOrResumeOrDelete: function(index, row, type){
+            // 执行任务
+            handleExecute: function (index, row) {
+                this.$http.post('jobs/action/execute', {
+                    "jobClassName": row.jobName,
+                    "jobGroupName": row.jobGroup,
+                    "secretKey": this.form.secretKey,
+                }, {emulateJSON: true}).then(function (res) {
+                    if (res.body.meta.code === 200) {
+                        this.$notify({
+                            title: '成功',
+                            message: res.body.meta.msg,
+                            type: 'success'
+                        });
+                        this.loadData(this.currentPage, this.pagesize);
+                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: res.body.meta.msg,
+                            type: 'warning'
+                        });
+                    }
+                    this.loadData(this.currentPage, this.pagesize);
+                }, function () {
+                    console.log('failed');
+                });
+            },
+
+            // 弹出暂停|恢复|删除|立即执行对话框
+            handlePauseOrResumeOrDeleteOrExecute: function(index, row, type){
                 this.form.index = index;
                 this.form.row = row;
                 this.form.type = type;
-                this.pauseOrResumeOrDeleteFormVisible = true;
+                this.pauseOrResumeOrDeleteOrExecuteFormVisible = true;
             },
 
-            //处理暂停|恢复|删除表单提交
-            commitPauseOrResumeOrDeleteForm: function () {
+            //处理暂停|恢复|删除|立即执行表单提交
+            commitPauseOrResumeOrDeleteOrExecuteForm: function () {
                 var type = this.form.type;
                 switch (type) {
                     case 1:
@@ -453,6 +490,9 @@
                         break;
                     case 3:
                         this.handleDelete(this.form.index,this.form.row);
+                        break;
+                    case 4:
+                        this.handleExecute(this.form.index,this.form.row);
                         break;
                 }
                 this.form.secretKey = '';
@@ -483,7 +523,7 @@
                     "cronExpression": this.addform.cronExpression,
                     "secretKey": this.addform.secretKey,
                 }, {emulateJSON: true}).then(function (res) {
-                    if (res.body.meta.code === '200') {
+                    if (res.body.meta.code === 200) {
                         this.$notify({
                             title: '成功',
                             message: res.body.meta.msg,
@@ -525,7 +565,7 @@
                         "secretKey": this.updateform.secretKey,
                     }, {emulateJSON: true}
                 ).then(function (res) {
-                    if (res.body.meta.code === '200') {
+                    if (res.body.meta.code === 200) {
                         this.$notify({
                             title: '成功',
                             message: res.body.meta.msg,

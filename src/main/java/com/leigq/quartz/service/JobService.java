@@ -92,6 +92,50 @@ public class JobService {
         }
     }
 
+
+    /**
+     * 执行任务
+     * <p>
+     * 创建人：LeiGQ <br>
+     * 创建时间：2019/5/28 2:57 <br>
+     * <p>
+     * 修改人： <br>
+     * 修改时间： <br>
+     * 修改备注： <br>
+     * </p>
+     *
+     * @param cls 任务类，可用 类名.class 获得
+     * @return true 成功, false 失败
+     */
+    public Boolean executeJob(Class<?> cls) {
+        return executeJob(cls.getSimpleName(), jobMapper.getJobGroup(cls.getName()));
+    }
+
+    /**
+     * 执行任务
+     * <p>
+     * 创建人：LeiGQ <br>
+     * 创建时间：2019/5/28 2:57 <br>
+     * <p>
+     * 修改人： <br>
+     * 修改时间： <br>
+     * 修改备注： <br>
+     * </p>
+     *
+     * @param jobSimpleName 类名
+     * @param jobGroupName  类组名
+     * @return true 成功, false 失败
+     */
+    public Boolean executeJob(String jobSimpleName, String jobGroupName) {
+        try {
+            scheduler.triggerJob(JobKey.jobKey(jobSimpleName, jobGroupName));
+            return true;
+        } catch (SchedulerException e) {
+            log.error("执行任务异常", e);
+            return false;
+        }
+    }
+
     /**
      * 暂停任务
      * <p>
