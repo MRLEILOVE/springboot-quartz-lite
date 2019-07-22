@@ -1,16 +1,16 @@
 package com.leigq.quartz.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.leigq.quartz.bean.DetailJobDTO;
 import com.leigq.quartz.bean.Response;
+import com.leigq.quartz.bean.SimpleJobDTO;
 import com.leigq.quartz.domain.entity.JobAndTrigger;
-import com.leigq.quartz.job.BaseJob;
 import com.leigq.quartz.service.JobAndTriggerService;
 import com.leigq.quartz.service.JobService;
-import com.leigq.quartz.simple.HelloQuartz;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -46,7 +46,6 @@ public class JobController {
         this.jobService = jobService;
     }
 
-
     /**
      * 添加任务
      * <p>
@@ -59,33 +58,12 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs")
-    public Response addJob(String jobClassName, String jobGroupName, String cronExpression,
-                           String jobDescription, String secretKey) {
-        if (StringUtils.isBlank(jobClassName)) {
-            return response.failure("全类名不能为空！");
-        }
-
-        if (StringUtils.isBlank(jobGroupName)) {
-            return response.failure("任务分组不能为空！");
-        }
-
-        if (StringUtils.isBlank(jobDescription)) {
-            return response.failure("任务描述不能为空！");
-        }
-
-        if (StringUtils.isBlank(cronExpression)) {
-            return response.failure("表达式不能为空！");
-        }
-
-        if (StringUtils.isBlank(secretKey)) {
-            return response.failure("密钥不能为空！");
-        }
-
-        if (!Objects.equals(SECRET_KEY, secretKey)) {
+    public Response addJob(@Validated DetailJobDTO detailJobDTO) {
+        if (!Objects.equals(SECRET_KEY, detailJobDTO.getSecretKey())) {
             return response.failure("密钥错误！");
         }
-
-        if (jobService.addJob(jobClassName, jobGroupName, cronExpression, jobDescription)) {
+        if (jobService.addJob(detailJobDTO.getJobClassName(), detailJobDTO.getJobGroupName(),
+		        detailJobDTO.getCronExpression(), detailJobDTO.getJobDescription())) {
             return response.success("创建定时任务成功！");
         }
         return response.failure("创建定时任务失败！");
@@ -103,14 +81,11 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/execute")
-    public Response executeJob(String jobClassName, String jobGroupName, String secretKey) {
-        if (StringUtils.isBlank(secretKey)) {
-            return response.failure("密钥不能为空！");
-        }
-        if (!Objects.equals(SECRET_KEY, secretKey)) {
+    public Response executeJob(@Validated SimpleJobDTO simpleJobDTO) {
+        if (!Objects.equals(SECRET_KEY, simpleJobDTO.getSecretKey())) {
             return response.failure("密钥错误！");
         }
-        if (jobService.executeJob(jobClassName, jobGroupName)) {
+        if (jobService.executeJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName())) {
             return response.success("执行任务成功！");
         }
         return response.failure("执行任务失败！");
@@ -129,14 +104,11 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/pause")
-    public Response pauseJob(String jobClassName, String jobGroupName, String secretKey) {
-        if (StringUtils.isBlank(secretKey)) {
-            return response.failure("密钥不能为空！");
-        }
-        if (!Objects.equals(SECRET_KEY, secretKey)) {
+    public Response pauseJob(@Validated SimpleJobDTO simpleJobDTO) {
+        if (!Objects.equals(SECRET_KEY, simpleJobDTO.getSecretKey())) {
             return response.failure("密钥错误！");
         }
-        if (jobService.pauseJob(jobClassName, jobGroupName)) {
+        if (jobService.pauseJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName())) {
             return response.success("暂停任务成功！");
         }
         return response.failure("暂停任务失败！");
@@ -154,14 +126,11 @@ public class JobController {
      * </p>
      */
     @PostMapping("/jobs/action/resume")
-    public Response resumeJob(String jobClassName, String jobGroupName, String secretKey) {
-        if (StringUtils.isBlank(secretKey)) {
-            return response.failure("密钥不能为空！");
-        }
-        if (!Objects.equals(SECRET_KEY, secretKey)) {
+    public Response resumeJob(@Validated SimpleJobDTO simpleJobDTO) {
+        if (!Objects.equals(SECRET_KEY, simpleJobDTO.getSecretKey())) {
             return response.failure("密钥错误！");
         }
-        if (jobService.resumeJob(jobClassName, jobGroupName)) {
+        if (jobService.resumeJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName())) {
             return response.success("恢复任务成功！");
         }
         return response.failure("恢复任务失败！");
@@ -180,22 +149,13 @@ public class JobController {
      * </p>
      */
     @PutMapping("/jobs")
-    public Response rescheduleJob(String jobClassName, String jobGroupName,
-                                  String cronExpression, String secretKey) {
-        if (StringUtils.isBlank(cronExpression)) {
-            return response.failure("表达式不能为空！");
-        }
-
-        if (StringUtils.isBlank(secretKey)) {
-            return response.failure("密钥不能为空！");
-        }
-
+    public Response rescheduleJob(@Validated DetailJobDTO detailJobDTO) {
         // 密钥应该从数据库查询出来比对，这里暂时写死
-        if (!Objects.equals(SECRET_KEY, secretKey)) {
+        if (!Objects.equals(SECRET_KEY, detailJobDTO.getSecretKey())) {
             return response.failure("密钥错误！");
         }
-
-        if (jobService.rescheduleJob(jobClassName, jobGroupName, cronExpression)) {
+        if (jobService.rescheduleJob(detailJobDTO.getJobClassName(), detailJobDTO.getJobGroupName(),
+		        detailJobDTO.getCronExpression())) {
             return response.success("更新任务成功！");
         }
         return response.failure("更新任务失败！");
@@ -219,7 +179,6 @@ public class JobController {
         if (StringUtils.isBlank(secretKey)) {
             return response.failure("密钥不能为空！");
         }
-
         // 密钥应该从数据库查询出来比对，这里暂时写死
         if (!Objects.equals(SECRET_KEY, secretKey)) {
             return response.failure("密钥错误！");
