@@ -1,6 +1,6 @@
 package com.leigq.quartz.web;
 
-import com.leigq.quartz.bean.Response;
+import com.leigq.quartz.bean.common.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;

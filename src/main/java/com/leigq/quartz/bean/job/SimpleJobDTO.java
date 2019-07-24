@@ -1,18 +1,18 @@
-package com.leigq.quartz.bean;
+package com.leigq.quartz.bean.job;
 
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
 /**
- * 详细任务 DTO，用户接受 添加任务、更新任务 请求参数
+ * 简单任务 DTO，用户接受 执行任务、暂停任务、恢复任务  请求参数
  * <br/>
  *
  * @author ：leigq
  * @date ：2019/7/22 16:53
  */
 @Data
-public class DetailJobDTO {
+public class SimpleJobDTO {
 
 	/**
 	 * 任务全类名
@@ -25,17 +25,6 @@ public class DetailJobDTO {
 	 */
 	@NotEmpty(message = "任务分组不能为空！")
 	private String jobGroupName;
-
-	/**
-	 * 任务表达式
-	 */
-	@NotEmpty(message = "表达式不能为空！")
-	private String cronExpression;
-
-	/**
-	 * 任务描述
-	 */
-	private String jobDescription;
 
 	/**
 	 * 密钥
