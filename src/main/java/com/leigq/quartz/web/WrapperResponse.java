@@ -32,9 +32,9 @@ public class WrapperResponse extends HttpServletResponseWrapper {
 	 */
 	@Override
 	public PrintWriter getWriter() {
-		try{
+		try {
 			pwrite = new PrintWriter(new OutputStreamWriter(bytes, "utf-8"));
-		} catch(UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return pwrite;
@@ -44,15 +44,15 @@ public class WrapperResponse extends HttpServletResponseWrapper {
 	 * 获取缓存在 PrintWriter 中的响应数据
 	 */
 	byte[] getBytes() {
-		if(null != pwrite) {
+		if (null != pwrite) {
 			pwrite.close();
 			return bytes.toByteArray();
 		}
 
-		if(null != bytes) {
+		if (null != bytes) {
 			try {
 				bytes.flush();
-			} catch(IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -61,9 +61,8 @@ public class WrapperResponse extends HttpServletResponseWrapper {
 	}
 
 
-
 	class MyServletOutputStream extends ServletOutputStream {
-		private ByteArrayOutputStream ostream ;
+		private ByteArrayOutputStream ostream;
 
 		MyServletOutputStream(ByteArrayOutputStream ostream) {
 			this.ostream = ostream;
