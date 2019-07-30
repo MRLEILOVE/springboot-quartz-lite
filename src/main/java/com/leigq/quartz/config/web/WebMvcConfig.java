@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.config.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

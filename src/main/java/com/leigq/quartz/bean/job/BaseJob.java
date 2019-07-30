@@ -1,4 +1,4 @@
-package com.leigq.quartz.job;
+package com.leigq.quartz.bean.job;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

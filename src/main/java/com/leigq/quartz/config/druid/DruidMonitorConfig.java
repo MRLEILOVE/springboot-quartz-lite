@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.config.druid;
 
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;

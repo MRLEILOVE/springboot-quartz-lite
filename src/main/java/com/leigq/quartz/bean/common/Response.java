@@ -31,32 +31,32 @@ public class Response {
     /**
      * 默认成功响应码
      */
-    private static final Integer DEAFAULT_SUCCESS_CODE = HttpStatus.OK.value();
+    private static final Integer DEFAULT_SUCCESS_CODE = HttpStatus.OK.value();
 
     /**
      * 默认成功响应信息
      */
-    private static final String DEAFAULT_SUCCESS_MSG = "请求/处理成功！";
+    private static final String DEFAULT_SUCCESS_MSG = "请求/处理成功！";
 
     /**
      * 默认国际化成功响应信息
      */
-    private static final String DEAFAULT_I18N_SUCCESS_MSG = "REQUEST_SUCCESS";
+    private static final String DEFAULT_I18N_SUCCESS_MSG = "REQUEST_SUCCESS";
 
     /**
      * 默认失败响应码
      */
-    private static final Integer DEAFAULT_FAILURE_CODE = HttpStatus.INTERNAL_SERVER_ERROR.value();
+    private static final Integer DEFAULT_FAILURE_CODE = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
     /**
      * 默认失败响应信息
      */
-    private static final String DEAFAULT_FAILURE_MSG = "请求/处理失败！";
+    private static final String DEFAULT_FAILURE_MSG = "请求/处理失败！";
 
     /**
      * 默认国际化失败响应信息
      */
-    private static final String DEAFAULT_I18N_FAILURE_MSG = "REQUEST_FAIL";
+    private static final String DEFAULT_I18N_FAILURE_MSG = "REQUEST_FAIL";
 
     @Getter
     @Setter
@@ -81,7 +81,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success() {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, DEAFAULT_SUCCESS_MSG, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG, false, null);
         this.data = null;
         return this;
     }
@@ -95,7 +95,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response successI18n() {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, DEAFAULT_I18N_SUCCESS_MSG, true, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_I18N_SUCCESS_MSG, true, null);
         this.data = null;
         return this;
     }
@@ -113,7 +113,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(String msg) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, false, null);
         this.data = null;
         return this;
     }
@@ -128,7 +128,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response successI18n(String msg) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, msg, true, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, null);
         this.data = null;
         return this;
     }
@@ -144,7 +144,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response successI18n(String msg, Object[] msgParams) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, msg, true, msgParams);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, msgParams);
         this.data = null;
         return this;
     }
@@ -162,7 +162,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(Object data) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, DEAFAULT_SUCCESS_MSG, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG, false, null);
         this.data = data;
         return this;
     }
@@ -177,7 +177,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response successI18n(Object data) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, DEAFAULT_I18N_SUCCESS_MSG, true, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_I18N_SUCCESS_MSG, true, null);
         this.data = data;
         return this;
     }
@@ -197,7 +197,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(String msg, Object data) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, false, null);
         this.data = data;
         return this;
     }
@@ -213,7 +213,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response successI18n(String msg, Object data) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, msg, true, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, null);
         this.data = data;
         return this;
     }
@@ -230,7 +230,7 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response successI18n(String msg, Object data, Object[] msgParams) {
-        this.meta = new Meta(DEAFAULT_SUCCESS_CODE, msg, true, msgParams);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, msgParams);
         this.data = data;
         return this;
     }
@@ -304,7 +304,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure() {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, DEAFAULT_FAILURE_MSG, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG, false, null);
         this.data = null;
         return this;
     }
@@ -318,7 +318,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failureI18n() {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, DEAFAULT_I18N_FAILURE_MSG, true, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_I18N_FAILURE_MSG, true, null);
         this.data = null;
         return this;
     }
@@ -335,7 +335,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(String msg) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, false, null);
         this.data = null;
         return this;
     }
@@ -350,7 +350,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failureI18n(String msg) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, msg, true, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, null);
         this.data = null;
         return this;
     }
@@ -366,7 +366,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failureI18n(String msg, Object[] msgParams) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, msg, true, msgParams);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, msgParams);
         this.data = null;
         return this;
     }
@@ -383,7 +383,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(Object data) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, DEAFAULT_FAILURE_MSG, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG, false, null);
         this.data = data;
         return this;
     }
@@ -398,7 +398,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failureI18n(Object data) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, DEAFAULT_I18N_FAILURE_MSG, true, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_I18N_FAILURE_MSG, true, null);
         this.data = data;
         return this;
     }
@@ -418,7 +418,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(String msg, Object data) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, false, null);
         this.data = data;
         return this;
     }
@@ -435,7 +435,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failureI18n(String msg, Object data, Object[] msgParams) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, msg, true, msgParams);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, msgParams);
         this.data = data;
         return this;
     }
@@ -451,7 +451,7 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failureI18n(String msg, Object data) {
-        this.meta = new Meta(DEAFAULT_FAILURE_CODE, msg, true, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, null);
         this.data = data;
         return this;
     }
@@ -515,7 +515,7 @@ public class Response {
     /**
      * 元数据，包含响应码和信息。
      * <p>
-     * 创建人：袁炜林 <br>
+     * 创建人：leigq <br>
      * 创建时间：2017年10月9日 下午3:31:17 <br>
      * <p>
      * 修改人： <br>

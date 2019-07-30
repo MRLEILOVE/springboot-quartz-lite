@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.config.quartz;
 
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Autowired;

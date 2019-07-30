@@ -1,9 +1,7 @@
 package com.leigq.quartz;
 
-import com.leigq.quartz.job.BaseJob;
-import com.leigq.quartz.service.JobAndTriggerService;
 import com.leigq.quartz.service.JobService;
-import com.leigq.quartz.simple.HelloQuartz;
+import com.leigq.quartz.job.HelloQuartz;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

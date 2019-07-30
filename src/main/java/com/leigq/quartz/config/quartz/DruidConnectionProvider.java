@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.config.quartz;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.config.druid;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;

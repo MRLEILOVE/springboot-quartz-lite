@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.config.quartz;
 
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;

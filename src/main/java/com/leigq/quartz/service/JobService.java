@@ -1,7 +1,7 @@
 package com.leigq.quartz.service;
 
 import com.leigq.quartz.domain.mapper.JobMapper;
-import com.leigq.quartz.job.BaseJob;
+import com.leigq.quartz.bean.job.BaseJob;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;

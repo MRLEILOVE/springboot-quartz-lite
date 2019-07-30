@@ -1,6 +1,6 @@
-package com.leigq.quartz.simple;
+package com.leigq.quartz.job;
 
-import com.leigq.quartz.job.BaseJob;
+import com.leigq.quartz.bean.job.BaseJob;
 import com.leigq.quartz.service.JobAndTriggerService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobDataMap;
@@ -9,7 +9,6 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 
 /**

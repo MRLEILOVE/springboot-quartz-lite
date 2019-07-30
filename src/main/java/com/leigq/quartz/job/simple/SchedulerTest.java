@@ -1,5 +1,6 @@
-package com.leigq.quartz.simple;
+package com.leigq.quartz.job.simple;
 
+import com.leigq.quartz.job.HelloQuartz;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
