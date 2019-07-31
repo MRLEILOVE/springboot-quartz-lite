@@ -28,10 +28,12 @@ spring:
         url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=true&serverTimezone=UTC
         username: root
         validationQuery: SELECT 1 FROM DUAL
+    # 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略
     data:
       mongodb:
         uri: mongodb://localhost/dev
         port: 27017
+# 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略
 logging:
   config: classpath:config/log4j2-dev.xml
 
