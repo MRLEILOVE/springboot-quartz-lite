@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <!--必须排除掉默认的logback-->
+            <!--必须排除掉默认的logback 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，排除logback，防止jar包冲突，如不需要，请忽略-->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -90,7 +90,7 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <!-- mongodb driver -->
+        <!-- mongodb driver 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
         <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -98,14 +98,14 @@
             <version>3.10.1</version>
         </dependency>
 
-        <!-- log4j2 -->
+        <!-- log4j2 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
         <!-- 必需，否则报错 Springboot 1.5.x 使用 2.7版本-->
-        <!--log4j-core-->
+        <!--log4j-core 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -119,7 +119,7 @@
             <version>3.3.7</version>
         </dependency>-->
 
-        <!-- 必需，否则报错 Springboot 1.5.x 使用 2.7版本-->
+        <!-- 必需，否则报错 Springboot 1.5.x 使用 2.7版本 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-nosql -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -128,6 +128,7 @@
         </dependency>
     </dependencies>
 
+    <!--此项目使用了 docker，如不需要，请忽略-->
     <profiles>
         <profile>
             <id>dev</id>
@@ -160,7 +161,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!--docker 插件，将项目打包成镜像，推送至阿里镜像仓库-->
+            <!--docker 插件，将项目打包成镜像，推送至阿里镜像仓库， 此项目使用了 docker，如不需要，请忽略-->
             <!-- docker 插件使用参考：https://www.jianshu.com/p/3b91b8958c3e -->
             <plugin>
                 <groupId>com.spotify</groupId>

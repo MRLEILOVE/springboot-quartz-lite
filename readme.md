@@ -1,6 +1,11 @@
-Quartz版本：2.3.0 目前稳定版
 
+## 效果
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190731095608529.gif)
+
+Quartz版本：2.3.0 目前稳定版
 SpringBoot版本：2.0.4.RELEASE
+
 ## 项目结构
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190524235426118.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM0ODQ1Mzk0,size_16,color_FFFFFF,t_70)
 
@@ -19,3 +24,8 @@ SpringBoot版本：2.0.4.RELEASE
 ## 参考
 - [Spring Boot集成持久化Quartz定时任务管理和界面展示](https://www.cnblogs.com/dekevin/p/8716596.html)
 - [解决spring bean注入Job的问题](https://www.imooc.com/article/25585)
+## 源码
+
+ - https://github.com/MRLEILOVE/springboot-quartz.git
+
+
