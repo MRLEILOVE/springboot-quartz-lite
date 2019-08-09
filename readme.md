@@ -14,95 +14,79 @@
 下面是整个项目结构，主要类已做注释。
 
 ```
-├─main
-│  ├─java
-│  │  └─com
-│  │      └─leigq
-│  │          └─quartz
-│  │              │  QuartzApplication.java
-│  │              │
-│  │              ├─bean
-│  │              │  ├─common
-│  │              │  │      Response.java  -- 统一返回结果
-│  │              │  │
-│  │              │  └─job
-│  │              │          BaseJob.java  -- Job基础接口，其他Job实现此接口
-│  │              │          DetailJobDTO.java
-│  │              │          SimpleJobDTO.java
-│  │              │
-│  │              ├─config
-│  │              │  ├─druid
-│  │              │  │      DruidDataSourceConfig.java -- Druid数据源配置
-│  │              │  │      DruidMonitorConfig.java    -- Druid监控配置
-│  │              │  │
-│  │              │  ├─quartz
-│  │              │  │      DruidConnectionProvider.java -- Druid连接池的Quartz扩展类
-│  │              │  │      QuartzScheduledConfig.java   -- Quartz任务配置
-│  │              │  │      SpringJobFactory.java        -- 解决spring bean注入Job的问题
-│  │              │  │
-│  │              │  └─web
-│  │              │          WebMvcConfig.java
-│  │              │
-│  │              ├─controller
-│  │              │      JobController.java
-│  │              │
-│  │              ├─domain
-│  │              │  ├─entity
-│  │              │  │      JobAndTrigger.java
-│  │              │  │
-│  │              │  └─mapper
-│  │              │          JobAndTriggerMapper.java
-│  │              │          JobMapper.java
-│  │              │
-│  │              ├─job
-│  │              │  │  HelloQuartz.java    -- 测试任务，实现BaseJob接口
-│  │              │  │  HelloQuartz1.java   -- 测试任务，实现BaseJob接口
-│  │              │  │
-│  │              │  └─simple
-│  │              │          SchedulerTest.java  -- 最简单的Quartz
-│  │              │
-│  │              ├─service
-│  │              │      JobAndTriggerService.java
-│  │              │      JobService.java
-│  │              │
-│  │              └─web
-│  │                      GlobalExceptionHand.java  -- 全局异常处理
-│  │
-│  └─resources
-│      │  application-dev.yml
-│      │  application-prod.yml
-│      │  application-test.yml
-│      │  application.yml
-│      │  quartz.properties -- quartz配置文件
-│      │
-│      ├─config -- 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略
-│      │      log4j2-dev.xml
-│      │      log4j2-prod.xml
-│      │      log4j2-test.xml
-│      │
-│      ├─help
-│      │      Hibernate Validator常用注解.md
-│      │
-│      ├─mappers
-│      │      JobAndTriggerMapper.xml
-│      │      JobMapper.xml
-│      │
-│      ├─sql
-│      │      Quartz官方建表.sql
-│      │
-│      └─templates
-│              job-manager.html
+├─java
+│  └─com
+│      └─leigq
+│          └─quartz
+│              │  QuartzApplication.java
+│              │
+│              ├─bean
+│              │  ├─common
+│              │  │      Response.java  -- 统一返回结果
+│              │  │
+│              │  └─job
+│              │          BaseJob.java  -- Job基础接口，其他Job实现此接口
+│              │          DetailJobDTO.java
+│              │          SimpleJobDTO.java
+│              │
+│              ├─config
+│              │  ├─quartz
+│              │  │      QuartzScheduledConfig.java  -- Quartz任务配置
+│              │  │
+│              │  └─web
+│              │          WebMvcConfig.java
+│              │
+│              ├─controller
+│              │      JobController.java
+│              │
+│              ├─domain
+│              │  ├─entity
+│              │  │      JobAndTrigger.java
+│              │  │
+│              │  └─mapper
+│              │          JobAndTriggerMapper.java
+│              │          JobMapper.java
+│              │
+│              ├─job
+│              │  │  HelloQuartz.java   -- 测试任务，实现BaseJob接口
+│              │  │  HelloQuartz1.java  -- 测试任务，实现BaseJob接口 
+│              │  │
+│              │  └─simple
+│              │          SchedulerTest.java  -- 最简单的Quartz
+│              │
+│              ├─service
+│              │      JobAndTriggerService.java
+│              │      JobService.java
+│              │
+│              └─web
+│                      GlobalExceptionHand.java  -- 全局异常处理
 │
-└─test
-    └─java
-        └─com
-            └─leigq
-                └─quartz
-                        QuartzApplicationTests.java
+└─resources
+    │  application-dev.yml
+    │  application-prod.yml
+    │  application-test.yml
+    │  application.yml
+    │
+    ├─config  -- 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略
+    │      log4j2-dev.xml
+    │      log4j2-prod.xml
+    │      log4j2-test.xml
+    │
+    ├─help
+    │      Hibernate Validator常用注解.md
+    │
+    ├─mappers
+    │      JobAndTriggerMapper.xml
+    │      JobMapper.xml
+    │
+    ├─sql
+    │      Quartz官方建表.sql
+    │
+    └─templates
+            job-manager.html
 ```
 
-
-结构很简单就不多说了，有一点需要注意，因为此项目使用的是Druid连接池，需要额外的一些配置，具体看：[Quartz学习笔记(五) quartz扩展druid连接池](https://www.cnblogs.com/zouhao510/p/5313600.html)
+结构很简单就不多说了。
 
 建议直接把源码克隆下来运行，源码里面注释很清晰，然后结合下面的几篇文章看，就可以很快理解了。
 
@@ -112,8 +96,9 @@
 - [Quartz使用总结](https://www.cnblogs.com/drift-ice/p/3817269.html)
 
 ## 参考
+
 - [Spring Boot集成持久化Quartz定时任务管理和界面展示](https://www.cnblogs.com/dekevin/p/8716596.html)
-- [解决spring bean注入Job的问题](https://www.imooc.com/article/25585)
+
 ## 源码
 
  - https://github.com/MRLEILOVE/springboot-quartz.git
