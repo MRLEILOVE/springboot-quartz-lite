@@ -43,7 +43,7 @@
     <!--然后定义logger，只有定义了logger并引入上面定义的appender，appender才会生效 -->
     <Loggers>
         <!--过滤掉spring等框架的无用日志信息，也可以在springboot的logging.level.org.springframework=FATAL设置-->
-        <logger name="org.springframework" level="warn"/>
+        <logger name="org.springframework" level="info"/>
 
         <!--建立一个默认的Root的logger，记录>=level的信息，如果这里的level高于Appenders中的，则Appenders中也是以此等级为起点。
             比如，这里level="fatal"，则Appenders中只出现fatal信息。

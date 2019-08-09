@@ -5,11 +5,13 @@ import org.quartz.Scheduler;
 import org.quartz.ee.servlet.QuartzInitializerListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -26,64 +28,12 @@ import java.util.Properties;
  */
 @Configuration
 @Slf4j
-public class QuartzScheduledConfig {
+public class QuartzScheduledConfig implements SchedulerFactoryBeanCustomizer {
 
-    @Autowired
-    private SpringJobFactory springJobFactory;
-
-    /**
-     * 读取quartz.properties 文件
-     * 将值初始化
-     *
-     * @return
-     */
-    @Bean
-    public Properties quartzProperties() throws IOException {
-        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        propertiesFactoryBean.setLocation(new ClassPathResource("/quartz.properties"));
-        propertiesFactoryBean.afterPropertiesSet();
-        final Properties properties = propertiesFactoryBean.getObject();
-        log.warn("读取quartz.properties 文件:{}", properties);
-        return properties;
-    }
-
-    /**
-     * 将配置文件的数据加载到SchedulerFactoryBean中
-     *
-     * @return
-     * @throws IOException
-     */
-    @Bean
-    public SchedulerFactoryBean schedulerFactoryBean() throws IOException {
-        SchedulerFactoryBean factory = new SchedulerFactoryBean();
-        factory.setQuartzProperties(quartzProperties());
-        factory.setAutoStartup(true);
+    @Override
+    public void customize(SchedulerFactoryBean schedulerFactoryBean) {
+        schedulerFactoryBean.setAutoStartup(true);
         // 延时n秒启动
-        factory.setStartupDelay(2);
-        // 注意这里是重点
-        factory.setJobFactory(springJobFactory);
-        return factory;
+        schedulerFactoryBean.setStartupDelay(2);
     }
-
-    /**
-     * 初始化监听器
-     *
-     * @return
-     */
-    @Bean
-    public QuartzInitializerListener executorListener() {
-        return new QuartzInitializerListener();
-    }
-
-    /**
-     * 获得Scheduler 对象
-     *
-     * @return
-     * @throws IOException
-     */
-    @Bean
-    public Scheduler scheduler() throws IOException {
-        return schedulerFactoryBean().getScheduler();
-    }
-
 }

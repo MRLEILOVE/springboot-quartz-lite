@@ -1,24 +1,3 @@
-#    quartz:
-#        #相关属性配置
-#        properties:
-#          org:
-#            quartz:
-#              scheduler:
-#                instanceName: clusteredScheduler
-#                instanceId: AUTO
-#              jobStore:
-#                class: org.quartz.impl.jdbcjobstore.JobStoreTX
-#                driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
-#                tablePrefix: qrtz_
-#                isClustered: true
-#                clusterCheckinInterval: 10000
-#                useProperties: false
-#              threadPool:
-#                class: org.quartz.simpl.SimpleThreadPool
-#                threadCount: 10
-#                threadPriority: 5
-#                threadsInheritContextClassLoaderOfInitializingThread: true
-#        job-store-type: jdbc
 logging:
     config: classpath:config/log4j2-dev.xml
 spring:
@@ -54,5 +33,45 @@ spring:
                 exclusions: '*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*'
                 url-pattern: /*
         password: kGJF6c+pzVsf49LGs01ss0yijBGXIpNEp20cMkNCQo3ONaeMNPeoW9M89v+nGeiWs95/D2Ms59uGyydDGUWpmg==
-        url: jdbc:mysql://localhost:3306/spring_Boot_building?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
+        url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
         username: root
+    quartz:
+        #相关属性配置
+        properties:
+            org:
+                quartz:
+                    # 线程调度器
+                    scheduler:
+                        # 线程调度器实例名
+                        instanceName: myQuartzScheduler
+                        instanceId: AUTO
+                    # 如何存储任务和触发器等信息
+                    jobStore:
+                        # 默认存储在内存中 org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+                        # 持久化
+                        class: org.quartz.impl.jdbcjobstore.JobStoreTX
+                        # 驱动代理
+                        driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+                        # 数据库中表的前缀
+                        tablePrefix: qrtz_
+                        # 是否集群
+                        isClustered: false
+                        clusterCheckinInterval: 10000
+                        useProperties: false
+                        # 数据源命名
+                        dataSource: quartzDataSource
+                        misfireThreshold: 5000
+                    # 线程池
+                    threadPool:
+                        # 实例化ThreadPool时，使用的线程类为SimpleThreadPool
+                        class: org.quartz.simpl.SimpleThreadPool
+                        # 并发个数, 线程池的线程数，即最多3个任务同时跑
+                        threadCount: 3
+                        # 优先级
+                        threadPriority: 5
+                        threadsInheritContextClassLoaderOfInitializingThread: true
+        #数据库方式
+        job-store-type: jdbc
+          #初始化表结构
+          #jdbc:
+        #initialize-schema: never
