@@ -1,3 +1,15 @@
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    use-generated-keys: true
+  mapper-locations: classpath*:/mappers/**/*.xml
+  type-aliases-package: com.leigq.quartz.domain.mapper
+server:
+  tomcat:
+    uri-encoding: UTF-8
 spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
   profiles:
     active: dev
