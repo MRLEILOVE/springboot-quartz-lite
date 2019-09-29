@@ -1,15 +1,43 @@
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
-    use-generated-keys: true
-  mapper-locations: classpath*:/mappers/**/*.xml
-  type-aliases-package: com.leigq.quartz.domain.mapper
+## ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓下面配置（此配置文件）为3个环境公用↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 server:
   tomcat:
     uri-encoding: UTF-8
+
 spring:
+  profiles:
+    active: dev
+
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
-  profiles:
-    active: dev
+    ## Druid连接池配置，配置参考：https://blog.csdn.net/weixin_38187317/article/details/81562571
+    druid:
+      ## 监控过滤
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*'
+      ## 监控页面配置
+      stat-view-servlet:
+        # 页面地址
+        url-pattern: /druid/*
+        # 白名单 多个ip逗号隔开
+        allow: 127.0.0.1,192.168.163.1
+        # IP黑名单 (存在共同时，deny优先于allow) : 如果满足deny的话提示:Sorry, you are not permitted to view this page.
+        deny: 192.168.1.73
+
+
+# ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ MyBatis 配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
+mybatis:
+  # mybatis mapper文件的位置
+  mapper-locations: classpath*:/mappers/**/*.xml
+  # 扫描mapper接口类的位置,在此处指明扫描实体类的包，在mapper.xml中就可以不用写pojo类的全路径名了
+  type-aliases-package: com.leigq.quartz.domain.mapper
+  configuration:
+    # 使用mybatis插入自增主键ID的数据后返回自增的ID，配合keyProperty="id"使用
+    use-generated-keys: true
+    # 设置自动驼峰命名转换
+    map-underscore-to-camel-case: true
+#    config-location: classpath:mybatis-config.xml
+
+

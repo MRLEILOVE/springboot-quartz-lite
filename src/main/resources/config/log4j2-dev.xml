@@ -34,7 +34,7 @@
     <Appenders>
         <Console name="ConsoleLog" target="SYSTEM_OUT">
             <!--只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
-            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <!--输出日志的格式，引用自定义模板 pattern -->
             <PatternLayout charset="UTF-8" pattern="${pattern}"/>
         </Console>
