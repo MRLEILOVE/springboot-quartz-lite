@@ -102,3 +102,7 @@
 ## 源码
 
  - https://github.com/MRLEILOVE/springboot-quartz.git
+
+## 其它
+
+ - [Quartz集群原理及配置应用](https://www.cnblogs.com/zhenyuyaodidiao/p/4755649.html)
