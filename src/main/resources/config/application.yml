@@ -30,7 +30,7 @@ spring:
 # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ MyBatis 配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
 mybatis:
   # mybatis mapper文件的位置
-  mapper-locations: classpath*:/mappers/**/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
   # 扫描mapper接口类的位置,在此处指明扫描实体类的包，在mapper.xml中就可以不用写pojo类的全路径名了
   type-aliases-package: com.leigq.quartz.domain.mapper
   configuration:

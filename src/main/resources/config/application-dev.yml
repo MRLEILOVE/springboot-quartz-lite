@@ -1,8 +1,9 @@
 spring:
     # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 数据源 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
     datasource:
-        password: Q0eJGTbRlTvTnjRFj76Vkbdo9H4PmEtC4DVBHHISQl2Y4+CC5Ohg3NTQ/Ah+c/FDe1jjqzx02DoAnXFyrokEDA==
-        url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
+#        password: Q0eJGTbRlTvTnjRFj76Vkbdo9H4PmEtC4DVBHHISQl2Y4+CC5Ohg3NTQ/Ah+c/FDe1jjqzx02DoAnXFyrokEDA==
+        password: tq26556570
+        url: jdbc:mysql://192.168.6.242:3307/quartz?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
         username: root
         # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Druid 连接池配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
         druid:
@@ -45,7 +46,7 @@ spring:
             # java -cp .\druid-1.0.29.jar com.alibaba.druid.filter.config.ConfigTools your password
             # 直接在IDEA工具打开CMD窗口
             # 通过connectProperties属性来打开mergeSql功能；慢SQL记录, config.decrypt=true;config.decrypt.key={公钥}
-            connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANSTMPRbGPKQL55fGaMa9J2SiUfydGq83Vnkgufl869dfIV6eY93VZLHNzxruvwjSlevm1m+xqDqWPF1Xq48/7cCAwEAAQ==
+            connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;config.decrypt=false;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANSTMPRbGPKQL55fGaMa9J2SiUfydGq83Vnkgufl869dfIV6eY93VZLHNzxruvwjSlevm1m+xqDqWPF1Xq48/7cCAwEAAQ==
 
 
     # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ quartz配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
@@ -95,4 +96,4 @@ spring:
 # 默认情况下，spring boot从控制台打印出来的日志级别只有ERROR, WARN 还有INFO，如果你想要打印debug级别的日志，可以通过配置debug=true
 debug: false
 logging:
-    config: classpath:config/log4j2-dev.xml
+    config: classpath:config/log4j2/log4j2-dev.xml

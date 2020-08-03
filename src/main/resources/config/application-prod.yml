@@ -100,4 +100,4 @@ spring:
 # 默认情况下，spring boot从控制台打印出来的日志级别只有ERROR, WARN 还有INFO，如果你想要打印debug级别的日志，可以通过配置debug=true
 debug: false
 logging:
-    config: classpath:config/log4j2-prod.xml
+    config: classpath:config/log4j2/log4j2-prod.xml
