@@ -16,62 +16,13 @@ import org.springframework.stereotype.Component;
  * @author ：leigq <br>
  * 创建时间：2017年10月9日 下午3:26:17 <br>
  * <p>
- * 修改人： <br>
- * 修改时间： <br>
- * 修改备注： <br>
- * </p>
  */
+@SuppressWarnings(value = "all")
 @Component
 @Scope("prototype")
-@SuppressWarnings(value = "all")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Response {
-
-    /**
-     * 默认成功响应码
-     */
-    private static final Integer DEFAULT_SUCCESS_CODE = HttpStatus.OK.value();
-
-    /**
-     * 默认成功响应信息
-     */
-    private static final String DEFAULT_SUCCESS_MSG = "请求/处理成功！";
-
-    /**
-     * 默认国际化成功响应信息
-     */
-    private static final String DEFAULT_I18N_SUCCESS_MSG = "REQUEST_SUCCESS";
-
-    /**
-     * 默认失败响应码
-     */
-    private static final Integer DEFAULT_FAILURE_CODE = HttpStatus.INTERNAL_SERVER_ERROR.value();
-
-    /**
-     * 默认失败响应信息
-     */
-    private static final String DEFAULT_FAILURE_MSG = "请求/处理失败！";
-
-    /**
-     * 默认国际化失败响应信息
-     */
-    private static final String DEFAULT_I18N_FAILURE_MSG = "REQUEST_FAIL";
-
-    @Getter
-    @Setter
-    private Meta meta;
-
-    @Getter
-    @Setter
-    private Object data;
-
-
-
-    /*******处理成功响应*************************************************************************************/
-
-    /*↓↓↓↓↓↓默认(200)响应码，默认信息，无返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
-
+public final class Response {
     /**
      * 处理成功响应，默认(200)响应码，默认信息，无返回数据
      *
@@ -81,27 +32,10 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success() {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG);
         this.data = null;
         return this;
     }
-
-    /**
-     * 处理国际化成功响应，默认(200)响应码，默认信息，无返回数据
-     *
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n() {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_I18N_SUCCESS_MSG, true, null);
-        this.data = null;
-        return this;
-    }
-
-
-    /*↓↓↓↓↓↓默认(200)响应码，自定义信息，无返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理成功响应，默认(200)响应码，自定义信息，无返回数据
@@ -113,44 +47,11 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(String msg) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg);
         this.data = null;
         return this;
     }
 
-    /**
-     * 处理成功响应，默认(200)响应码，自定义信息，无返回数据
-     *
-     * @param msg  处理结果信息
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(String msg) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, null);
-        this.data = null;
-        return this;
-    }
-
-    /**
-     * 处理成功响应，默认(200)响应码，自定义信息，无返回数据
-     *
-     * @param msg  处理结果信息
-     * @param msgParams 结果信息参数
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(String msg, Object[] msgParams) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, msgParams);
-        this.data = null;
-        return this;
-    }
-
-
-    /*↓↓↓↓↓↓默认(200)响应码，默认信息，有返回数据。↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理成功响应，默认(200)响应码，默认信息，有返回数据。
@@ -162,28 +63,10 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(Object data) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG);
         this.data = data;
         return this;
     }
-
-    /**
-     * 处理成功响应，默认(200)响应码，默认信息，有返回数据。
-     *
-     * @param data 返回数据
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(Object data) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_I18N_SUCCESS_MSG, true, null);
-        this.data = data;
-        return this;
-    }
-
-
-    /*↓↓↓↓↓↓默认(200)响应码，自定义信息，有返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
 
     /**
@@ -197,46 +80,11 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(String msg, Object data) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg);
         this.data = data;
         return this;
     }
 
-    /**
-     * 处理成功响应，默认(200)响应码，自定义信息，有返回数据
-     *
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(String msg, Object data) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, null);
-        this.data = data;
-        return this;
-    }
-
-    /**
-     * 处理成功响应，默认(200)响应码，自定义信息，有返回数据
-     *
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @param msgParams 结果信息参数
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(String msg, Object data, Object[] msgParams) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg, true, msgParams);
-        this.data = data;
-        return this;
-    }
-
-
-    /*↓↓↓↓↓↓自定义响应码，自定义信息，有返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理成功响应，自定义响应码，自定义信息，有返回数据
@@ -250,50 +98,12 @@ public class Response {
      * @date ：2019-05-20 15:25 <br>
      */
     public Response success(HttpStatus httpStatus, String msg, Object data) {
-        this.meta = new Meta(httpStatus.value(), msg, false, null);
-        this.data = data;
-        return this;
-    }
-
-    /**
-     * 处理成功响应，自定义响应码，自定义信息，有返回数据
-     *
-     * @param httpStatus HTTP 响应码
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(HttpStatus httpStatus, String msg, Object data) {
-        this.meta = new Meta(httpStatus.value(), msg, true, null);
-        this.data = data;
-        return this;
-    }
-
-    /**
-     * 处理成功响应，自定义响应码，自定义信息，有返回数据
-     *
-     * @param httpStatus HTTP 响应码
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @param msgParams 结果信息参数
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:25 <br>
-     */
-    public Response successI18n(HttpStatus httpStatus, String msg, Object data, Object[] msgParams) {
-        this.meta = new Meta(httpStatus.value(), msg, true, msgParams);
+        this.meta = new Meta(httpStatus.value(), msg);
         this.data = data;
         return this;
     }
 
 
-    /*******处理失败响应*************************************************************************************/
-
-    /*↓↓↓↓↓↓默认(500)响应码，默认信息，无返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理失败响应，返回默认(500)响应码、默认信息，无返回数据。
@@ -304,26 +114,11 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure() {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG);
         this.data = null;
         return this;
     }
 
-    /**
-     * 处理国际化失败响应，返回默认(500)响应码、默认信息，无返回数据。
-     *
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
-     */
-    public Response failureI18n() {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_I18N_FAILURE_MSG, true, null);
-        this.data = null;
-        return this;
-    }
-
-    /*↓↓↓↓↓↓默认(500)响应码，自定义信息，无返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理失败响应，返回默认(500)响应码、自定义信息，无返回数据。
@@ -335,43 +130,11 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(String msg) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg);
         this.data = null;
         return this;
     }
 
-    /**
-     * 处理国际化失败响应，返回默认(500)响应码、自定义信息，无返回数据。
-     *
-     * @param msg 处理结果信息
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
-     */
-    public Response failureI18n(String msg) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, null);
-        this.data = null;
-        return this;
-    }
-
-    /**
-     * 处理国际化失败响应，返回默认(500)响应码、自定义信息，无返回数据。
-     *
-     * @param msg 处理结果信息
-     * @param msgParams 结果信息参数
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
-     */
-    public Response failureI18n(String msg, Object[] msgParams) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, msgParams);
-        this.data = null;
-        return this;
-    }
-
-    /*↓↓↓↓↓↓默认(500)响应码，默认信息，有返回数据。↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理失败响应，默认(500)响应码，默认信息，有返回数据。
@@ -383,28 +146,10 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(Object data) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG);
         this.data = data;
         return this;
     }
-
-    /**
-     * 处理国际化失败响应，默认(500)响应码，默认信息，有返回数据。
-     *
-     * @param data 返回数据
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
-     */
-    public Response failureI18n(Object data) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_I18N_FAILURE_MSG, true, null);
-        this.data = data;
-        return this;
-    }
-
-
-    /*↓↓↓↓↓↓默认(500)响应码，自定义信息，有返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
 
     /**
@@ -418,46 +163,11 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(String msg, Object data) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, false, null);
+        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg);
         this.data = data;
         return this;
     }
 
-    /**
-     * 处理国际化失败响应，默认(500)响应码，自定义信息，有返回数据，有结果信息参数。
-     *
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @param msgParams 结果信息参数
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
-     */
-    public Response failureI18n(String msg, Object data, Object[] msgParams) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, msgParams);
-        this.data = data;
-        return this;
-    }
-
-    /**
-     * 处理国际化失败响应，默认(500)响应码，自定义信息，有返回数据，无结果信息参数。
-     *
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
-     */
-    public Response failureI18n(String msg, Object data) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg, true, null);
-        this.data = data;
-        return this;
-    }
-
-
-    /*↓↓↓↓↓↓自定义响应码，自定义信息，有返回数据↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
     /**
      * 处理失败响应，自定义响应码，自定义信息，有返回数据
@@ -471,45 +181,38 @@ public class Response {
      * @date ：2019-05-20 15:22 <br>
      */
     public Response failure(HttpStatus httpStatus, String msg, Object data) {
-        this.meta = new Meta(httpStatus.value(), msg, false, null);
+        this.meta = new Meta(httpStatus.value(), msg);
         this.data = data;
         return this;
     }
 
     /**
-     * 处理国际化失败响应，自定义响应码，自定义信息，有返回数据，有结果信息参数。
-     *
-     * @param httpStatus HTTP 响应码
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @param msgParams 结果信息参数
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
+     * 默认成功响应码
      */
-    public Response failureI18n(HttpStatus httpStatus, String msg, Object data, Object[] msgParams) {
-        this.meta = new Meta(httpStatus.value(), msg, true, msgParams);
-        this.data = data;
-        return this;
-    }
+    private static final Integer DEFAULT_SUCCESS_CODE = HttpStatus.OK.value();
 
     /**
-     * 处理国际化失败响应，自定义响应码，自定义信息，有返回数据，无结果信息参数。
-     *
-     * @param httpStatus HTTP 响应码
-     * @param msg  处理结果信息
-     * @param data 返回数据
-     * @return 响应对象
-     * <p>
-     * @author ：LeiGQ <br>
-     * @date ：2019-05-20 15:22 <br>
+     * 默认成功响应信息
      */
-    public Response failureI18n(HttpStatus httpStatus, String msg, Object data) {
-        this.meta = new Meta(httpStatus.value(), msg, true, null);
-        this.data = data;
-        return this;
-    }
+    private static final String DEFAULT_SUCCESS_MSG = "请求/处理成功！";
+
+    /**
+     * 默认失败响应码
+     */
+    private static final Integer DEFAULT_FAILURE_CODE = HttpStatus.INTERNAL_SERVER_ERROR.value();
+
+    /**
+     * 默认失败响应信息
+     */
+    private static final String DEFAULT_FAILURE_MSG = "请求/处理失败！";
+
+    @Getter
+    @Setter
+    private Meta meta;
+
+    @Getter
+    @Setter
+    private Object data;
 
 
     /**
@@ -526,7 +229,7 @@ public class Response {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class Meta {
+    private class Meta {
 
         /**
          * 处理结果代码，与 HTTP 状态响应码对应
@@ -537,16 +240,6 @@ public class Response {
          * 处理结果信息
          */
         private String msg;
-
-        /**
-         * 处理结果信息是否国际化
-         */
-        private Boolean isI18n;
-
-        /**
-         * 处理结果信息参数
-         */
-        private Object[] msgParams;
     }
 
 }
