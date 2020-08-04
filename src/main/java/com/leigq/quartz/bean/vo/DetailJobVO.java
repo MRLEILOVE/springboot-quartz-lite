@@ -1,18 +1,18 @@
-package com.leigq.quartz.bean.job;
+package com.leigq.quartz.bean.vo;
 
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
 /**
- * 详细任务 DTO，用户接受 添加任务、更新任务 请求参数
+ * 详细任务 VO，用户接受 添加任务、更新任务 请求参数
  * <br/>
  *
  * @author ：leigq
  * @date ：2019/7/22 16:53
  */
 @Data
-public class DetailJobDTO {
+public class DetailJobVO {
 
 	/**
 	 * 任务全类名
