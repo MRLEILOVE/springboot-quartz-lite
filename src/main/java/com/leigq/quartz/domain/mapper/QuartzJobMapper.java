@@ -30,7 +30,7 @@ public interface QuartzJobMapper {
      * 修改备注： <br>
      * </p>
      */
-    String getJobGroup(@Param("jobClsName")String jobClsName);
+    String getJobGroupName(@Param("jobClsName")String jobClsName);
 
 
     /**

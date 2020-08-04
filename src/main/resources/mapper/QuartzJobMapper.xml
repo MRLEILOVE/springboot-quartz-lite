@@ -3,7 +3,7 @@
 <mapper namespace="com.leigq.quartz.domain.mapper.QuartzJobMapper">
 
 	<!--获取任务分组-->
-	<select id="getJobGroup" parameterType="java.lang.String" resultType="java.lang.String">
+	<select id="getJobGroupName" parameterType="java.lang.String" resultType="java.lang.String">
 		SELECT
 		  qjd.`JOB_GROUP`
 		FROM
