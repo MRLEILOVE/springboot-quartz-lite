@@ -1,6 +1,6 @@
 package com.leigq.quartz.controller;
 
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.leigq.quartz.bean.common.Response;
 import com.leigq.quartz.bean.job.DetailJobDTO;
 import com.leigq.quartz.bean.job.SimpleJobDTO;
@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -202,11 +200,8 @@ public class JobController {
 	 */
 	@GetMapping("/jobs")
 	public Response queryJob(Integer pageNum, Integer pageSize) {
-		PageInfo<JobAndTrigger> jobAndTrigger = jobAndTriggerService.getJobAndTriggerDetails(pageNum, pageSize);
-		Map<String, Object> map = new HashMap<>();
-		map.put("JobAndTrigger", jobAndTrigger);
-		map.put("number", jobAndTrigger.getTotal());
-		return response.success(map);
+		final IPage<JobAndTrigger> jobAndTriggerDetails = jobAndTriggerService.getJobAndTriggerDetails(pageNum, pageSize);
+		return response.success(jobAndTriggerDetails);
 	}
 
 }

@@ -1,10 +1,9 @@
 package com.leigq.quartz.service;
 
-import com.leigq.quartz.domain.mapper.JobMapper;
 import com.leigq.quartz.bean.job.BaseJob;
+import com.leigq.quartz.domain.mapper.JobMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
  * 修改备注： <br>
  * </p>
  */
-@Service
-@Transactional
 @Slf4j
+@Transactional
+@Service
 public class JobService {
 
     private final Scheduler scheduler;
     private final JobMapper jobMapper;
 
-    @Autowired
     public JobService(JobMapper jobMapper, Scheduler scheduler) {
         this.scheduler = scheduler;
         this.jobMapper = jobMapper;

@@ -355,8 +355,9 @@
             //从服务器读取数据
             loadData(pageNum, pageSize) {
                 this.$http.get('jobs?' + 'pageNum=' + pageNum + '&pageSize=' + pageSize).then(function (res) {
-                    this.tableData = res.body.data.JobAndTrigger.list;
-                    this.totalCount = res.body.data.number;
+                    var data = res.body.data;
+                    this.tableData = data.records;
+                    this.totalCount = data.total;
                 }, function () {
                     console.log('failed');
                 });

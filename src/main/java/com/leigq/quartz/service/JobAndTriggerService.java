@@ -1,30 +1,23 @@
 package com.leigq.quartz.service;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leigq.quartz.domain.entity.JobAndTrigger;
 import com.leigq.quartz.domain.mapper.JobAndTriggerMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-
-@Service
-@Transactional
 @Slf4j
-public class JobAndTriggerService {
+@Transactional
+@Service
+public class JobAndTriggerService extends ServiceImpl<JobAndTriggerMapper, JobAndTrigger> {
 
 	private final JobAndTriggerMapper jobAndTriggerMapper;
-	private final Scheduler scheduler;
 
-	@Autowired
-	public JobAndTriggerService(JobAndTriggerMapper jobAndTriggerMapper, Scheduler scheduler) {
+	public JobAndTriggerService(JobAndTriggerMapper jobAndTriggerMapper) {
 		this.jobAndTriggerMapper = jobAndTriggerMapper;
-		this.scheduler = scheduler;
 	}
 
 	/**
@@ -38,10 +31,10 @@ public class JobAndTriggerService {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	public PageInfo<JobAndTrigger> getJobAndTriggerDetails(int pageNum, int pageSize) {
-		PageHelper.startPage(pageNum, pageSize);
-		List<JobAndTrigger> list = jobAndTriggerMapper.getJobAndTriggerDetails();
-		return new PageInfo<>(list);
+	public IPage<JobAndTrigger> getJobAndTriggerDetails(int pageNum, int pageSize) {
+		Page<JobAndTrigger> page = new Page<>(pageNum, pageSize);
+		return jobAndTriggerMapper.getJobAndTriggerDetails(page);
 	}
 
 }
+

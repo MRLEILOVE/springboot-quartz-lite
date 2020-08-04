@@ -1,10 +1,12 @@
 package com.leigq.quartz.domain.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leigq.quartz.domain.entity.JobAndTrigger;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
-public interface JobAndTriggerMapper {
+public interface JobAndTriggerMapper extends BaseMapper<JobAndTrigger> {
 	/**
 	 * 获取任务与触发器详细信息
 	 * <p>
@@ -16,7 +18,7 @@ public interface JobAndTriggerMapper {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	List<JobAndTrigger> getJobAndTriggerDetails();
+	IPage<JobAndTrigger> getJobAndTriggerDetails(@Param("page") Page<JobAndTrigger> page);
 
 
 }
