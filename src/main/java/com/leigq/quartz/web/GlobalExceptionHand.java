@@ -1,6 +1,7 @@
 package com.leigq.quartz.web;
 
 import com.leigq.quartz.bean.common.Response;
+import com.leigq.quartz.web.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,7 +22,7 @@ import javax.security.auth.login.LoginException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -38,6 +39,20 @@ import java.util.Set;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHand {
+
+    /**
+     * 自定义业务异常处理
+     * <br>
+     * 处理 BusinessException 及其 子类异常
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(ServiceException.class)
+    public Response handleMissingServletRequestParameterException(ServiceException e) {
+        String msg = e.getMessage();
+        log.error(msg, e);
+        return new Response().failure(msg);
+    }
+
 
     /**
      * 400 - Bad Request
@@ -86,7 +101,7 @@ public class GlobalExceptionHand {
     /**
      * 400 - Bad Request
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ConstraintViolationException.class)
     public Response handleServiceException(ConstraintViolationException e) {
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
@@ -98,7 +113,7 @@ public class GlobalExceptionHand {
     /**
      * 400 - Bad Request
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ValidationException.class)
     public Response handleValidationException(ValidationException e) {
         String msg = e.getMessage();
@@ -187,8 +202,12 @@ public class GlobalExceptionHand {
      */
     private String handleBindingResult(BindingResult result) {
         if (result.hasErrors()) {
-            final List<FieldError> fieldErrors = result.getFieldErrors();
-            return fieldErrors.iterator().next().getDefaultMessage();
+            Optional<FieldError> fieldError = result.getFieldErrors().stream().findFirst();
+            if (fieldError.isPresent()) {
+                FieldError error = fieldError.get();
+                String field = error.getField();
+                return field + ":" + error.getDefaultMessage();
+            }
         }
         return null;
     }
