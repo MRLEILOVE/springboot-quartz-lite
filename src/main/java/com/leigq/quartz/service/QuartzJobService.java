@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leigq.quartz.bean.job.BaseJob;
 import com.leigq.quartz.bean.vo.JobAndTriggerVO;
 import com.leigq.quartz.domain.mapper.QuartzJobMapper;
+import com.leigq.quartz.web.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.stereotype.Service;
@@ -34,22 +35,16 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:20 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param jobClassName   任务类全名
      * @param jobGroupName   任务组名
      * @param cronExpression 任务表达式
      * @param jobDescription 任务描述
      */
-    public Boolean addJob(String jobClassName, String jobGroupName, String cronExpression, String jobDescription) {
-
+    public void addJob(String jobClassName, String jobGroupName, String cronExpression, String jobDescription) throws SchedulerException {
         // 验证表达式格式
         if (!CronExpression.isValidExpression(cronExpression)) {
-            throw new RuntimeException("表达式格式错误！");
+            throw new ServiceException("表达式格式错误！");
         }
 
         BaseJob baseJob;
@@ -57,7 +52,7 @@ public class QuartzJobService {
             // 利用反射获取任务实例，因为所有任务都是实现BaseJob的接口，所以这里使用BaseJob接收
             baseJob = (BaseJob) Class.forName(jobClassName).newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new RuntimeException("全类名错误！");
+            throw new ServiceException("全类名错误！");
         }
 
         //构建job信息
@@ -76,16 +71,10 @@ public class QuartzJobService {
                 .startNow()
                 .build();
 
-        try {
-            // 把job和触发器注册到任务调度中
-            scheduler.scheduleJob(jobDetail, trigger);
-            // 启动调度器
-            scheduler.start();
-            return true;
-        } catch (SchedulerException e) {
-            log.error("创建定时任务失败:", e);
-            return false;
-        }
+        // 把job和触发器注册到任务调度中
+        scheduler.scheduleJob(jobDetail, trigger);
+        // 启动调度器
+        scheduler.start();
     }
 
 
@@ -94,17 +83,11 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param cls 任务类，可用 类名.class 获得
-     * @return true 成功, false 失败
      */
-    public Boolean executeJob(Class<?> cls) {
-        return executeJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
+    public void executeJob(Class<?> cls) throws SchedulerException {
+        executeJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
     }
 
     /**
@@ -112,24 +95,12 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param jobSimpleName 类名
      * @param jobGroupName  类组名
-     * @return true 成功, false 失败
      */
-    public Boolean executeJob(String jobSimpleName, String jobGroupName) {
-        try {
-            scheduler.triggerJob(JobKey.jobKey(jobSimpleName, jobGroupName));
-            return true;
-        } catch (SchedulerException e) {
-            log.error("执行任务异常", e);
-            return false;
-        }
+    public void executeJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
+        scheduler.triggerJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
 
     /**
@@ -137,17 +108,11 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param cls 任务类，可用 类名.class 获得
-     * @return true 成功, false 失败
      */
-    public Boolean pauseJob(Class<?> cls) {
-        return pauseJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
+    public void pauseJob(Class<?> cls) throws SchedulerException {
+        pauseJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
     }
 
     /**
@@ -155,24 +120,12 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param jobSimpleName 类名
      * @param jobGroupName  类组名
-     * @return true 成功, false 失败
      */
-    public Boolean pauseJob(String jobSimpleName, String jobGroupName) {
-        try {
-            scheduler.pauseJob(JobKey.jobKey(jobSimpleName, jobGroupName));
-            return true;
-        } catch (SchedulerException e) {
-            log.error("暂停任务异常", e);
-            return false;
-        }
+    public void pauseJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
+        scheduler.pauseJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
 
     /**
@@ -180,17 +133,11 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:00 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param cls 任务类，可用 类名.class 获得
-     * @return true 成功, false 失败
      */
-    public Boolean resumeJob(Class<?> cls) {
-        return resumeJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
+    public void resumeJob(Class<?> cls) throws SchedulerException {
+        resumeJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
     }
 
 
@@ -199,24 +146,12 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:00 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param jobSimpleName 类名
      * @param jobGroupName  类组名
-     * @return true 成功, false 失败
      */
-    public Boolean resumeJob(String jobSimpleName, String jobGroupName) {
-        try {
-            scheduler.resumeJob(JobKey.jobKey(jobSimpleName, jobGroupName));
-            return true;
-        } catch (SchedulerException e) {
-            log.error("恢复任务异常", e);
-            return false;
-        }
+    public void resumeJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
+        scheduler.resumeJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
 
     /**
@@ -224,39 +159,27 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:50 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param jobClassName   任务全类名
      * @param jobGroupName   类组名
      * @param cronExpression 任务表达式
-     * @return true 成功, false 失败
      */
-    public Boolean rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) {
+    public void rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) throws SchedulerException {
         // 验证表达式格式
         if (!CronExpression.isValidExpression(cronExpression)) {
-            throw new RuntimeException("表达式格式错误！");
+            throw new ServiceException("表达式格式错误！");
         }
-        try {
-            TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
-            // 表达式调度构建器
-            // 增加：withMisfireHandlingInstructionDoNothing()方法 参考：https://blog.csdn.net/zhouhao1256/article/details/53486748?tdsourcetag=s_pctim_aiomsg
-            // 1，不触发立即执行
-            // 2，等待下次Cron触发频率到达时刻开始按照Cron频率依次执行
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing();
-            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
-            // 按新的cronExpression表达式重新构建trigger
-            trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
-            // 按新的trigger重新设置job执行
-            scheduler.rescheduleJob(triggerKey, trigger);
-            return true;
-        } catch (SchedulerException e) {
-            log.error("更新任务失败", e);
-            return false;
-        }
+        TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
+        // 表达式调度构建器
+        // 增加：withMisfireHandlingInstructionDoNothing()方法 参考：https://blog.csdn.net/zhouhao1256/article/details/53486748?tdsourcetag=s_pctim_aiomsg
+        // 1，不触发立即执行
+        // 2，等待下次Cron触发频率到达时刻开始按照Cron频率依次执行
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing();
+        CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+        // 按新的cronExpression表达式重新构建trigger
+        trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
+        // 按新的trigger重新设置job执行
+        scheduler.rescheduleJob(triggerKey, trigger);
     }
 
     /**
@@ -264,18 +187,12 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:50 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param cls            任务类，可用 类名.class 获得
      * @param cronExpression 表达式
-     * @return true 成功, false 失败
      */
-    public Boolean rescheduleJob(Class<?> cls, String cronExpression) {
-        return rescheduleJob(cls.getName(), quartzJobMapper.getJobGroup(cls.getName()), cronExpression);
+    public void rescheduleJob(Class<?> cls, String cronExpression) throws SchedulerException {
+        rescheduleJob(cls.getName(), quartzJobMapper.getJobGroupName(cls.getName()), cronExpression);
     }
 
 
@@ -284,26 +201,14 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:53 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param jobSimpleName 任务类名
      * @param jobGroupName  类组名
-     * @return true 成功, false 失败
      */
-    public Boolean deleteJob(String jobSimpleName, String jobGroupName) {
-        try {
-            scheduler.pauseTrigger(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
-            scheduler.unscheduleJob(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
-            scheduler.deleteJob(JobKey.jobKey(jobSimpleName, jobGroupName));
-            return true;
-        } catch (SchedulerException e) {
-            log.error("删除任务异常", e);
-            return false;
-        }
+    public void deleteJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
+        scheduler.pauseTrigger(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
+        scheduler.unscheduleJob(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
+        scheduler.deleteJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
 
     /**
@@ -311,17 +216,11 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:53 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param cls 任务类，可用 类名.class 获得
-     * @return true 成功, false 失败
      */
-    public Boolean deleteJob(Class<?> cls) {
-        return deleteJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
+    public void deleteJob(Class<?> cls) throws SchedulerException {
+        deleteJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
     }
 
 
@@ -330,6 +229,10 @@ public class QuartzJobService {
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/19 1:18 <br>
+     *
+     * @param pageNum  the page num
+     * @param pageSize the page size
+     * @return the job and trigger details
      */
     public IPage<JobAndTriggerVO> getJobAndTriggerDetails(int pageNum, int pageSize) {
         Page<JobAndTriggerVO> page = new Page<>(pageNum, pageSize);

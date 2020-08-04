@@ -1,7 +1,7 @@
 package com.leigq.quartz;
 
-import com.leigq.quartz.service.QuartzJobService;
 import com.leigq.quartz.job.HelloQuartz2;
+import com.leigq.quartz.service.SysTaskService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +13,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class QuartzApplicationTests {
 
     @Autowired
-    private QuartzJobService quartzJobService;
+    private SysTaskService sysTaskService;
 
     @Test
     public void contextLoads() throws InterruptedException {
 
-        System.out.println(quartzJobService.pauseJob(HelloQuartz2.class));
+        sysTaskService.pauseJob(HelloQuartz2.class);
+
+        System.out.println();
 
         Thread.sleep(5000);
 
-        System.out.println(quartzJobService.resumeJob(HelloQuartz2.class));
+        sysTaskService.resumeJob(HelloQuartz2.class);
 
     }
 
