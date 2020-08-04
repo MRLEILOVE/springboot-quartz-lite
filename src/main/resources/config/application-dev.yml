@@ -2,8 +2,8 @@ spring:
     # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 数据源 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
     datasource:
 #        password: Q0eJGTbRlTvTnjRFj76Vkbdo9H4PmEtC4DVBHHISQl2Y4+CC5Ohg3NTQ/Ah+c/FDe1jjqzx02DoAnXFyrokEDA==
-        password: tq26556570
-        url: jdbc:mysql://192.168.6.242:3307/quartz?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
+        password: 111111
+        url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
         username: root
         # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Druid 连接池配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
         druid:
