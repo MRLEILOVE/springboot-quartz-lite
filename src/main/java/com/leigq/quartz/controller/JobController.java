@@ -8,12 +8,8 @@ import com.leigq.quartz.domain.entity.JobAndTrigger;
 import com.leigq.quartz.service.JobAndTriggerService;
 import com.leigq.quartz.service.JobService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 /**
  * Job Controller
@@ -30,14 +26,10 @@ import java.util.Objects;
 @RestController
 public class JobController {
 
-	// 密钥应该从数据库查询出来比对，这里暂时写死
-	private static final String SECRET_KEY = "111111";
-
 	private final JobAndTriggerService jobAndTriggerService;
 	private final Response response;
 	private final JobService jobService;
 
-	@Autowired
 	public JobController(JobAndTriggerService jobAndTriggerService, Response response, JobService jobService) {
 		this.jobAndTriggerService = jobAndTriggerService;
 		this.response = response;
@@ -57,14 +49,9 @@ public class JobController {
 	 */
 	@PostMapping("/jobs")
 	public Response addJob(@Validated DetailJobDTO detailJobDTO) {
-		if (!Objects.equals(SECRET_KEY, detailJobDTO.getSecretKey())) {
-			return response.failure("密钥错误！");
-		}
-		if (jobService.addJob(detailJobDTO.getJobClassName(), detailJobDTO.getJobGroupName(),
-				detailJobDTO.getCronExpression(), detailJobDTO.getJobDescription())) {
-			return response.success("创建定时任务成功！");
-		}
-		return response.failure("创建定时任务失败！");
+		final Boolean addJobResult = jobService.addJob(detailJobDTO.getJobClassName(), detailJobDTO.getJobGroupName(),
+				detailJobDTO.getCronExpression(), detailJobDTO.getJobDescription());
+		return addJobResult ? response.success("创建定时任务成功！") : response.failure("创建定时任务失败！");
 	}
 
 	/**
@@ -80,13 +67,8 @@ public class JobController {
 	 */
 	@PostMapping("/jobs/action/execute")
 	public Response executeJob(@Validated SimpleJobDTO simpleJobDTO) {
-		if (!Objects.equals(SECRET_KEY, simpleJobDTO.getSecretKey())) {
-			return response.failure("密钥错误！");
-		}
-		if (jobService.executeJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName())) {
-			return response.success("执行任务成功！");
-		}
-		return response.failure("执行任务失败！");
+		final Boolean executeJobResult = jobService.executeJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName());
+		return executeJobResult ? response.success("执行任务成功！") : response.failure("执行任务失败！");
 	}
 
 
@@ -103,13 +85,8 @@ public class JobController {
 	 */
 	@PostMapping("/jobs/action/pause")
 	public Response pauseJob(@Validated SimpleJobDTO simpleJobDTO) {
-		if (!Objects.equals(SECRET_KEY, simpleJobDTO.getSecretKey())) {
-			return response.failure("密钥错误！");
-		}
-		if (jobService.pauseJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName())) {
-			return response.success("暂停任务成功！");
-		}
-		return response.failure("暂停任务失败！");
+		final Boolean pauseJobResult = jobService.pauseJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName());
+		return pauseJobResult ? response.success("暂停任务成功！") : response.failure("暂停任务失败！");
 	}
 
 	/**
@@ -125,13 +102,8 @@ public class JobController {
 	 */
 	@PostMapping("/jobs/action/resume")
 	public Response resumeJob(@Validated SimpleJobDTO simpleJobDTO) {
-		if (!Objects.equals(SECRET_KEY, simpleJobDTO.getSecretKey())) {
-			return response.failure("密钥错误！");
-		}
-		if (jobService.resumeJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName())) {
-			return response.success("恢复任务成功！");
-		}
-		return response.failure("恢复任务失败！");
+		final Boolean resumeJobResult = jobService.resumeJob(simpleJobDTO.getJobClassName(), simpleJobDTO.getJobGroupName());
+		return resumeJobResult ? response.success("恢复任务成功！") : response.failure("恢复任务失败！");
 	}
 
 
@@ -148,15 +120,9 @@ public class JobController {
 	 */
 	@PutMapping("/jobs")
 	public Response rescheduleJob(@Validated DetailJobDTO detailJobDTO) {
-		// 密钥应该从数据库查询出来比对，这里暂时写死
-		if (!Objects.equals(SECRET_KEY, detailJobDTO.getSecretKey())) {
-			return response.failure("密钥错误！");
-		}
-		if (jobService.rescheduleJob(detailJobDTO.getJobClassName(), detailJobDTO.getJobGroupName(),
-				detailJobDTO.getCronExpression())) {
-			return response.success("更新任务成功！");
-		}
-		return response.failure("更新任务失败！");
+		final Boolean rescheduleJobResult = jobService.rescheduleJob(detailJobDTO.getJobClassName(), detailJobDTO.getJobGroupName(),
+				detailJobDTO.getCronExpression());
+		return rescheduleJobResult ? response.success("更新任务成功！") : response.failure("更新任务失败！");
 	}
 
 	/**
@@ -170,21 +136,10 @@ public class JobController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@DeleteMapping("/jobs/{jobClassName}/{jobGroupName}")
-	public Response deleteJob(@PathVariable("jobClassName") String jobClassName,
-	                          @PathVariable("jobGroupName") String jobGroupName,
-	                          String secretKey) {
-		if (StringUtils.isBlank(secretKey)) {
-			return response.failure("密钥不能为空！");
-		}
-		// 密钥应该从数据库查询出来比对，这里暂时写死
-		if (!Objects.equals(SECRET_KEY, secretKey)) {
-			return response.failure("密钥错误！");
-		}
-		if (jobService.deleteJob(jobClassName, jobGroupName)) {
-			return response.success("删除任务成功！");
-		}
-		return response.failure("删除任务失败！");
+	@DeleteMapping("/jobs/{job_class_name}/{job_group_Name}")
+	public Response deleteJob(@PathVariable("job_class_name") String jobClassName, @PathVariable("job_group_Name") String jobGroupName) {
+		final Boolean deleteJobResult = jobService.deleteJob(jobClassName, jobGroupName);
+		return deleteJobResult ? response.success("删除任务成功！") : response.failure("删除任务失败！");
 	}
 
 	/**
@@ -198,8 +153,8 @@ public class JobController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@GetMapping("/jobs")
-	public Response queryJob(Integer pageNum, Integer pageSize) {
+	@GetMapping("/jobs/{page_num}/{page_size}")
+	public Response queryJob(@PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
 		final IPage<JobAndTrigger> jobAndTriggerDetails = jobAndTriggerService.getJobAndTriggerDetails(pageNum, pageSize);
 		return response.success(jobAndTriggerDetails);
 	}

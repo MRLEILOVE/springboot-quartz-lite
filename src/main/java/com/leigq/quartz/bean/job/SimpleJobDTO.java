@@ -25,12 +25,4 @@ public class SimpleJobDTO {
 	 */
 	@NotEmpty(message = "任务分组不能为空！")
 	private String jobGroupName;
-
-	/**
-	 * 密钥
-	 */
-	@NotEmpty(message = "密钥不能为空！")
-	private String secretKey;
-
-
 }

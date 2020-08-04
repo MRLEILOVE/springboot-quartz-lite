@@ -36,12 +36,4 @@ public class DetailJobDTO {
 	 * 任务描述
 	 */
 	private String jobDescription;
-
-	/**
-	 * 密钥
-	 */
-	@NotEmpty(message = "密钥不能为空！")
-	private String secretKey;
-
-
 }
