@@ -1,20 +1,18 @@
 package com.leigq.quartz.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.leigq.quartz.bean.job.DetailJobDTO;
 import com.leigq.quartz.bean.common.Response;
+import com.leigq.quartz.bean.job.DetailJobDTO;
 import com.leigq.quartz.bean.job.SimpleJobDTO;
 import com.leigq.quartz.domain.entity.JobAndTrigger;
 import com.leigq.quartz.service.JobAndTriggerService;
 import com.leigq.quartz.service.JobService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
