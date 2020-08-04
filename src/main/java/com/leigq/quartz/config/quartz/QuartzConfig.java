@@ -1,19 +1,9 @@
 package com.leigq.quartz.config.quartz;
 
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.Scheduler;
-import org.quartz.ee.servlet.QuartzInitializerListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-
-import javax.annotation.Resource;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Quartz任务配置
@@ -26,12 +16,18 @@ import java.util.Properties;
  * 修改备注： <br>
  * </p>
  */
-@Configuration
 @Slf4j
-public class QuartzScheduledConfig implements SchedulerFactoryBeanCustomizer {
+@Configuration
+public class QuartzConfig implements SchedulerFactoryBeanCustomizer {
 
+    /**
+     * 自定义配置
+     *
+     * @param schedulerFactoryBean the scheduler factory bean
+     */
     @Override
     public void customize(SchedulerFactoryBean schedulerFactoryBean) {
+        // 设置自动启动
         schedulerFactoryBean.setAutoStartup(true);
         // 延时n秒启动
         schedulerFactoryBean.setStartupDelay(2);
