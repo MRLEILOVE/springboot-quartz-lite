@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leigq.quartz.domain.mapper.SysTaskMapper">
+  <resultMap id="BaseResultMap" type="com.leigq.quartz.domain.entity.SysTask">
+    <!--@mbg.generated-->
+    <!--@Table sys_task-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="job_name" jdbcType="VARCHAR" property="jobName" />
+    <result column="job_group" jdbcType="VARCHAR" property="jobGroup" />
+    <result column="job_class" jdbcType="VARCHAR" property="jobClass" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="cron" jdbcType="VARCHAR" property="cron" />
+    <result column="exec_params" jdbcType="LONGVARCHAR" property="execParams" />
+    <result column="exec_at" jdbcType="TIMESTAMP" property="execAt" />
+    <result column="exec_result" jdbcType="LONGVARCHAR" property="execResult" />
+    <result column="disabled" jdbcType="BOOLEAN" property="disabled" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="concurrent" jdbcType="TINYINT" property="concurrent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, job_name, job_group, job_class, note, cron, exec_params, exec_at, exec_result, 
+    disabled, create_time, creator, concurrent
+  </sql>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leigq.quartz.domain.mapper.SysTaskLogMapper">
+  <resultMap id="BaseResultMap" type="com.leigq.quartz.domain.entity.SysTaskLog">
+    <!--@mbg.generated-->
+    <!--@Table sys_task_log-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="exec_at" jdbcType="TIMESTAMP" property="execAt" />
+    <result column="exec_success" jdbcType="INTEGER" property="execSuccess" />
+    <result column="job_exception" jdbcType="VARCHAR" property="jobException" />
+    <result column="id_task" jdbcType="BIGINT" property="idTask" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `name`, exec_at, exec_success, job_exception, id_task
+  </sql>
+</mapper>

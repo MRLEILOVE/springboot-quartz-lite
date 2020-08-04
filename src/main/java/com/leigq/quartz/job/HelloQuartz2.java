@@ -24,7 +24,7 @@ import java.io.Serializable;
  */
 @Slf4j
 @Component
-public class HelloQuartz implements BaseJob, Serializable {
+public class HelloQuartz2 implements BaseJob, Serializable {
 
     // 实现序列化接口、防止重启应用出现quartz Couldn't retrieve job because a required class was not found 的问题
     private static final long serialVersionUID = 8969855105016200770L;

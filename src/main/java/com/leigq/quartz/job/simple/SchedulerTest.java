@@ -1,6 +1,6 @@
 package com.leigq.quartz.job.simple;
 
-import com.leigq.quartz.job.HelloQuartz;
+import com.leigq.quartz.job.HelloQuartz2;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -31,7 +31,7 @@ public class SchedulerTest {
     public static void main(String[] args) throws SchedulerException {
         // 创建jobDetail实例，绑定Job实现类
         // 指明job的名称，所在组的名称，以及绑定job类
-        JobDetail jobDetail = JobBuilder.newJob(HelloQuartz.class)
+        JobDetail jobDetail = JobBuilder.newJob(HelloQuartz2.class)
                 .withIdentity("helloJob", "helloJobGroup")
                 .usingJobData("jobDateKey", "jobDateValue")//定义属性
                 .withDescription("测试Quartz")
