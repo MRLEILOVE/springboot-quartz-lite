@@ -1,4 +1,4 @@
-package com.leigq.quartz.domain.entity;
+package com.leigq.quartz.bean.vo;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ import java.math.BigInteger;
  * </p>
  */
 @Data
-public class JobAndTrigger {
+public class JobAndTriggerVO {
 
 	private String jobName;
 	private String jobGroup;

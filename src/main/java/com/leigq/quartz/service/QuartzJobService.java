@@ -1,34 +1,32 @@
 package com.leigq.quartz.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leigq.quartz.bean.job.BaseJob;
-import com.leigq.quartz.domain.mapper.JobMapper;
+import com.leigq.quartz.bean.vo.JobAndTriggerVO;
+import com.leigq.quartz.domain.mapper.QuartzJobMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 任务服务
+ * Quartz自带表的任务服务
  * <p>
  * 创建人：LeiGQ <br>
  * 创建时间：2019/5/28 2:52 <br>
- * <p>
- * 修改人： <br>
- * 修改时间： <br>
- * 修改备注： <br>
- * </p>
  */
 @Slf4j
 @Transactional
 @Service
-public class JobService {
+public class QuartzJobService {
 
     private final Scheduler scheduler;
-    private final JobMapper jobMapper;
+    private final QuartzJobMapper quartzJobMapper;
 
-    public JobService(JobMapper jobMapper, Scheduler scheduler) {
+    public QuartzJobService(QuartzJobMapper quartzJobMapper, Scheduler scheduler) {
         this.scheduler = scheduler;
-        this.jobMapper = jobMapper;
+        this.quartzJobMapper = quartzJobMapper;
     }
 
     /**
@@ -106,7 +104,7 @@ public class JobService {
      * @return true 成功, false 失败
      */
     public Boolean executeJob(Class<?> cls) {
-        return executeJob(cls.getSimpleName(), jobMapper.getJobGroup(cls.getName()));
+        return executeJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
     }
 
     /**
@@ -149,7 +147,7 @@ public class JobService {
      * @return true 成功, false 失败
      */
     public Boolean pauseJob(Class<?> cls) {
-        return pauseJob(cls.getSimpleName(), jobMapper.getJobGroup(cls.getName()));
+        return pauseJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
     }
 
     /**
@@ -192,7 +190,7 @@ public class JobService {
      * @return true 成功, false 失败
      */
     public Boolean resumeJob(Class<?> cls) {
-        return resumeJob(cls.getSimpleName(), jobMapper.getJobGroup(cls.getName()));
+        return resumeJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
     }
 
 
@@ -277,7 +275,7 @@ public class JobService {
      * @return true 成功, false 失败
      */
     public Boolean rescheduleJob(Class<?> cls, String cronExpression) {
-        return rescheduleJob(cls.getName(), jobMapper.getJobGroup(cls.getName()), cronExpression);
+        return rescheduleJob(cls.getName(), quartzJobMapper.getJobGroup(cls.getName()), cronExpression);
     }
 
 
@@ -323,7 +321,19 @@ public class JobService {
      * @return true 成功, false 失败
      */
     public Boolean deleteJob(Class<?> cls) {
-        return deleteJob(cls.getSimpleName(), jobMapper.getJobGroup(cls.getName()));
+        return deleteJob(cls.getSimpleName(), quartzJobMapper.getJobGroup(cls.getName()));
+    }
+
+
+    /**
+     * 获取任务与触发器详细信息
+     * <p>
+     * 创建人：LeiGQ <br>
+     * 创建时间：2019/5/19 1:18 <br>
+     */
+    public IPage<JobAndTriggerVO> getJobAndTriggerDetails(int pageNum, int pageSize) {
+        Page<JobAndTriggerVO> page = new Page<>(pageNum, pageSize);
+        return quartzJobMapper.getJobAndTriggerDetails(page);
     }
 
 }

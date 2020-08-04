@@ -1,7 +1,7 @@
 package com.leigq.quartz.job;
 
 import com.leigq.quartz.bean.job.BaseJob;
-import com.leigq.quartz.service.JobAndTriggerService;
+import com.leigq.quartz.service.QuartzJobService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class HelloQuartz1 implements BaseJob, Serializable {
     private static final long serialVersionUID = 8969855105016200770L;
 
     @Autowired
-    private JobAndTriggerService service;
+    private QuartzJobService quartzJobService;
 
     // */2 * * * * ?
     @Override
