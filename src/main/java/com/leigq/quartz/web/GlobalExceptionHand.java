@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.management.ServiceNotFoundException;
 import javax.security.auth.login.LoginException;
@@ -36,10 +35,8 @@ import java.util.Set;
  * 修改备注： <br>
  * </p>
  */
-
-@EnableWebMvc
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHand {
 
     /**
