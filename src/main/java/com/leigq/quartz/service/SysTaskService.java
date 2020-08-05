@@ -1,14 +1,21 @@
 package com.leigq.quartz.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
+import com.leigq.quartz.bean.vo.AddSysTaskVO;
 import com.leigq.quartz.bean.vo.JobAndTriggerVO;
+import com.leigq.quartz.bean.vo.SysTaskDetailVO;
 import com.leigq.quartz.domain.entity.SysTask;
 import com.leigq.quartz.domain.mapper.SysTaskMapper;
 import com.leigq.quartz.web.exception.ServiceException;
 import org.quartz.SchedulerException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
  * 系统自己创建的任务表服务
@@ -32,14 +39,25 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:20 <br>
      *
-     * @param jobClassName   任务类全名
-     * @param jobGroupName   任务组名
-     * @param cronExpression 任务表达式
-     * @param jobDescription 任务描述
+     * @param addSysTaskVO 添加任务接受参数 VO
      */
-    public void addJob(String jobClassName, String jobGroupName, String cronExpression, String jobDescription) {
+    public void addJob(AddSysTaskVO addSysTaskVO) {
         try {
-            quartzJobService.addJob(jobClassName, jobGroupName, cronExpression, jobDescription);
+            // 先添加一条任务记录到自己的任务表，应该后面任务日志需要任务id
+            SysTask sysTask = SysTask.builder().build();
+            BeanUtils.copyProperties(addSysTaskVO, sysTask);
+            sysTask.setCreateTime(new Date());
+            // 创建人根据自己的系统确定，这里默认写死
+            sysTask.setCreator(1L);
+            this.save(sysTask);
+
+            // 添加 Quartz 任务表
+            AddQuartzJobDTO addQuartzJobDTO = AddQuartzJobDTO.builder().build();
+            BeanUtils.copyProperties(addSysTaskVO, addQuartzJobDTO);
+            // 转换执行参数为 Map
+            addQuartzJobDTO.setDataMap(addSysTaskVO.transExecParams(addSysTaskVO.getExecParams()));
+            addQuartzJobDTO.setTaskId(sysTask.getId());
+            quartzJobService.addJob(addQuartzJobDTO);
         } catch (SchedulerException e) {
             throw new ServiceException("添加任务失败", e);
         }
@@ -156,9 +174,19 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * @param jobGroupName   类组名
      * @param cronExpression 任务表达式
      */
-    public void rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) {
+    public void rescheduleJob(SysTaskDetailVO sysTaskDetailVO) {
         try {
-            quartzJobService.rescheduleJob(jobClassName, jobGroupName, cronExpression);
+            SysTask sysTask = new SysTask();
+            BeanUtils.copyProperties(sysTaskDetailVO, sysTask);
+            this.update(Wrappers.update(sysTask));
+
+
+            this.update(Wrappers.<SysTask>update().set("cron", "111"));
+
+            AddQuartzJobDTO addQuartzJobDTO = new AddQuartzJobDTO();
+            // TODO
+//            quartzJobService.rescheduleJob(jobClassName, jobGroupName, cronExpression);
+            quartzJobService.rescheduleJob(null, null, null);
         } catch (SchedulerException e) {
             throw new ServiceException("更新任务失败", e);
         }

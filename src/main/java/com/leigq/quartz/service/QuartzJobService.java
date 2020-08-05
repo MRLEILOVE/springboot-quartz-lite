@@ -2,7 +2,9 @@ package com.leigq.quartz.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
 import com.leigq.quartz.bean.job.BaseJob;
+import com.leigq.quartz.bean.job.BaseJobDisallowConcurrent;
 import com.leigq.quartz.bean.vo.JobAndTriggerVO;
 import com.leigq.quartz.domain.mapper.QuartzJobMapper;
 import com.leigq.quartz.web.exception.ServiceException;
@@ -36,37 +38,28 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:20 <br>
      *
-     * @param jobClassName   任务类全名
-     * @param jobGroupName   任务组名
-     * @param cronExpression 任务表达式
-     * @param jobDescription 任务描述
+     * @param addQuartzJobDTO 添加 Quartz 任务表 DTO
+     * @throws SchedulerException the scheduler exception
      */
-    public void addJob(String jobClassName, String jobGroupName, String cronExpression, String jobDescription) throws SchedulerException {
-        // 验证表达式格式
-        if (!CronExpression.isValidExpression(cronExpression)) {
-            throw new ServiceException("表达式格式错误！");
-        }
-
-        BaseJob baseJob;
-        try {
-            // 利用反射获取任务实例，因为所有任务都是实现BaseJob的接口，所以这里使用BaseJob接收
-            baseJob = (BaseJob) Class.forName(jobClassName).newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new ServiceException("全类名错误！");
-        }
+    public void addJob(AddQuartzJobDTO addQuartzJobDTO) throws SchedulerException {
+        //是否允许并发执行
+        Class<? extends Job> jobClass = addQuartzJobDTO.getConcurrent() ? BaseJob.class : BaseJobDisallowConcurrent.class;
 
         //构建job信息
-        JobDetail jobDetail = JobBuilder.newJob(baseJob.getClass())
-                .withIdentity(baseJob.getClass().getSimpleName(), jobGroupName)
-                .withDescription(jobDescription)
+        JobDetail jobDetail = JobBuilder.newJob(jobClass)
+                .withIdentity(addQuartzJobDTO.getTaskName(), addQuartzJobDTO.getTaskGroup())
+                .withDescription(addQuartzJobDTO.getNote())
                 .build();
 
+        // 向 BaseJob 中传递参数
+        jobDetail.getJobDataMap().put("addQuartzJobDTO", addQuartzJobDTO);
+
         //表达式调度构建器(即任务执行的时间)
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(addQuartzJobDTO.getCron());
 
         //按新的cronExpression表达式构建一个新的trigger
         CronTrigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(jobClassName, jobGroupName)
+                .withIdentity(addQuartzJobDTO.getTaskClass(), addQuartzJobDTO.getTaskGroup())
                 .withSchedule(scheduleBuilder)
                 .startNow()
                 .build();

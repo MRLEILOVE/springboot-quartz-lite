@@ -2,11 +2,13 @@ package com.leigq.quartz.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.leigq.quartz.bean.common.Response;
-import com.leigq.quartz.bean.vo.DetailJobVO;
-import com.leigq.quartz.bean.vo.SimpleJobVO;
+import com.leigq.quartz.bean.vo.AddSysTaskVO;
 import com.leigq.quartz.bean.vo.JobAndTriggerVO;
+import com.leigq.quartz.bean.vo.SysTaskDetailVO;
+import com.leigq.quartz.bean.vo.SysTaskSimpleVO;
 import com.leigq.quartz.service.SysTaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.CronExpression;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +35,6 @@ public class SysTaskController {
 		this.response = response;
 	}
 
-
 	/**
 	 * 添加任务
 	 * <p>
@@ -46,8 +47,12 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs")
-	public Response addJob(@Validated DetailJobVO detailJobVO) {
-		sysTaskService.addJob(detailJobVO.getJobClassName(), detailJobVO.getJobGroupName(), detailJobVO.getCronExpression(), detailJobVO.getJobDescription());
+	public Response addJob(@Validated() AddSysTaskVO addSysTaskVO) {
+		// 验证表达式格式
+		if (!CronExpression.isValidExpression(addSysTaskVO.getCron())) {
+			return response.failure("表达式格式错误！");
+		}
+		sysTaskService.addJob(addSysTaskVO);
 		return response.success("创建定时任务成功！");
 	}
 
@@ -63,8 +68,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs/action/execute")
-	public Response executeJob(@Validated SimpleJobVO simpleJobVO) {
-		sysTaskService.executeJob(simpleJobVO.getJobClassName(), simpleJobVO.getJobGroupName());
+	public Response executeJob(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
+		sysTaskService.executeJob(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("执行任务成功！");
 	}
 
@@ -81,8 +86,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs/action/pause")
-	public Response pauseJob(@Validated SimpleJobVO simpleJobVO) {
-		sysTaskService.pauseJob(simpleJobVO.getJobClassName(), simpleJobVO.getJobGroupName());
+	public Response pauseJob(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
+		sysTaskService.pauseJob(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("暂停任务成功！");
 	}
 
@@ -98,8 +103,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs/action/resume")
-	public Response resumeJob(@Validated SimpleJobVO simpleJobVO) {
-		sysTaskService.resumeJob(simpleJobVO.getJobClassName(), simpleJobVO.getJobGroupName());
+	public Response resumeJob(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
+		sysTaskService.resumeJob(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("恢复任务成功！");
 	}
 
@@ -116,8 +121,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PutMapping("/jobs")
-	public Response rescheduleJob(@Validated DetailJobVO detailJobVO) {
-		sysTaskService.rescheduleJob(detailJobVO.getJobClassName(), detailJobVO.getJobGroupName(), detailJobVO.getCronExpression());
+	public Response rescheduleJob(@Validated SysTaskDetailVO sysTaskDetailVO) {
+		sysTaskService.rescheduleJob(sysTaskDetailVO);
 		return response.success("更新任务成功！");
 	}
 
