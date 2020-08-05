@@ -21,8 +21,8 @@
 <div id="test">
 
     <div id="top">
-        <el-button @click="search">查询</el-button>
-        <el-button @click="addTask">添加</el-button>
+        <el-button @click="refresh">刷新</el-button>
+        <el-button @click="showAddTaskForm">添加</el-button>
         <el-button @click="windowOpen('http://cron.qqe2.com')">在线Cron表达式生成
         </el-button>
 
@@ -180,46 +180,50 @@
     </div>
 
     <!--添加弹框-->
-    <el-dialog title="添加任务" :visible.sync="addDialogVisible">
-        <el-form :model="addform">
+    <el-dialog title="添加任务" :visible.sync="addTaskFormVisible">
+        <el-form :model="addTaskFormData">
             <el-form-item label="任务名称" label-width="120px" style="width:50%">
-                <el-input v-model="addform.taskName" auto-complete="off"></el-input>
+                <el-input v-model="addTaskFormData.taskName" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="任务组" label-width="120px" style="width:50%">
-                <el-input v-model="addform.taskGroup" auto-complete="off"></el-input>
+                <el-input v-model="addTaskFormData.taskGroup" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="任务全类名" label-width="120px" style="width:50%">
-                <el-input v-model="addform.taskClass" auto-complete="off"></el-input>
+                <el-input v-model="addTaskFormData.taskClass" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="任务描述" label-width="120px" style="width:50%">
-                <el-input v-model="addform.note" auto-complete="off"></el-input>
+                <el-input v-model="addTaskFormData.note" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="表达式" label-width="120px" style="width:50%">
-                <el-input v-model="addform.cron" auto-complete="off"></el-input>
+                <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="执行参数" label-width="120px" style="width:50%">
-                <el-input v-model="addform.execParams" auto-complete="off"></el-input>
+                <el-input v-model="addTaskFormData.execParams" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="是否禁用" label-width="120px" style="width:50%">
-                <el-radio v-model="addform.disabled" label="0">启用</el-radio>
-                <el-radio v-model="addform.disabled" label="1">禁用</el-radio>
+                <el-radio-group v-model="addTaskFormData.disabled">
+                    <el-radio :label="1">启用</el-radio>
+                    <el-radio :label="0">禁用</el-radio>
+                </el-radio-group>
             </el-form-item>
 
             <el-form-item label="是否允许并发" label-width="120px" style="width:50%">
-                <el-radio v-model="addform.concurrent" label="0">允许</el-radio>
-                <el-radio v-model="addform.concurrent" label="1">不允许</el-radio>
+                <el-radio-group v-model="addTaskFormData.concurrent">
+                    <el-radio :label="1">允许</el-radio>
+                    <el-radio :label="0">不允许</el-radio>
+                </el-radio-group>
             </el-form-item>
 
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="addDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="add">确 定</el-button>
+            <el-button @click="addTaskFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="addTaskSubmit">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -275,7 +279,7 @@
             totalCount: 1000,
 
             //添加对话框默认可见性
-            addDialogVisible: false,
+            addTaskFormVisible: false,
 
             //修改对话框默认可见性
             updateFormVisible: false,
@@ -284,11 +288,15 @@
             pauseOrResumeOrDeleteOrExecuteFormVisible: false,
 
             //提交的表单
-            addform: {
-                jobName: '',
-                jobGroup: '',
-                jobDescription: '',
-                cronExpression: '',
+            addTaskFormData: {
+                taskName: '',
+                taskGroup: '',
+                taskClass: '',
+                note: '',
+                cron: '',
+                execParams: '',
+                disabled: 1,
+                concurrent: 0,
             },
             //修改表单
             updateform: {
@@ -529,14 +537,14 @@
             },
 
 
-            //搜索
-            search: function () {
+            //刷新
+            refresh: function () {
                 this.loadData(this.currentPage, this.pagesize);
             },
 
             //弹出添加对话框
-            addTask: function () {
-                this.addDialogVisible = true;
+            showAddTaskForm: function () {
+                this.addTaskFormVisible = true;
             },
 
             //打开新页面
@@ -545,12 +553,16 @@
             },
 
             //添加
-            add: function () {
+            addTaskSubmit: function () {
                 this.$http.post('jobs', {
-                    "jobClassName": this.addform.jobName,
-                    "jobGroupName": this.addform.jobGroup,
-                    "jobDescription": this.addform.jobDescription,
-                    "cronExpression": this.addform.cronExpression,
+                    "taskName": this.addTaskFormData.taskName,
+                    "taskGroup": this.addTaskFormData.taskGroup,
+                    "taskClass": this.addTaskFormData.taskClass,
+                    "note": this.addTaskFormData.note,
+                    "cron": this.addTaskFormData.cron,
+                    "execParams": this.addTaskFormData.execParams,
+                    "disabled": this.addTaskFormData.disabled,
+                    "concurrent": this.addTaskFormData.concurrent,
                 }, {emulateJSON: true}).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
@@ -561,7 +573,7 @@
                             type: 'success'
                         });
                         this.loadData(this.currentPage, this.pagesize);
-                        this.addDialogVisible = false;
+                        this.addTaskFormVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
