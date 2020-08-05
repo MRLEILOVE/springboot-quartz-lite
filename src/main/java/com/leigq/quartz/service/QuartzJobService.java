@@ -52,7 +52,7 @@ public class QuartzJobService {
                 .build();
 
         // 向 BaseJob 中传递参数
-        jobDetail.getJobDataMap().put("addQuartzJobDTO", addQuartzJobDTO);
+        jobDetail.getJobDataMap().put("quartzJobDetails", addQuartzJobDTO);
 
         //表达式调度构建器(即任务执行的时间)
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(addQuartzJobDTO.getCron());

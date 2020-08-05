@@ -1,7 +1,7 @@
 package com.leigq.quartz.bean.job;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
+import com.leigq.quartz.bean.dto.TaskExecuteDTO;
 import com.leigq.quartz.bean.enumeration.SysTaskExecResultEnum;
 import com.leigq.quartz.domain.entity.SysTask;
 import com.leigq.quartz.domain.entity.SysTaskLog;
@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 public abstract class TaskExecute {
 
-    private AddQuartzJobDTO addQuartzJobDTO;
+    private TaskExecuteDTO taskExecuteDTO;
 
     @Autowired
     private SysTaskService sysTaskService;
@@ -30,18 +30,18 @@ public abstract class TaskExecute {
     private SysTaskLogService sysTaskLogService;
 
 
-    public void setAddQuartzJobDTO(AddQuartzJobDTO addQuartzJobDTO) {
-        this.addQuartzJobDTO = addQuartzJobDTO;
+    public void setTaskExecuteDTO(TaskExecuteDTO taskExecuteDTO) {
+        this.taskExecuteDTO = taskExecuteDTO;
     }
 
     public void execute() {
         // 添加任务执行日志
         SysTaskLog sysTaskLog = SysTaskLog.builder()
-                .taskName(addQuartzJobDTO.getTaskName())
+                .taskName(taskExecuteDTO.getTaskName())
                 .execDate(new Date())
                 .execResult(SysTaskExecResultEnum.SUCCESS.getValue())
                 .execResultText("任务执行成功")
-                .taskId(addQuartzJobDTO.getTaskId())
+                .taskId(taskExecuteDTO.getTaskId())
                 .build();
         sysTaskLogService.save(sysTaskLog);
 
@@ -49,11 +49,11 @@ public abstract class TaskExecute {
         sysTaskService.update(Wrappers.<SysTask>lambdaUpdate()
                 .set(SysTask::getExecDate, new Date())
                 .set(SysTask::getExecResult, SysTaskExecResultEnum.SUCCESS.getValue())
-                .eq(SysTask::getId, addQuartzJobDTO.getTaskId())
+                .eq(SysTask::getId, taskExecuteDTO.getTaskId())
         );
         try {
             // 获取任务携带的参数
-            Map<String, Object> dataMap = addQuartzJobDTO.getDataMap();
+            Map<String, Object> dataMap = taskExecuteDTO.getDataMap();
             // 调用子类的任务
             execute(dataMap);
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public abstract class TaskExecute {
 
             sysTaskService.update(Wrappers.<SysTask>lambdaUpdate()
                     .set(SysTask::getExecResult, SysTaskExecResultEnum.FAILURE.getValue())
-                    .eq(SysTask::getId, addQuartzJobDTO.getTaskId())
+                    .eq(SysTask::getId, taskExecuteDTO.getTaskId())
             );
             // 回滚事务
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

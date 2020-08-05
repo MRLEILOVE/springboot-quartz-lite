@@ -1,11 +1,13 @@
 package com.leigq.quartz.bean.job;
 
 import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
+import com.leigq.quartz.bean.dto.TaskExecuteDTO;
 import com.leigq.quartz.util.SpringContextHolder;
 import com.leigq.quartz.web.exception.ServiceException;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
+import org.springframework.beans.BeanUtils;
 
 /**
  * 任务基类，所有任务都继承此类
@@ -21,17 +23,21 @@ public class BaseJob implements Job {
         JobDataMap data = context.getJobDetail().getJobDataMap();
 
         // 获取创建任务时传递过来的参数
-        AddQuartzJobDTO addQuartzJobDTO = (AddQuartzJobDTO) data.get("addQuartzJobDTO");
+        AddQuartzJobDTO quartzJobDetails = (AddQuartzJobDTO) data.get("quartzJobDetails");
 
         try {
             // 获取自定义任务的类
-            Class<?> clazz = Class.forName(addQuartzJobDTO.getTaskClass());
+            Class<?> clazz = Class.forName(quartzJobDetails.getTaskClass());
             // 获取自定义任务实例，自定义任务全部继承 TaskExecute
             TaskExecute taskExecute = (TaskExecute) SpringContextHolder.getBean(clazz);
-            taskExecute.setAddQuartzJobDTO(addQuartzJobDTO);
+
+            TaskExecuteDTO taskExecuteDTO = TaskExecuteDTO.builder().build();
+            BeanUtils.copyProperties(quartzJobDetails, taskExecuteDTO);
+
+            taskExecute.setTaskExecuteDTO(taskExecuteDTO);
             taskExecute.execute();
         } catch (Exception e) {
-            String errorMessage = String.format("任务: [%s] 未启动成功，请检查执行类是否配置正确！！！", addQuartzJobDTO.getTaskName());
+            String errorMessage = String.format("任务: [%s] 未启动成功，请检查执行类是否配置正确！！！", quartzJobDetails.getTaskName());
             throw new ServiceException(errorMessage, e);
         }
     }
