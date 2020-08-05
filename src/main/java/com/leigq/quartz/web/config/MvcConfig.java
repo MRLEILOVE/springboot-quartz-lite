@@ -1,4 +1,4 @@
-package com.leigq.quartz.config.web;
+package com.leigq.quartz.web.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

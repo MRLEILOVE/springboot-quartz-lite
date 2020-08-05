@@ -1,13 +1,13 @@
-package com.leigq.quartz.job;
+package com.leigq.quartz.task;
 
-import com.leigq.quartz.bean.job.BaseJob;
+import com.leigq.quartz.bean.job.TaskExecute;
 import com.leigq.quartz.service.QuartzJobService;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 最简单的Quartz
@@ -22,7 +22,7 @@ import java.io.Serializable;
  */
 @Slf4j
 @Component
-public class HelloQuartz1 implements BaseJob, Serializable {
+public class HelloQuartz1 extends TaskExecute implements Serializable {
 
     // 实现序列化接口、防止重启应用出现quartz Couldn't retrieve job because a required class was not found 的问题
     private static final long serialVersionUID = 8969855105016200770L;
@@ -32,7 +32,7 @@ public class HelloQuartz1 implements BaseJob, Serializable {
 
     // */2 * * * * ?
     @Override
-    public void execute(JobExecutionContext context) {
+    public void execute(Map<String, Object> dataMap) {
         log.warn(">>>>>>>>>Hello Quartz1 start!");
     }
 }

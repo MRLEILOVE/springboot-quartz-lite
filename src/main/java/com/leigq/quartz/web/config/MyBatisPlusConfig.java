@@ -1,4 +1,4 @@
-package com.leigq.quartz.config;
+package com.leigq.quartz.web.config;
 
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;

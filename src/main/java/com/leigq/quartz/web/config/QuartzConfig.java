@@ -1,4 +1,4 @@
-package com.leigq.quartz.config.quartz;
+package com.leigq.quartz.web.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
