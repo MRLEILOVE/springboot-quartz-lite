@@ -1,8 +1,8 @@
-package com.leigq.quartz.web;
+package com.leigq.quartz.web.exception;
 
 import com.leigq.quartz.bean.common.Response;
-import com.leigq.quartz.web.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -22,8 +22,10 @@ import javax.security.auth.login.LoginException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常处理
@@ -49,7 +51,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(ServiceException.class)
     public Response handleMissingServletRequestParameterException(ServiceException e) {
         String msg = e.getMessage();
-        log.error(msg, e);
+        log.warn(msg, e);
         return new Response().failure(msg);
     }
 
@@ -61,7 +63,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Response handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         String msg = "缺少请求参数！";
-        log.error(msg, e);
+        log.warn(msg, e);
         return new Response().failure(msg);
     }
 
@@ -72,7 +74,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Response handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String msg = e.getMessage();
-        log.error("参数解析失败：", e);
+        log.warn("参数解析失败：", e);
         return new Response().failure(msg);
     }
 
@@ -83,7 +85,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String msg = handleBindingResult(e.getBindingResult());
-        log.error("方法参数无效: ", e);
+        log.warn("方法参数无效: ", e);
         return new Response().failure(msg);
     }
 
@@ -94,7 +96,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(BindException.class)
     public Response handleBindException(BindException e) {
         String msg = handleBindingResult(e.getBindingResult());
-        log.error("参数绑定失败:", e);
+        log.warn("参数绑定失败:", e);
         return new Response().failure(msg);
     }
 
@@ -106,7 +108,7 @@ public class GlobalExceptionHand {
     public Response handleServiceException(ConstraintViolationException e) {
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
         String msg = violations.iterator().next().getMessage();
-        log.error("参数验证失败:", e);
+        log.warn("参数验证失败:", e);
         return new Response().failure(msg);
     }
 
@@ -117,7 +119,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(ValidationException.class)
     public Response handleValidationException(ValidationException e) {
         String msg = e.getMessage();
-        log.error("参数验证失败：", e);
+        log.warn("参数验证失败：", e);
         return new Response().failure(msg);
     }
 
@@ -128,7 +130,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(LoginException.class)
     public Response handleLoginException(LoginException e) {
         String msg = e.getMessage();
-        log.error("登录异常：", e);
+        log.warn("登录异常：", e);
         return new Response().failure(msg);
     }
 
@@ -139,7 +141,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Response handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         String msg = "不支持当前请求方法！";
-        log.error(msg, e);
+        log.warn(msg, e);
         return new Response().failure(msg);
     }
 
@@ -150,7 +152,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public Response handleHttpMediaTypeNotSupportedException(Exception e) {
         String msg = "不支持当前媒体类型！";
-        log.error(msg, e);
+        log.warn(msg, e);
         return new Response().failure(msg);
     }
 
@@ -161,7 +163,7 @@ public class GlobalExceptionHand {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public Response handleMaxUploadSizeExceededException(Exception e) {
         String msg = "所上传文件大小超过最大限制，上传失败！";
-        log.error(msg, e);
+        log.warn(msg, e);
         return new Response().failure(msg);
     }
 
@@ -198,17 +200,38 @@ public class GlobalExceptionHand {
      * 修改备注： <br>
      * </p>
      *
-     * @param result
+     * @param result 错误提示信息
      */
     private String handleBindingResult(BindingResult result) {
         if (result.hasErrors()) {
-            Optional<FieldError> fieldError = result.getFieldErrors().stream().findFirst();
-            if (fieldError.isPresent()) {
-                FieldError error = fieldError.get();
-                String field = error.getField();
-                return field + ":" + error.getDefaultMessage();
-            }
+            // 获取目标对象类（验证的对象）
+            final Class<?> targetClass = Objects.requireNonNull(result.getTarget()).getClass();
+            // 获取所有属性
+            final Field[] declaredFields = targetClass.getDeclaredFields();
+
+            // 排序字段，按照其在表单中的显示方式进行排序
+            List<String> fieldsWithOrder = Arrays.stream(declaredFields).map(Field::getName).collect(Collectors.toList());
+
+            // 获取与字段相关的所有错误
+            final List<FieldError> fieldErrors = result.getFieldErrors();
+
+            AtomicReference<String> errorMessage = new AtomicReference<>();
+            fieldErrors.stream().min(getFieldOrderComparator(fieldsWithOrder)).ifPresent(fieldError -> errorMessage.set(fieldError.getDefaultMessage()));
+            return errorMessage.get();
         }
         return null;
+    }
+
+
+    /**
+     * Gets field order comparator.
+     * <br/>
+     * 参考：https://www.icode9.com/content-1-588364.html
+     *
+     * @param fieldsWithOrder 排序字段，按照其在表单中的显示方式进行排序
+     * @return the field order comparator
+     */
+    private Comparator<FieldError> getFieldOrderComparator(List<String> fieldsWithOrder) {
+        return (fe1, fe2) -> NumberUtils.compare(fieldsWithOrder.indexOf(fe1.getField()), fieldsWithOrder.indexOf(fe2.getField()));
     }
 }
