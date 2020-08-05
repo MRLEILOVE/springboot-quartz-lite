@@ -160,7 +160,7 @@
                     <el-button
                             size="small"
                             type="success"
-                            @click="handleUpdate(scope.$index, scope.row)">修改
+                            @click="showUpdateTaskFrom(scope.$index, scope.row)">修改
                     </el-button>
                 </template>
             </el-table-column>
@@ -228,15 +228,15 @@
     </el-dialog>
 
     <!--修改弹框-->
-    <el-dialog title="修改任务" :visible.sync="updateFormVisible">
-        <el-form :model="updateform">
+    <el-dialog title="修改任务" :visible.sync="updateTaskFormVisible">
+        <el-form :model="updateTaskFormData">
             <el-form-item label="表达式" label-width="120px" style="width:35%">
-                <el-input v-model="updateform.cronExpression" auto-complete="off"></el-input>
+                <el-input v-model="updateTaskFormData.cronExpression" auto-complete="off"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="updateFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="update">确 定</el-button>
+            <el-button @click="updateTaskFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="updateTaskSubmit">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -282,7 +282,7 @@
             addTaskFormVisible: false,
 
             //修改对话框默认可见性
-            updateFormVisible: false,
+            updateTaskFormVisible: false,
 
             //暂停 恢复 删除 立即执行 弹框默认可见性
             pauseOrResumeOrDeleteOrExecuteFormVisible: false,
@@ -299,10 +299,10 @@
                 concurrent: 0,
             },
             //修改表单
-            updateform: {
-                jobName: '',
-                jobGroup: '',
-                cronExpression: '',
+            updateTaskFormData: {
+                taskName: '',
+                taskGroup: '',
+                cron: '',
             },
             //暂停|恢复|删除表单
             form: {
@@ -343,7 +343,7 @@
         },
         mounted() {
             this.timer = setInterval(function () {
-                vue.loadData(vue.currentPage, vue.pagesize);
+                vue.initData(vue.currentPage, vue.pagesize);
             }, this.value * 1000);
 
             setInterval(function () {
@@ -360,13 +360,13 @@
                 } else {
                     var time = cycleTime * 1000;
                     this.timer = setInterval(function () {
-                        vue.loadData(vue.currentPage, vue.pagesize);
+                        vue.initData(vue.currentPage, vue.pagesize);
                     }, time);
                 }
             },
 
             //从服务器读取数据
-            loadData(pageNum, pageSize) {
+            initData(pageNum, pageSize) {
                 this.$http.get('jobs/' + pageNum + '/' + pageSize).then(function (res) {
                     var data = res.body.data;
                     this.tableData = data.records;
@@ -387,7 +387,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.loadData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pagesize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -396,7 +396,7 @@
                             type: 'warning'
                         });
                     }
-                    this.loadData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pagesize);
                 }, function () {
                     var body = res.body;
                     var meta = body.meta;
@@ -421,7 +421,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.loadData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pagesize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -430,7 +430,7 @@
                             type: 'warning'
                         });
                     }
-                    this.loadData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pagesize);
                 }, function () {
                     var body = res.body;
                     var meta = body.meta;
@@ -455,7 +455,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.loadData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pagesize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -464,7 +464,7 @@
                             type: 'warning'
                         });
                     }
-                    this.loadData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pagesize);
                 }, function () {
                     var body = res.body;
                     var meta = body.meta;
@@ -489,7 +489,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.loadData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pagesize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -498,7 +498,7 @@
                             type: 'warning'
                         });
                     }
-                    this.loadData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pagesize);
                 }, function (res) {
                     var body = res.body;
                     var meta = body.meta;
@@ -539,7 +539,7 @@
 
             //刷新
             refresh: function () {
-                this.loadData(this.currentPage, this.pagesize);
+                this.initData(this.currentPage, this.pagesize);
             },
 
             //弹出添加对话框
@@ -572,7 +572,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.loadData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pagesize);
                         this.addTaskFormVisible = false;
                     } else {
                         this.$notify({
@@ -592,20 +592,20 @@
             },
 
             //弹出更新对话框
-            handleUpdate: function (index, row) {
-                this.updateFormVisible = true;
-                this.updateform.jobName = row.jobClassName;
-                this.updateform.jobGroup = row.jobGroup;
-                this.updateform.cronExpression = row.cronExpression;
+            showUpdateTaskFrom: function (index, row) {
+                this.updateTaskFormVisible = true;
+                this.updateTaskFormData.taskName = row.taskName;
+                this.updateTaskFormData.taskGroup = row.taskGroup;
+                this.updateTaskFormData.cron = row.cron;
             },
 
             //更新任务
-            update: function () {
+            updateTaskSubmit: function () {
                 this.$http.put('jobs',
                     {
-                        "jobClassName": this.updateform.jobName,
-                        "jobGroupName": this.updateform.jobGroup,
-                        "cronExpression": this.updateform.cronExpression,
+                        "taskName": this.updateTaskFormData.taskName,
+                        "taskGroup": this.updateTaskFormData.taskGroup,
+                        "cron": this.updateTaskFormData.cron,
                     }, {emulateJSON: true}
                 ).then(function (res) {
                     var body = res.body;
@@ -616,8 +616,8 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.loadData(this.currentPage, this.pagesize);
-                        this.updateFormVisible = false;
+                        this.initData(this.currentPage, this.pagesize);
+                        this.updateTaskFormVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
@@ -636,20 +636,20 @@
             //每页显示数据量变更
             handleSizeChange: function (val) {
                 this.pagesize = val;
-                this.loadData(this.currentPage, this.pagesize);
+                this.initData(this.currentPage, this.pagesize);
             },
 
             //页码变更
             handleCurrentChange: function (val) {
                 this.currentPage = val;
-                this.loadData(this.currentPage, this.pagesize);
+                this.initData(this.currentPage, this.pagesize);
             },
 
         },
     });
 
     //载入数据
-    vue.loadData(vue.currentPage, vue.pagesize);
+    vue.initData(vue.currentPage, vue.pagesize);
 </script>
 </body>
 </html>
