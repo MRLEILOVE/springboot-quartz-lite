@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.leigq.quartz.bean.common.Response;
 import com.leigq.quartz.bean.vo.AddSysTaskVO;
 import com.leigq.quartz.bean.vo.JobAndTriggerVO;
-import com.leigq.quartz.bean.vo.SysTaskDetailVO;
+import com.leigq.quartz.bean.vo.UpdateSysTaskVO;
 import com.leigq.quartz.bean.vo.SysTaskSimpleVO;
 import com.leigq.quartz.service.SysTaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -47,13 +47,35 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs")
-	public Response addJob(@Validated() AddSysTaskVO addSysTaskVO) {
+	public Response addTask(@Validated() AddSysTaskVO addSysTaskVO) {
 		// 验证表达式格式
 		if (!CronExpression.isValidExpression(addSysTaskVO.getCron())) {
 			return response.failure("表达式格式错误！");
 		}
-		sysTaskService.addJob(addSysTaskVO);
+		sysTaskService.addTask(addSysTaskVO);
 		return response.success("创建定时任务成功！");
+	}
+
+
+	/**
+	 * 更新任务
+	 * <p>
+	 * 创建人：LeiGQ <br>
+	 * 创建时间：2019/5/19 13:49 <br>
+	 * <p>
+	 * 修改人： <br>
+	 * 修改时间： <br>
+	 * 修改备注： <br>
+	 * </p>
+	 */
+	@PutMapping("/jobs")
+	public Response updateTask(@Validated UpdateSysTaskVO updateSysTaskVO) {
+		// 验证表达式格式
+		if (!CronExpression.isValidExpression(updateSysTaskVO.getCron())) {
+			return response.failure("表达式格式错误！");
+		}
+		sysTaskService.updateTask(updateSysTaskVO);
+		return response.success("更新任务成功！");
 	}
 
 	/**
@@ -68,8 +90,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs/action/execute")
-	public Response executeJob(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
-		sysTaskService.executeJob(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
+	public Response executeTask(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
+		sysTaskService.executeTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("执行任务成功！");
 	}
 
@@ -86,8 +108,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs/action/pause")
-	public Response pauseJob(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
-		sysTaskService.pauseJob(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
+	public Response pauseTask(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
+		sysTaskService.pauseTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("暂停任务成功！");
 	}
 
@@ -103,28 +125,11 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@PostMapping("/jobs/action/resume")
-	public Response resumeJob(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
-		sysTaskService.resumeJob(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
+	public Response resumeTask(@Validated SysTaskSimpleVO sysTaskSimpleVO) {
+		sysTaskService.resumeTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("恢复任务成功！");
 	}
 
-
-	/**
-	 * 更新任务
-	 * <p>
-	 * 创建人：LeiGQ <br>
-	 * 创建时间：2019/5/19 13:49 <br>
-	 * <p>
-	 * 修改人： <br>
-	 * 修改时间： <br>
-	 * 修改备注： <br>
-	 * </p>
-	 */
-	@PutMapping("/jobs")
-	public Response rescheduleJob(@Validated SysTaskDetailVO sysTaskDetailVO) {
-		sysTaskService.rescheduleJob(sysTaskDetailVO);
-		return response.success("更新任务成功！");
-	}
 
 	/**
 	 * 删除任务
@@ -138,8 +143,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@DeleteMapping("/jobs/{job_class_name}/{job_group_Name}")
-	public Response deleteJob(@PathVariable("job_class_name") String jobClassName, @PathVariable("job_group_Name") String jobGroupName) {
-		sysTaskService.deleteJob(jobClassName, jobGroupName);
+	public Response deleteTask(@PathVariable("job_class_name") String jobClassName, @PathVariable("job_group_Name") String jobGroupName) {
+		sysTaskService.deleteTask(jobClassName, jobGroupName);
 		return response.success("删除任务成功！");
 	}
 
@@ -155,8 +160,8 @@ public class SysTaskController {
 	 * </p>
 	 */
 	@GetMapping("/jobs/{page_num}/{page_size}")
-	public Response queryJob(@PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
-		final IPage<JobAndTriggerVO> jobAndTriggerDetails = sysTaskService.getJobAndTriggerDetails(pageNum, pageSize);
+	public Response queryTaskList(@PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
+		final IPage<JobAndTriggerVO> jobAndTriggerDetails = sysTaskService.taskList(pageNum, pageSize);
 		return response.success(jobAndTriggerDetails);
 	}
 }

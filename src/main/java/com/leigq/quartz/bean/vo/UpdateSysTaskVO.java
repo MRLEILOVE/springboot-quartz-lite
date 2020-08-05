@@ -3,21 +3,25 @@ package com.leigq.quartz.bean.vo;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * 详细任务 VO，用于接受 添加任务、更新任务 请求参数
+ * 更新任务 VO
  * <br/>
  *
  * @author ：leigq
  * @date ：2019/7/22 16:53
  */
 @Data
-public class SysTaskDetailVO implements Serializable {
+public class UpdateSysTaskVO implements Serializable {
 
     private static final long serialVersionUID = 7803099260867270252L;
 
 
+    @NotNull
+    @Size(min = 1)
     private Long taskId;
 
     /**
@@ -50,18 +54,4 @@ public class SysTaskDetailVO implements Serializable {
     @NotEmpty(message = "定时规则(表达式)不能为空！")
     private String cron;
 
-    /**
-     * 执行参数，前端类似这样传 aaa=11;bbb=222
-     */
-    private String execParams;
-
-    /**
-     * 是否禁用
-     */
-    private Boolean disabled;
-
-    /**
-     * 是否允许并发
-     */
-    private Integer concurrent;
 }
