@@ -64,14 +64,14 @@ public class AddSysTaskVO implements Serializable {
     private String execParams;
 
     /**
-     * 是否禁用，0：启用 1：禁用
+     * 是否禁用，0(false)：禁用 1（true）：启用
      */
     private Boolean disabled;
 
     /**
-     * 是否允许并发，0：允许 1：不允许
+     * 是否允许并发，0(false)：不允许 1（true）：允许
      */
-    private Integer concurrent;
+    private Boolean concurrent;
 
 
     /**
