@@ -34,5 +34,6 @@ public class HelloQuartz1 extends TaskExecute implements Serializable {
     @Override
     public void execute(Map<String, Object> dataMap) {
         log.warn(">>>>>>>>>Hello Quartz1 start!");
+        log.warn("quartzJobService = {}", quartzJobService);
     }
 }
