@@ -21,28 +21,29 @@
 <div id="test">
 
     <div id="top">
-        <el-button type="primary" @click="search" style="color:white">查询</el-button>
-        <el-button type="primary" @click="handleadd" style="color:white">添加</el-button>
-        <el-button type="primary" @click="windowOpen('http://cron.qqe2.com')" style="color:white">在线Cron表达式生成
+        <el-button @click="search">查询</el-button>
+        <el-button @click="addTask">添加</el-button>
+        <el-button @click="windowOpen('http://cron.qqe2.com')">在线Cron表达式生成
         </el-button>
-        <span style="color: white">系统时间：</span>
-        <span style="color: white">{{currentDate}}</span>
-        <span style="color: white; margin-left: 38%">自动刷新时间：</span>
-        <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime">
-            <el-option
-                    v-for="item in cycleTime"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-            </el-option>
-        </el-select>
+
+        <div style="position:absolute; right: 16px; top: 13px">
+            <span style="color: white">自动刷新时间：</span>
+            <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime" size="3">
+                <el-option
+                        v-for="item in cycleTime"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                </el-option>
+            </el-select>
+        </div>
+
     </div>
 
     <br/>
 
     <div style="margin-top:15px">
-
-        <el-table :data="tableData" border ref="testTable" style="width:100%">
+        <el-table :data="tableData" border ref="testTable">
             <el-table-column
                     prop="jobName"
                     label="任务名称"
@@ -179,23 +180,45 @@
     </div>
 
     <!--添加弹框-->
-    <el-dialog title="添加任务" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加任务" :visible.sync="addDialogVisible">
         <el-form :model="addform">
-            <el-form-item label="任务全类名" label-width="120px" style="width:35%">
-                <el-input v-model="addform.jobName" auto-complete="off"></el-input>
+            <el-form-item label="任务名称" label-width="120px" style="width:50%">
+                <el-input v-model="addform.taskName" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="任务分组" label-width="120px" style="width:35%">
-                <el-input v-model="addform.jobGroup" auto-complete="off"></el-input>
+
+            <el-form-item label="任务组" label-width="120px" style="width:50%">
+                <el-input v-model="addform.taskGroup" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="任务描述" label-width="120px" style="width:35%">
-                <el-input v-model="addform.jobDescription" auto-complete="off"></el-input>
+
+            <el-form-item label="任务全类名" label-width="120px" style="width:50%">
+                <el-input v-model="addform.taskClass" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="表达式" label-width="120px" style="width:35%">
-                <el-input v-model="addform.cronExpression" auto-complete="off"></el-input>
+
+            <el-form-item label="任务描述" label-width="120px" style="width:50%">
+                <el-input v-model="addform.note" auto-complete="off"></el-input>
             </el-form-item>
+
+            <el-form-item label="表达式" label-width="120px" style="width:50%">
+                <el-input v-model="addform.cron" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="执行参数" label-width="120px" style="width:50%">
+                <el-input v-model="addform.execParams" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="是否禁用" label-width="120px" style="width:50%">
+                <el-radio v-model="addform.disabled" label="0">启用</el-radio>
+                <el-radio v-model="addform.disabled" label="1">禁用</el-radio>
+            </el-form-item>
+
+            <el-form-item label="是否允许并发" label-width="120px" style="width:50%">
+                <el-radio v-model="addform.concurrent" label="0">允许</el-radio>
+                <el-radio v-model="addform.concurrent" label="1">不允许</el-radio>
+            </el-form-item>
+
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button @click="addDialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="add">确 定</el-button>
         </div>
     </el-dialog>
@@ -252,7 +275,7 @@
             totalCount: 1000,
 
             //添加对话框默认可见性
-            dialogFormVisible: false,
+            addDialogVisible: false,
 
             //修改对话框默认可见性
             updateFormVisible: false,
@@ -512,8 +535,8 @@
             },
 
             //弹出添加对话框
-            handleadd: function () {
-                this.dialogFormVisible = true;
+            addTask: function () {
+                this.addDialogVisible = true;
             },
 
             //打开新页面
@@ -538,7 +561,7 @@
                             type: 'success'
                         });
                         this.loadData(this.currentPage, this.pagesize);
-                        this.dialogFormVisible = false;
+                        this.addDialogVisible = false;
                     } else {
                         this.$notify({
                             title: '警告',
