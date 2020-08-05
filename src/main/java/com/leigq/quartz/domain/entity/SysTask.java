@@ -71,19 +71,19 @@ public class SysTask implements Serializable {
     private Date execDate;
 
     /**
-     * 最近一次执行结果
+     * 最近一次执行结果 （成功:1、失败:0)
      */
     @TableField(value = "exec_result")
     private Integer execResult;
 
     /**
-     * 是否禁用
+     * 是否禁用 0：启用 1：禁用
      */
     @TableField(value = "disabled")
     private Boolean disabled;
 
     /**
-     * 是否允许并发
+     * 是否允许并发 0：允许 1：不允许
      */
     @TableField(value = "concurrent")
     private Integer concurrent;
