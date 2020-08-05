@@ -1,13 +1,8 @@
 package com.leigq.quartz.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
 import com.leigq.quartz.bean.job.BaseJob;
 import com.leigq.quartz.bean.job.BaseJobDisallowConcurrent;
-import com.leigq.quartz.bean.vo.JobAndTriggerVO;
-import com.leigq.quartz.domain.mapper.QuartzJobMapper;
-import com.leigq.quartz.web.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.stereotype.Service;
@@ -25,11 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuartzJobService {
 
     private final Scheduler scheduler;
-    private final QuartzJobMapper quartzJobMapper;
 
-    public QuartzJobService(QuartzJobMapper quartzJobMapper, Scheduler scheduler) {
+    public QuartzJobService(Scheduler scheduler) {
         this.scheduler = scheduler;
-        this.quartzJobMapper = quartzJobMapper;
     }
 
     /**
@@ -77,18 +70,6 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param cls 任务类，可用 类名.class 获得
-     */
-    public void executeJob(Class<?> cls) throws SchedulerException {
-        executeJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
-    }
-
-    /**
-     * 执行任务
-     * <p>
-     * 创建人：LeiGQ <br>
-     * 创建时间：2019/5/28 2:57 <br>
-     *
      * @param jobSimpleName 类名
      * @param jobGroupName  类组名
      */
@@ -96,17 +77,6 @@ public class QuartzJobService {
         scheduler.triggerJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
 
-    /**
-     * 暂停任务
-     * <p>
-     * 创建人：LeiGQ <br>
-     * 创建时间：2019/5/28 2:57 <br>
-     *
-     * @param cls 任务类，可用 类名.class 获得
-     */
-    public void pauseJob(Class<?> cls) throws SchedulerException {
-        pauseJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
-    }
 
     /**
      * 暂停任务
@@ -119,18 +89,6 @@ public class QuartzJobService {
      */
     public void pauseJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
         scheduler.pauseJob(JobKey.jobKey(jobSimpleName, jobGroupName));
-    }
-
-    /**
-     * 恢复任务
-     * <p>
-     * 创建人：LeiGQ <br>
-     * 创建时间：2019/5/28 3:00 <br>
-     *
-     * @param cls 任务类，可用 类名.class 获得
-     */
-    public void resumeJob(Class<?> cls) throws SchedulerException {
-        resumeJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
     }
 
 
@@ -148,7 +106,7 @@ public class QuartzJobService {
     }
 
     /**
-     * 更新任务
+     * 更新任务(只更新 cron 表达式)
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:50 <br>
@@ -156,12 +114,9 @@ public class QuartzJobService {
      * @param jobClassName   任务全类名
      * @param jobGroupName   类组名
      * @param cronExpression 任务表达式
+     * @throws SchedulerException the scheduler exception
      */
     public void rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) throws SchedulerException {
-        // 验证表达式格式
-        if (!CronExpression.isValidExpression(cronExpression)) {
-            throw new ServiceException("表达式格式错误！");
-        }
         TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
         // 表达式调度构建器
         // 增加：withMisfireHandlingInstructionDoNothing()方法 参考：https://blog.csdn.net/zhouhao1256/article/details/53486748?tdsourcetag=s_pctim_aiomsg
@@ -173,19 +128,6 @@ public class QuartzJobService {
         trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
         // 按新的trigger重新设置job执行
         scheduler.rescheduleJob(triggerKey, trigger);
-    }
-
-    /**
-     * 更新任务
-     * <p>
-     * 创建人：LeiGQ <br>
-     * 创建时间：2019/5/28 3:50 <br>
-     *
-     * @param cls            任务类，可用 类名.class 获得
-     * @param cronExpression 表达式
-     */
-    public void rescheduleJob(Class<?> cls, String cronExpression) throws SchedulerException {
-        rescheduleJob(cls.getName(), quartzJobMapper.getJobGroupName(cls.getName()), cronExpression);
     }
 
 
@@ -204,18 +146,6 @@ public class QuartzJobService {
         scheduler.deleteJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
 
-    /**
-     * 删除任务
-     * <p>
-     * 创建人：LeiGQ <br>
-     * 创建时间：2019/5/28 3:53 <br>
-     *
-     * @param cls 任务类，可用 类名.class 获得
-     */
-    public void deleteJob(Class<?> cls) throws SchedulerException {
-        deleteJob(cls.getSimpleName(), quartzJobMapper.getJobGroupName(cls.getName()));
-    }
-
 
     /**
      * 获取任务与触发器详细信息
@@ -227,9 +157,9 @@ public class QuartzJobService {
      * @param pageSize the page size
      * @return the job and trigger details
      */
-    public IPage<JobAndTriggerVO> getJobAndTriggerDetails(int pageNum, int pageSize) {
-        Page<JobAndTriggerVO> page = new Page<>(pageNum, pageSize);
-        return quartzJobMapper.getJobAndTriggerDetails(page);
-    }
+//    public IPage<JobAndTriggerVO> getJobAndTriggerDetails(int pageNum, int pageSize) {
+//        Page<JobAndTriggerVO> page = new Page<>(pageNum, pageSize);
+//        return quartzJobMapper.getJobAndTriggerDetails(page);
+//    }
 
 }
