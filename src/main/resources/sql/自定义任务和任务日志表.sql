@@ -12,10 +12,10 @@ CREATE TABLE `sys_task` (
   `exec_params` text COMMENT '执行参数',
   `exec_date` datetime DEFAULT NULL COMMENT '执行时间',
   `exec_result` text COMMENT '执行结果（成功:1、失败:0)',
-  `disabled` tinyint(1) DEFAULT NULL COMMENT '是否禁用，0(false)：禁用 1（true）：启用',
+  `enabled` tinyint(1) DEFAULT NULL COMMENT '是否启用，0(false)：禁用 1（true）：启用',
   `create_time` datetime DEFAULT NULL,
   `creator` bigint(20) DEFAULT NULL,
-  `concurrent` tinyint(4) DEFAULT '0' COMMENT '是否允许并发，0(false)：不允许 1（true）：允许',
+  `concurrent` tinyint(1) DEFAULT '0' COMMENT '是否允许并发，0(false)：不允许 1（true）：允许',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

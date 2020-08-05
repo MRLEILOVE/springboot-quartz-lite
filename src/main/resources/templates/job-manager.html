@@ -207,7 +207,7 @@
             </el-form-item>
 
             <el-form-item label="是否禁用" label-width="120px" style="width:50%">
-                <el-radio-group v-model="addTaskFormData.disabled">
+                <el-radio-group v-model="addTaskFormData.enabled">
                     <el-radio :label="1">启用</el-radio>
                     <el-radio :label="0">禁用</el-radio>
                 </el-radio-group>
@@ -289,13 +289,13 @@
 
             //提交的表单
             addTaskFormData: {
-                taskName: '',
-                taskGroup: '',
-                taskClass: '',
-                note: '',
-                cron: '',
+                taskName: 'HelloQuartz1',
+                taskGroup: 'test',
+                taskClass: 'com.leigq.quartz.task.HelloQuartz1',
+                note: '测试任务',
+                cron: '*/2 * * * * ?',
                 execParams: '',
-                disabled: 1,
+                enabled: 1,
                 concurrent: 0,
             },
             //修改表单
@@ -561,7 +561,7 @@
                     "note": this.addTaskFormData.note,
                     "cron": this.addTaskFormData.cron,
                     "execParams": this.addTaskFormData.execParams,
-                    "disabled": this.addTaskFormData.disabled,
+                    "enabled": this.addTaskFormData.enabled,
                     "concurrent": this.addTaskFormData.concurrent,
                 }, {emulateJSON: true}).then(function (res) {
                     var body = res.body;
