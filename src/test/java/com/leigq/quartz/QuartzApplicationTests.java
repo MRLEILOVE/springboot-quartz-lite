@@ -1,6 +1,6 @@
 package com.leigq.quartz;
 
-import com.leigq.quartz.job.HelloQuartz2;
+import com.leigq.quartz.task.HelloQuartz2;
 import com.leigq.quartz.service.SysTaskService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
