@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
  * @date ：2019/7/22 16:53
  */
 @Data
-public class SimpleJobVO {
+public class SysTaskSimpleVO {
 
 	/**
 	 * 任务全类名
