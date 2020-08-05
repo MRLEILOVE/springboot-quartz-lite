@@ -10,15 +10,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 /**
  * 任务表
  */
-@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName(value = "sys_task")
+@Data
+@FieldNameConstants
 public class SysTask implements Serializable {
     /**
      * 自增主键
@@ -29,20 +31,20 @@ public class SysTask implements Serializable {
     /**
      * 任务名
      */
-    @TableField(value = "job_name")
-    private String jobName;
+    @TableField(value = "task_name")
+    private String taskName;
 
     /**
      * 任务组
      */
-    @TableField(value = "job_group")
-    private String jobGroup;
+    @TableField(value = "task_group")
+    private String taskGroup;
 
     /**
      * 执行类
      */
-    @TableField(value = "job_class")
-    private String jobClass;
+    @TableField(value = "task_class")
+    private String taskClass;
 
     /**
      * 任务说明
@@ -63,22 +65,28 @@ public class SysTask implements Serializable {
     private String execParams;
 
     /**
-     * 执行时间
+     * 最近一次执行时间
      */
-    @TableField(value = "exec_at")
-    private Date execAt;
+    @TableField(value = "exec_date")
+    private Date execDate;
 
     /**
-     * 执行结果
+     * 最近一次执行结果
      */
     @TableField(value = "exec_result")
-    private String execResult;
+    private Integer execResult;
 
     /**
      * 是否禁用
      */
     @TableField(value = "disabled")
     private Boolean disabled;
+
+    /**
+     * 是否允许并发
+     */
+    @TableField(value = "concurrent")
+    private Integer concurrent;
 
     /**
      * 创建时间
@@ -91,12 +99,6 @@ public class SysTask implements Serializable {
      */
     @TableField(value = "creator")
     private Long creator;
-
-    /**
-     * 是否允许并发
-     */
-    @TableField(value = "concurrent")
-    private Integer concurrent;
 
     private static final long serialVersionUID = 1L;
 }

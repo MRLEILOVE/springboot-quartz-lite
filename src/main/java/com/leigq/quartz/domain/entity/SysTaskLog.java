@@ -29,32 +29,32 @@ public class SysTaskLog implements Serializable {
     /**
      * 任务名
      */
-    @TableField(value = "name")
-    private String name;
+    @TableField(value = "task_name")
+    private String taskName;
 
     /**
      * 执行时间
      */
-    @TableField(value = "exec_at")
-    private Date execAt;
+    @TableField(value = "exec_date")
+    private Date execDate;
 
     /**
      * 执行结果（成功:1、失败:0)
      */
-    @TableField(value = "exec_success")
-    private Integer execSuccess;
+    @TableField(value = "exec_result")
+    private Integer execResult;
 
     /**
      * 抛出的异常信息
      */
-    @TableField(value = "job_exception")
-    private String jobException;
+    @TableField(value = "exec_result_text")
+    private String execResultText;
 
     /**
      * 任务ID，外键
      */
-    @TableField(value = "id_task")
-    private Long idTask;
+    @TableField(value = "task_id")
+    private Long taskId;
 
     private static final long serialVersionUID = 1L;
 }
