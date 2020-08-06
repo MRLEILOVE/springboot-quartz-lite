@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 系统自己创建的任务表服务
@@ -89,7 +90,9 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
         final SysTask sysTask = getSysTask(taskName, taskGroup);
         ValidUtils.isNull(sysTask, "查询不到此任务！");
 
-        this.checkTaskClassAlreadyExists(updateSysTaskVO.getTaskClass());
+        if (!Objects.equals(sysTask.getTaskClass(), updateSysTaskVO.getTaskClass())) {
+            this.checkTaskClassAlreadyExists(updateSysTaskVO.getTaskClass());
+        }
 
         try {
             BeanUtils.copyProperties(updateSysTaskVO, sysTask);

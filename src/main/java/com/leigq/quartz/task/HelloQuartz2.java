@@ -35,10 +35,8 @@ public class HelloQuartz2 extends BaseTaskExecute implements Serializable {
     @Override
     public void execute(Map<String, Object> dataMap) {
         // */2 * * * * ?
-        log.warn(">>>>>>>>>Hello Quartz start!");
+        log.warn(">>>>>>>>>Hello Quartz2 start!");
         final String value = dataMap.get("aaa") + "";
         log.warn("value:{}", value);
-        // 测试是否获取到 bean
-        log.error("quartzJobService: {}", quartzJobService);
     }
 }
