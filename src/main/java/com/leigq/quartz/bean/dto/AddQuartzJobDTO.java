@@ -28,11 +28,6 @@ public class AddQuartzJobDTO implements Serializable {
     private String cron;
 
     /**
-     * 是否启用，0(false)：禁用 1（true）：启用
-     */
-    private Boolean enabled;
-
-    /**
      * 是否允许并发，0(false)：不允许 1（true）：允许
      */
     private Boolean concurrent;

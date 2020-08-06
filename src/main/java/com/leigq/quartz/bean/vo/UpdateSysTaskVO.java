@@ -54,12 +54,6 @@ public class UpdateSysTaskVO implements Serializable {
     @NotEmpty(message = "定时规则(表达式)不能为空！")
     private String cron;
 
-
-    /**
-     * 是否启用，0(false)：禁用 1（true）：启用
-     */
-    private Boolean enabled;
-
     /**
      * 是否允许并发，0(false)：不允许 1（true）：允许
      */

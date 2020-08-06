@@ -207,13 +207,6 @@
                 <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="是否启用" label-width="120px" style="width:50%">
-                <el-radio-group v-model="addTaskFormData.enabled">
-                    <el-radio :label="1">启用</el-radio>
-                    <el-radio :label="0">禁用</el-radio>
-                </el-radio-group>
-            </el-form-item>
-
             <el-form-item label="允许并发？" label-width="120px" style="width:50%">
                 <el-radio-group v-model="addTaskFormData.concurrent">
                     <el-radio :label="1">允许</el-radio>
@@ -254,14 +247,6 @@
 
             <el-form-item label="定时规则" label-width="120px" style="width:50%">
                 <el-input v-model="updateTaskFormData.cron" auto-complete="off"></el-input>
-            </el-form-item>
-
-
-            <el-form-item label="是否启用" label-width="120px" style="width:50%">
-                <el-radio-group v-model="updateTaskFormData.enabled">
-                    <el-radio :label="true">启用</el-radio>
-                    <el-radio :label="false">禁用</el-radio>
-                </el-radio-group>
             </el-form-item>
 
             <el-form-item label="允许并发？" label-width="120px" style="width:50%">
@@ -333,7 +318,6 @@
                 note: '测试任务',
                 cron: '*/2 * * * * ?',
                 execParams: '',
-                enabled: 1,
                 concurrent: 0,
             },
             //修改表单
@@ -344,7 +328,6 @@
                 cron: '',
                 taskClass: '',
                 execParams: '',
-                enabled: '',
                 concurrent: '',
             },
             //暂停|恢复|删除表单
@@ -595,7 +578,6 @@
                     "note": this.addTaskFormData.note,
                     "cron": this.addTaskFormData.cron,
                     "execParams": this.addTaskFormData.execParams,
-                    "enabled": this.addTaskFormData.enabled,
                     "concurrent": this.addTaskFormData.concurrent,
                 }, {emulateJSON: true}).then(function (res) {
                     var body = res.body;
@@ -634,7 +616,6 @@
                 this.updateTaskFormData.taskClass = row.taskClass;
                 this.updateTaskFormData.execParams = row.execParams;
                 this.updateTaskFormData.cron = row.cron;
-                this.updateTaskFormData.enabled = row.enabled;
                 this.updateTaskFormData.concurrent = row.concurrent;
             },
 
@@ -648,7 +629,6 @@
                         "taskClass": this.updateTaskFormData.taskClass,
                         "execParams": this.updateTaskFormData.execParams,
                         "cron": this.updateTaskFormData.cron,
-                        "enabled": this.updateTaskFormData.enabled,
                         "concurrent": this.updateTaskFormData.concurrent,
                     }, {emulateJSON: true}
                 ).then(function (res) {

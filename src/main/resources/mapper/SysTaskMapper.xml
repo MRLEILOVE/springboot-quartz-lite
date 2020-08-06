@@ -19,7 +19,6 @@
                        ) as nextFireTime,
 
                `sys_task`.`exec_result`,
-               `sys_task`.`enabled`,
                `sys_task`.`concurrent`,
                `qrtz_cron_triggers`.`time_zone_id`,
                `qrtz_triggers`.`trigger_state`

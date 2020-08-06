@@ -77,12 +77,6 @@ public class SysTask implements Serializable {
     private Integer execResult;
 
     /**
-     * 是否启用，0(false)：禁用 1（true）：启用
-     */
-    @TableField(value = "enabled")
-    private Boolean enabled;
-
-    /**
      * 是否允许并发，0(false)：不允许 1（true）：允许
      */
     @TableField(value = "concurrent")
