@@ -47,7 +47,7 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/jobs")
+	@PostMapping("/tasks")
 	public Response addTask(@Valid AddSysTaskVO addSysTaskVO) {
 		// 验证表达式格式
 		if (!CronExpression.isValidExpression(addSysTaskVO.getCron())) {
@@ -69,7 +69,7 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PutMapping("/jobs")
+	@PutMapping("/tasks")
 	public Response updateTask(@Valid UpdateSysTaskVO updateSysTaskVO) {
 		// 验证表达式格式
 		if (!CronExpression.isValidExpression(updateSysTaskVO.getCron())) {
@@ -90,7 +90,7 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/jobs/action/execute")
+	@PostMapping("/tasks/action/execute")
 	public Response executeTask(@Valid SysTaskSimpleVO sysTaskSimpleVO) {
 		sysTaskService.executeTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("执行任务成功！");
@@ -108,7 +108,7 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/jobs/action/pause")
+	@PostMapping("/tasks/action/pause")
 	public Response pauseTask(@Valid SysTaskSimpleVO sysTaskSimpleVO) {
 		sysTaskService.pauseTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("暂停任务成功！");
@@ -125,7 +125,7 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/jobs/action/resume")
+	@PostMapping("/tasks/action/resume")
 	public Response resumeTask(@Valid SysTaskSimpleVO sysTaskSimpleVO) {
 		sysTaskService.resumeTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
 		return response.success("恢复任务成功！");
@@ -143,7 +143,7 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@DeleteMapping("/jobs/{job_class_name}/{job_group_Name}")
+	@DeleteMapping("/tasks/{job_class_name}/{job_group_Name}")
 	public Response deleteTask(@PathVariable("job_class_name") String jobClassName, @PathVariable("job_group_Name") String jobGroupName) {
 		sysTaskService.deleteTask(jobClassName, jobGroupName);
 		return response.success("删除任务成功！");
@@ -160,9 +160,9 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@GetMapping("/jobs/{page_num}/{page_size}")
+	@GetMapping("/tasks/{page_num}/{page_size}")
 	public Response queryTaskList(@PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
-		final IPage<SysTaskListVO> jobAndTriggerDetails = sysTaskService.taskList(pageNum, pageSize);
-		return response.success(jobAndTriggerDetails);
+		final IPage<SysTaskListVO> sysTaskList = sysTaskService.taskList(pageNum, pageSize);
+		return response.success(sysTaskList);
 	}
 }

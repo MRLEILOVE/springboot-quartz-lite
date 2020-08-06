@@ -264,7 +264,7 @@
             tableData: [],
 
             //请求的URL
-            url: 'jobs',
+            url: 'tasks',
 
             //默认每页数据量
             pagesize: 10,
@@ -367,7 +367,7 @@
 
             //从服务器读取数据
             initData(pageNum, pageSize) {
-                this.$http.get('jobs/' + pageNum + '/' + pageSize).then(function (res) {
+                this.$http.get('tasks/' + pageNum + '/' + pageSize).then(function (res) {
                     var data = res.body.data;
                     this.tableData = data.records;
                     this.totalCount = data.total;
@@ -378,7 +378,7 @@
 
             //单行删除
             handleDelete: function (index, row) {
-                this.$http.delete('jobs/' + row.jobName + '/' + row.jobGroup).then(function (res) {
+                this.$http.delete('tasks/' + row.jobName + '/' + row.jobGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
                     if (meta.code === 200) {
@@ -409,7 +409,7 @@
 
             //暂停任务
             handlePause: function (index, row) {
-                this.$http.post('jobs/action/pause', {
+                this.$http.post('tasks/action/pause', {
                     "jobClassName": row.jobName,
                     "jobGroupName": row.jobGroup,
                 }, {emulateJSON: true}).then(function (res) {
@@ -443,7 +443,7 @@
 
             //恢复任务
             handleResume: function (index, row) {
-                this.$http.post('jobs/action/resume', {
+                this.$http.post('tasks/action/resume', {
                     "jobClassName": row.jobName,
                     "jobGroupName": row.jobGroup,
                 }, {emulateJSON: true}).then(function (res) {
@@ -477,7 +477,7 @@
 
             // 执行任务
             handleExecute: function (index, row) {
-                this.$http.post('jobs/action/execute', {
+                this.$http.post('tasks/action/execute', {
                     "jobClassName": row.jobName,
                     "jobGroupName": row.jobGroup,
                 }, {emulateJSON: true}).then(function (res) {
@@ -554,7 +554,7 @@
 
             //添加
             addTaskSubmit: function () {
-                this.$http.post('jobs', {
+                this.$http.post('tasks', {
                     "taskName": this.addTaskFormData.taskName,
                     "taskGroup": this.addTaskFormData.taskGroup,
                     "taskClass": this.addTaskFormData.taskClass,
@@ -601,7 +601,7 @@
 
             //更新任务
             updateTaskSubmit: function () {
-                this.$http.put('jobs',
+                this.$http.put('tasks',
                     {
                         "taskName": this.updateTaskFormData.taskName,
                         "taskGroup": this.updateTaskFormData.taskGroup,
