@@ -145,21 +145,4 @@ public class QuartzJobService {
         scheduler.unscheduleJob(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
         scheduler.deleteJob(JobKey.jobKey(jobSimpleName, jobGroupName));
     }
-
-
-    /**
-     * 获取任务与触发器详细信息
-     * <p>
-     * 创建人：LeiGQ <br>
-     * 创建时间：2019/5/19 1:18 <br>
-     *
-     * @param pageNum  the page num
-     * @param pageSize the page size
-     * @return the job and trigger details
-     */
-//    public IPage<JobAndTriggerVO> getJobAndTriggerDetails(int pageNum, int pageSize) {
-//        Page<JobAndTriggerVO> page = new Page<>(pageNum, pageSize);
-//        return quartzJobMapper.getJobAndTriggerDetails(page);
-//    }
-
 }
