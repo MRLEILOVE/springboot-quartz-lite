@@ -17,7 +17,7 @@ CREATE TABLE `sys_task` (
   `creator` bigint(20) DEFAULT NULL,
   `concurrent` tinyint(4) DEFAULT '0' COMMENT '是否允许并发，0(false)：不允许 1（true）：允许',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
 /*Data for the table `sys_task` */
@@ -34,7 +34,7 @@ CREATE TABLE `sys_task_log` (
   `exec_result_text` text COMMENT '成功信息或抛出的异常信息',
   `task_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
 /*Data for the table `sys_task_log` */
