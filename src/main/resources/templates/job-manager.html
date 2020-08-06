@@ -45,6 +45,7 @@
     <div style="margin-top:15px">
         <el-table :data="tableData" border ref="testTable">
             <el-table-column
+                    width="120"
                     prop="taskName"
                     label="任务名"
                     sortable
@@ -52,6 +53,7 @@
             </el-table-column>
 
             <el-table-column
+                    width="70"
                     prop="taskGroup"
                     label="任务组"
                     sortable>
@@ -95,11 +97,10 @@
                     sortable>
             </el-table-column>
 
-            <el-table-column
-                    width="160"
-                    prop="execResult"
-                    label="最近一次执行结果"
-                    sortable>
+            <el-table-column width="150" sortable prop="execResult" label="最近一次执行结果" align="center">
+                <template slot-scope="scope">
+                    <div>{{scope.row.execResult === 1 ? '成功' : '失败'}}</div>
+                </template>
             </el-table-column>
 
             <el-table-column
