@@ -1,5 +1,6 @@
 package com.leigq.quartz.service;
 
+import com.leigq.quartz.bean.constant.QuartzTriggerConstant;
 import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
 import com.leigq.quartz.bean.job.BaseJob;
 import com.leigq.quartz.bean.job.BaseJobDisallowConcurrent;
@@ -38,8 +39,11 @@ public class QuartzJobService {
         //是否允许并发执行
         Class<? extends Job> jobClass = addQuartzJobDTO.getConcurrent() ? BaseJob.class : BaseJobDisallowConcurrent.class;
 
+        final String taskName = addQuartzJobDTO.getTaskName();
+        final String taskGroup = addQuartzJobDTO.getTaskGroup();
+
         // 通过任务名称和任务组确定一个任务
-        JobKey jobKey = JobKey.jobKey(addQuartzJobDTO.getTaskName(), addQuartzJobDTO.getTaskGroup());
+        JobKey jobKey = JobKey.jobKey(taskName, taskGroup);
 
         //构建job信息
         JobDetail jobDetail = JobBuilder.newJob(jobClass)
@@ -53,7 +57,7 @@ public class QuartzJobService {
         //表达式调度构建器(即任务执行的时间)
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(addQuartzJobDTO.getCron());
 
-        TriggerKey triggerKey = TriggerKey.triggerKey(addQuartzJobDTO.getTaskName() + "Trigger", addQuartzJobDTO.getTaskGroup());
+        TriggerKey triggerKey = TriggerKey.triggerKey(QuartzTriggerConstant.triggerName(taskName), taskGroup);
 
         //按新的cronExpression表达式构建一个新的trigger
         CronTrigger trigger = TriggerBuilder.newTrigger()
@@ -75,8 +79,8 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param jobName 类名
-     * @param jobGroup  类组名
+     * @param jobName  类名
+     * @param jobGroup 类组名
      */
     public void executeJob(String jobName, String jobGroup) throws SchedulerException {
         scheduler.triggerJob(JobKey.jobKey(jobName, jobGroup));
@@ -89,8 +93,8 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param jobName 类名
-     * @param jobGroup  类组名
+     * @param jobName  类名
+     * @param jobGroup 类组名
      */
     public void pauseJob(String jobName, String jobGroup) throws SchedulerException {
         scheduler.pauseJob(JobKey.jobKey(jobName, jobGroup));
@@ -103,8 +107,8 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:00 <br>
      *
-     * @param jobName 类名
-     * @param jobGroup  类组名
+     * @param jobName  类名
+     * @param jobGroup 类组名
      */
     public void resumeJob(String jobName, String jobGroup) throws SchedulerException {
         scheduler.resumeJob(JobKey.jobKey(jobName, jobGroup));
@@ -116,13 +120,13 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:50 <br>
      *
-     * @param jobClass 任务全类名
+     * @param jobName  任务名
      * @param jobGroup 类组名
      * @param cron     任务表达式
      * @throws SchedulerException the scheduler exception
      */
-    public void rescheduleJob(String jobClass, String jobGroup, String cron) throws SchedulerException {
-        TriggerKey triggerKey = TriggerKey.triggerKey(jobClass, jobGroup);
+    public void rescheduleJob(String jobName, String jobGroup, String cron) throws SchedulerException {
+        TriggerKey triggerKey = TriggerKey.triggerKey(QuartzTriggerConstant.triggerName(jobName), jobGroup);
         // 表达式调度构建器
         // 增加：withMisfireHandlingInstructionDoNothing()方法 参考：https://blog.csdn.net/zhouhao1256/article/details/53486748?tdsourcetag=s_pctim_aiomsg
         // 1，不触发立即执行

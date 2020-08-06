@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * MyBatisPlus 配置
  * <p>
- * 创建人：LeiGQ <br>
- * 创建时间：2019-06-14 10:40 <br>
+ * @author LeiGQ <br>
+ * @date 2019-06-14 10:40 <br>
  * <p>
  * 修改人： <br>
  * 修改时间： <br>

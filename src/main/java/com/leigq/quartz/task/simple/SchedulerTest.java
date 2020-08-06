@@ -15,14 +15,8 @@ import org.quartz.*;
  *      </li>
  * </ul>
  *
- * <p>
- * 创建人：LeiGQ <br>
- * 创建时间：2019-03-05 16:31 <br>
- * <p>
- * 修改人： <br>
- * 修改时间： <br>
- * 修改备注： <br>
- * </p>
+ * @author LeiGQ <br>
+ * @date 2019-03-05 16:31 <br>
  */
 public class SchedulerTest {
 
