@@ -12,11 +12,11 @@
                from_unixtime(
                        `qrtz_triggers`.`prev_fire_time` / 1000,
                        '%Y-%m-%d %T'
-                       ),
+                       ) as prevFireTime,
                from_unixtime(
                        `qrtz_triggers`.`next_fire_time` / 1000,
                        '%Y-%m-%d %T'
-                       ),
+                       ) as nextFireTime,
 
                `sys_task`.`exec_result`,
                `sys_task`.`enabled`,
@@ -26,6 +26,8 @@
              `qrtz_triggers`,
              `qrtz_cron_triggers`
         WHERE `qrtz_cron_triggers`.`trigger_group` = `qrtz_triggers`.`trigger_group`
+          AND `qrtz_cron_triggers`.`trigger_name` = `qrtz_triggers`.`trigger_name`
           AND `qrtz_triggers`.`job_name` = `sys_task`.`task_name`
+          AND `qrtz_triggers`.`job_group` = `sys_task`.`task_group`
     </select>
 </mapper>

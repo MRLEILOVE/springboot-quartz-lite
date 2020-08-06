@@ -2,6 +2,7 @@ package com.leigq.quartz.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
 import com.leigq.quartz.bean.vo.AddSysTaskVO;
@@ -168,7 +169,8 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建时间：2019/5/19 1:18 <br>
      */
     public IPage<SysTaskListVO> taskList(int pageNum, int pageSize) {
-        return sysTaskMapper.taskList(pageNum, pageSize);
+        Page<SysTaskListVO> page = new Page<>(pageNum, pageSize);
+        return sysTaskMapper.taskList(page);
     }
 
 }
