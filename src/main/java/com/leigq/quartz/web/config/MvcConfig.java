@@ -16,14 +16,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * {@link @SpringBootConfiguration} 继承自 {@link @Configuration}，二者功能也一致，标注当前类是配置类，
  * 并会将当前类内声明的一个或多个以@Bean注解标记的方法的实例纳入到spring容器中，并且实例名就是方法名。
  * {@link @EnableWebMvc} 启用此注解，SpringBoot 关于 MVC 的自动装载会失效，交由开发者自定义
- * 创建人：LeiGQ <br>
- * 创建时间：2019-05-24 23:50 <br>
+ *
+ * @author leigq <br>
+ * @date 2019-05-24 23:50 <br>
  */
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
     /**
      * 添加资源处理程序
+     *
      * @author ：LeiGQ <br>
      * @date ：2019-05-24 23:52 <br>
      * <p>

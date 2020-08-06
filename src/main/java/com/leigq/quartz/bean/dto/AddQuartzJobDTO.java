@@ -1,6 +1,7 @@
 package com.leigq.quartz.bean.dto;
 
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
+import com.google.common.collect.Maps;
 import com.leigq.quartz.util.ValidUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 /**
  * 添加 Quartz 任务表 DTO
+ * @author leigq
  */
 @Data
 @AllArgsConstructor
@@ -52,7 +54,7 @@ public class AddQuartzJobDTO implements Serializable {
         ValidUtils.checkArg(!execParams.contains("="), "执行参数格式错误");
 
         // 转换执行参数为 Map
-        Map<String, Object> dataMap = new HashMap<>();
+        Map<String, Object> dataMap = Maps.newHashMapWithExpectedSize(5);
 
         // 判断是多个参数还是单个参数
         if (execParams.contains(";")) {

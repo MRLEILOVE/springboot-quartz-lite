@@ -21,8 +21,9 @@ import java.util.Date;
 
 /**
  * 系统自己创建的任务表服务
+ * @author leigq
  */
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
 

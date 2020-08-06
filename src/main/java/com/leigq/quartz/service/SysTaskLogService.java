@@ -7,7 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Transactional
+/**
+ * The type Sys task log service.
+ * @author leigq
+ */
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class SysTaskLogService extends ServiceImpl<SysTaskLogMapper, SysTaskLog> {
 

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 创建时间：2019/5/28 2:52 <br>
  */
 @Slf4j
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class QuartzJobService {
 

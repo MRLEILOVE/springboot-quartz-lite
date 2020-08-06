@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 不并发执行的任务基类，继承自 BaseJob
+ * @author leigq
  */
 @Component
 @DisallowConcurrentExecution

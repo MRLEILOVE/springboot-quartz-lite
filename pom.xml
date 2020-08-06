@@ -87,6 +87,12 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+        </dependency>
+
         <!-- mongodb driver 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
         <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
         <dependency>

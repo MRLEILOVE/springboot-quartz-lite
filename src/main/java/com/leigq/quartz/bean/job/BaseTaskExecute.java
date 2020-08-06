@@ -20,11 +20,12 @@ import java.util.Map;
 
 /**
  * 任务执行的抽象类（模板），自己的任务继承此类，重写 execute 方法来执行自己的任务
+ * @author leigq
  */
 @Component
-public abstract class TaskExecute {
+public abstract class BaseTaskExecute {
 
-    private final Logger log = LoggerFactory.getLogger(TaskExecute.class);
+    private final Logger log = LoggerFactory.getLogger(BaseTaskExecute.class);
 
     private TaskExecuteDTO taskExecuteDTO;
 
@@ -88,6 +89,7 @@ public abstract class TaskExecute {
      * 自定义任务子类需实现此方法
      *
      * @param dataMap 添加任务时配置的参数，如：aaa=111;bbb=222
+     * @throws Exception the exception
      */
     public abstract void execute(Map<String, Object> dataMap) throws Exception;
 }

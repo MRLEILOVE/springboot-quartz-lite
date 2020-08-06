@@ -8,6 +8,7 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * 任务基类，所有任务都继承此类
@@ -29,13 +30,13 @@ public class BaseJob implements Job {
             // 获取自定义任务的类
             Class<?> clazz = Class.forName(quartzJobDetails.getTaskClass());
             // 获取自定义任务实例，自定义任务全部继承 TaskExecute
-            TaskExecute taskExecute = (TaskExecute) SpringContextHolder.getBean(clazz);
+            BaseTaskExecute baseTaskExecute = (BaseTaskExecute) SpringContextHolder.getBean(clazz);
 
             TaskExecuteDTO taskExecuteDTO = TaskExecuteDTO.builder().build();
             BeanUtils.copyProperties(quartzJobDetails, taskExecuteDTO);
 
-            taskExecute.setTaskExecuteDTO(taskExecuteDTO);
-            taskExecute.execute();
+            baseTaskExecute.setTaskExecuteDTO(taskExecuteDTO);
+            baseTaskExecute.execute();
         } catch (Exception e) {
             String errorMessage = String.format("任务: [%s] 未启动成功，请检查执行类是否配置正确！！！", quartzJobDetails.getTaskName());
             throw new ServiceException(errorMessage, e);

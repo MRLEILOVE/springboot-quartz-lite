@@ -6,8 +6,8 @@ import lombok.Data;
 /**
  * 任务列表 VO
  * <p>
- * 创建人：LeiGQ <br>
- * 创建时间：2019/5/19 1:14 <br>
+ * @author leigq <br>
+ * @date 2019/5/19 1:14 <br>
  */
 @Data
 public class SysTaskListVO {

@@ -30,13 +30,8 @@ import java.util.stream.Collectors;
 /**
  * 全局异常处理
  * <p>
- * 创建人：LeiGQ <br>
- * 创建时间：2019-05-14 17:09 <br>
- * <p>
- * 修改人： <br>
- * 修改时间： <br>
- * 修改备注： <br>
- * </p>
+ * @author leigq <br>
+ * @date 2019-05-14 17:09 <br>
  */
 @Slf4j
 @RestControllerAdvice
