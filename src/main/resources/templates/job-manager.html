@@ -183,7 +183,7 @@
     <!--添加弹框-->
     <el-dialog title="添加任务" :visible.sync="addTaskFormVisible">
         <el-form :model="addTaskFormData">
-            <el-form-item label="任务名称" label-width="120px" style="width:50%">
+            <el-form-item label="任务名" label-width="120px" style="width:50%">
                 <el-input v-model="addTaskFormData.taskName" auto-complete="off"></el-input>
             </el-form-item>
 
@@ -191,20 +191,20 @@
                 <el-input v-model="addTaskFormData.taskGroup" auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="任务全类名" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.taskClass" auto-complete="off"></el-input>
-            </el-form-item>
-
-            <el-form-item label="任务描述" label-width="120px" style="width:50%">
+            <el-form-item label="任务说明" label-width="120px" style="width:50%">
                 <el-input v-model="addTaskFormData.note" auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="表达式" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
+            <el-form-item label="执行类" label-width="120px" style="width:50%">
+                <el-input v-model="addTaskFormData.taskClass" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="执行参数" label-width="120px" style="width:50%">
                 <el-input v-model="addTaskFormData.execParams" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="定时规则" label-width="120px" style="width:50%">
+                <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
             </el-form-item>
 
             <el-form-item label="是否启用" label-width="120px" style="width:50%">
@@ -230,11 +230,48 @@
 
     <!--修改弹框-->
     <el-dialog title="修改任务" :visible.sync="updateTaskFormVisible">
+
         <el-form :model="updateTaskFormData">
-            <el-form-item label="表达式" label-width="120px" style="width:35%">
-                <el-input v-model="updateTaskFormData.cronExpression" auto-complete="off"></el-input>
+            <el-form-item label="任务名" label-width="120px" style="width:50%">
+                <el-input v-model="updateTaskFormData.taskName" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="任务组" label-width="120px" style="width:50%">
+                <el-input v-model="updateTaskFormData.taskGroup" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="任务说明" label-width="120px" style="width:35%">
+                <el-input v-model="updateTaskFormData.note" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="执行类" label-width="120px" style="width:50%">
+                <el-input v-model="updateTaskFormData.taskClass" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="执行参数" label-width="120px" style="width:50%">
+                <el-input v-model="updateTaskFormData.execParams" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="定时规则" label-width="120px" style="width:50%">
+                <el-input v-model="updateTaskFormData.cron" auto-complete="off"></el-input>
+            </el-form-item>
+
+
+            <el-form-item label="是否启用" label-width="120px" style="width:50%">
+                <el-radio-group v-model="updateTaskFormData.enabled">
+                    <el-radio :label="true">启用</el-radio>
+                    <el-radio :label="false">禁用</el-radio>
+                </el-radio-group>
+            </el-form-item>
+
+            <el-form-item label="允许并发？" label-width="120px" style="width:50%">
+                <el-radio-group v-model="updateTaskFormData.concurrent">
+                    <el-radio :label="true">允许</el-radio>
+                    <el-radio :label="false">不允许</el-radio>
+                </el-radio-group>
             </el-form-item>
         </el-form>
+
         <div slot="footer" class="dialog-footer">
             <el-button @click="updateTaskFormVisible = false">取 消</el-button>
             <el-button type="primary" @click="updateTaskSubmit">确 定</el-button>
@@ -303,7 +340,12 @@
             updateTaskFormData: {
                 taskName: '',
                 taskGroup: '',
+                note: '',
                 cron: '',
+                taskClass: '',
+                execParams: '',
+                enabled: '',
+                concurrent: '',
             },
             //暂停|恢复|删除表单
             form: {
@@ -597,7 +639,12 @@
                 this.updateTaskFormVisible = true;
                 this.updateTaskFormData.taskName = row.taskName;
                 this.updateTaskFormData.taskGroup = row.taskGroup;
+                this.updateTaskFormData.note = row.note;
+                this.updateTaskFormData.taskClass = row.taskClass;
+                this.updateTaskFormData.execParams = row.execParams;
                 this.updateTaskFormData.cron = row.cron;
+                this.updateTaskFormData.enabled = row.enabled;
+                this.updateTaskFormData.concurrent = row.concurrent;
             },
 
             //更新任务
@@ -606,7 +653,12 @@
                     {
                         "taskName": this.updateTaskFormData.taskName,
                         "taskGroup": this.updateTaskFormData.taskGroup,
+                        "note": this.updateTaskFormData.note,
+                        "taskClass": this.updateTaskFormData.taskClass,
+                        "execParams": this.updateTaskFormData.execParams,
                         "cron": this.updateTaskFormData.cron,
+                        "enabled": this.updateTaskFormData.enabled,
+                        "concurrent": this.updateTaskFormData.concurrent,
                     }, {emulateJSON: true}
                 ).then(function (res) {
                     var body = res.body;
