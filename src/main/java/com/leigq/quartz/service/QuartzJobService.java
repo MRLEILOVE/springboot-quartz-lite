@@ -38,9 +38,12 @@ public class QuartzJobService {
         //是否允许并发执行
         Class<? extends Job> jobClass = addQuartzJobDTO.getConcurrent() ? BaseJob.class : BaseJobDisallowConcurrent.class;
 
+        // 通过任务名称和任务组确定一个任务
+        JobKey jobKey = JobKey.jobKey(addQuartzJobDTO.getTaskName(), addQuartzJobDTO.getTaskGroup());
+
         //构建job信息
         JobDetail jobDetail = JobBuilder.newJob(jobClass)
-                .withIdentity(addQuartzJobDTO.getTaskName(), addQuartzJobDTO.getTaskGroup())
+                .withIdentity(jobKey)
                 .withDescription(addQuartzJobDTO.getNote())
                 .build();
 
@@ -50,9 +53,11 @@ public class QuartzJobService {
         //表达式调度构建器(即任务执行的时间)
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(addQuartzJobDTO.getCron());
 
+        TriggerKey triggerKey = TriggerKey.triggerKey(addQuartzJobDTO.getTaskName() + "Trigger", addQuartzJobDTO.getTaskGroup());
+
         //按新的cronExpression表达式构建一个新的trigger
         CronTrigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(addQuartzJobDTO.getTaskClass(), addQuartzJobDTO.getTaskGroup())
+                .withIdentity(triggerKey)
                 .withSchedule(scheduleBuilder)
                 .startNow()
                 .build();

@@ -46,6 +46,8 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * @param addSysTaskVO 添加任务接受参数 VO
      */
     public void addTask(AddSysTaskVO addSysTaskVO) {
+        this.checkTaskAlreadyExists(addSysTaskVO.getTaskName(), addSysTaskVO.getTaskGroup());
+        this.checkTaskClassAlreadyExists(addSysTaskVO.getTaskClass());
         try {
             // 先添加一条任务记录到自己的任务表，应该后面任务日志需要任务id
             SysTask sysTask = SysTask.builder().build();
@@ -68,6 +70,8 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
     }
 
 
+
+
     /**
      * 更新任务
      * <p>
@@ -77,11 +81,8 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * @param updateSysTaskVO the update sys task vo
      */
     public void updateTask(UpdateSysTaskVO updateSysTaskVO) {
-        final SysTask sysTask = this.getOne(Wrappers.<SysTask>lambdaQuery()
-                .eq(SysTask::getTaskName, updateSysTaskVO.getTaskName())
-                .eq(SysTask::getTaskGroup, updateSysTaskVO.getTaskGroup())
-        );
 
+        final SysTask sysTask = getSysTask(updateSysTaskVO.getTaskName(), updateSysTaskVO.getTaskGroup());
         ValidUtils.isNull(sysTask, "查询不到此任务！");
 
         try {
@@ -170,10 +171,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      */
     public void deleteTask(String taskName, String taskGroup) {
         try {
-            final SysTask sysTask = this.getOne(Wrappers.<SysTask>lambdaUpdate()
-                    .eq(SysTask::getTaskName, taskName)
-                    .eq(SysTask::getTaskGroup, taskGroup)
-            );
+            final SysTask sysTask = getSysTask(taskName, taskGroup);
             ValidUtils.isNull(sysTask, "查询不到此任务！");
             // 删除自定义任务表
             this.removeById(sysTask.getId());
@@ -181,6 +179,20 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
         } catch (SchedulerException e) {
             throw new ServiceException("删除任务失败", e);
         }
+    }
+
+    /**
+     * 获取单个任务
+     *
+     * @param taskName  the task name
+     * @param taskGroup the task group
+     * @return the sys task
+     */
+    public SysTask getSysTask(String taskName, String taskGroup) {
+        return this.getOne(Wrappers.<SysTask>lambdaUpdate()
+                .eq(SysTask::getTaskName, taskName)
+                .eq(SysTask::getTaskGroup, taskGroup)
+        );
     }
 
 
@@ -193,6 +205,36 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
     public IPage<SysTaskListVO> taskList(int pageNum, int pageSize) {
         Page<SysTaskListVO> page = new Page<>(pageNum, pageSize);
         return sysTaskMapper.taskList(page);
+    }
+
+    /**
+     * 验证该任务组中此任务是否已存在
+     *
+     * @param taskName  the task name
+     * @param taskGroup the task group
+     */
+    private void checkTaskAlreadyExists(String taskName, String taskGroup) {
+        // 每个任务组中的任务名称不能重复
+        final int count = this.count(Wrappers.<SysTask>lambdaQuery()
+                .eq(SysTask::getTaskName, taskName)
+                .eq(SysTask::getTaskGroup, taskGroup)
+        );
+
+        ValidUtils.checkArg(count > 0, "该任务组中已存在此任务，请勿重复添加!");
+    }
+
+
+    /**
+     * 验证该任务执行类是否已经存在
+     *
+     * @param taskClass the task class
+     */
+    private void checkTaskClassAlreadyExists(String taskClass) {
+        // 判断类名是否存在
+        final int taskClassCount = this.count(Wrappers.<SysTask>lambdaQuery()
+                .eq(SysTask::getTaskClass, taskClass)
+        );
+        ValidUtils.checkArg(taskClassCount > 0, "该执行类已存在，请勿重复添加！");
     }
 
 }

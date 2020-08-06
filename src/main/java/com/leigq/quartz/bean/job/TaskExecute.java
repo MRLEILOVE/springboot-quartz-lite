@@ -8,8 +8,11 @@ import com.leigq.quartz.domain.entity.SysTaskLog;
 import com.leigq.quartz.service.SysTaskLogService;
 import com.leigq.quartz.service.SysTaskService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
@@ -20,6 +23,8 @@ import java.util.Map;
  */
 @Component
 public abstract class TaskExecute {
+
+    private final Logger log = LoggerFactory.getLogger(TaskExecute.class);
 
     private TaskExecuteDTO taskExecuteDTO;
 
@@ -57,6 +62,7 @@ public abstract class TaskExecute {
             // 调用子类的任务
             execute(dataMap);
         } catch (Exception e) {
+            log.error("任务：[" + taskExecuteDTO.getTaskName() + "] 执行异常：[{}]", e);
             // 将执行结果改为失败并记录异常信息
             sysTaskLogService.update(Wrappers.<SysTaskLog>lambdaUpdate()
                     .set(SysTaskLog::getExecResult, SysTaskExecResultEnum.FAILURE.getValue())
@@ -69,7 +75,12 @@ public abstract class TaskExecute {
                     .eq(SysTask::getId, taskExecuteDTO.getTaskId())
             );
             // 回滚事务
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            try {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            } catch (NoTransactionException noTransactionException) {
+                // 没事务不回滚
+                log.warn("没事务不回滚");
+            }
         }
     }
 

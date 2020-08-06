@@ -173,7 +173,7 @@ public class GlobalExceptionHand {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ServiceNotFoundException.class)
     public Response handleServiceException(ServiceNotFoundException e) {
-        String msg = "服务内部异常：" + e.getMessage();
+        String msg = "服务内部异常！";
         log.error(msg, e);
         return new Response().failure(msg);
     }
@@ -184,7 +184,7 @@ public class GlobalExceptionHand {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public Response handleException(Exception e) {
-        String msg = "服务内部异常！" + e.getMessage();
+        String msg = "服务内部异常！";
         log.error(msg, e);
         return new Response().failure(msg);
     }
