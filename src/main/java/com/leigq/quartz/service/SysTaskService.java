@@ -10,6 +10,7 @@ import com.leigq.quartz.bean.vo.SysTaskListVO;
 import com.leigq.quartz.bean.vo.UpdateSysTaskVO;
 import com.leigq.quartz.domain.entity.SysTask;
 import com.leigq.quartz.domain.mapper.SysTaskMapper;
+import com.leigq.quartz.util.ValidUtils;
 import com.leigq.quartz.web.exception.ServiceException;
 import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
@@ -58,7 +59,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
             AddQuartzJobDTO addQuartzJobDTO = AddQuartzJobDTO.builder().build();
             BeanUtils.copyProperties(addSysTaskVO, addQuartzJobDTO);
             // 转换执行参数为 Map
-            addQuartzJobDTO.setDataMap(addSysTaskVO.transExecParams(addSysTaskVO.getExecParams()));
+            addQuartzJobDTO.setDataMap(addQuartzJobDTO.transExecParams(addSysTaskVO.getExecParams()));
             addQuartzJobDTO.setTaskId(sysTask.getId());
             quartzJobService.addJob(addQuartzJobDTO);
         } catch (SchedulerException e) {
@@ -76,14 +77,28 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * @param updateSysTaskVO the update sys task vo
      */
     public void updateTask(UpdateSysTaskVO updateSysTaskVO) {
-        try {
-            // 更新自定义任务表
-            SysTask sysTask = SysTask.builder().build();
-            BeanUtils.copyProperties(updateSysTaskVO, sysTask);
-            this.update(Wrappers.update(sysTask));
+        final SysTask sysTask = this.getOne(Wrappers.<SysTask>lambdaQuery()
+                .eq(SysTask::getTaskName, updateSysTaskVO.getTaskName())
+                .eq(SysTask::getTaskGroup, updateSysTaskVO.getTaskGroup())
+        );
 
-            // TODO 更新 Quartz 框架表，只能先删除旧任务，在添加一个新任务
-            quartzJobService.rescheduleJob(updateSysTaskVO.getTaskClass(), updateSysTaskVO.getTaskGroup(), updateSysTaskVO.getCron());
+        ValidUtils.isNull(sysTask, "查询不到此任务！");
+
+        try {
+            BeanUtils.copyProperties(updateSysTaskVO, sysTask);
+
+            // 更新自定义任务表
+            this.updateById(sysTask);
+
+            // 更新 Quartz 框架表，只能先删除旧任务，在添加一个新任务
+            quartzJobService.deleteJob(updateSysTaskVO.getTaskName(), updateSysTaskVO.getTaskGroup());
+
+            AddQuartzJobDTO addQuartzJobDTO = AddQuartzJobDTO.builder().build();
+            BeanUtils.copyProperties(updateSysTaskVO, addQuartzJobDTO);
+            // 转换执行参数为 Map
+            addQuartzJobDTO.setDataMap(addQuartzJobDTO.transExecParams(updateSysTaskVO.getExecParams()));
+            addQuartzJobDTO.setTaskId(sysTask.getId());
+            quartzJobService.addJob(addQuartzJobDTO);
         } catch (SchedulerException e) {
             throw new ServiceException("更新任务失败", e);
         }
@@ -150,7 +165,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:53 <br>
      *
-     * @param taskName 任务类名
+     * @param taskName  任务类名
      * @param taskGroup 类组名
      */
     public void deleteTask(String taskName, String taskGroup) {

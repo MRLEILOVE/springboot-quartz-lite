@@ -1,17 +1,12 @@
 package com.leigq.quartz.bean.vo;
 
-import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
-import com.leigq.quartz.util.ValidUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 添加任务接受参数 VO
@@ -73,44 +68,4 @@ public class AddSysTaskVO implements Serializable {
      */
     private Boolean concurrent;
 
-
-    /**
-     * 执行参数转换为 Map
-     *
-     * @param execParams the exec params
-     * @return the map
-     */
-    public Map<String, Object> transExecParams(String execParams) {
-        if (StringUtils.isEmpty(execParams)) {
-            return null;
-        }
-
-        ValidUtils.checkArg(!execParams.contains("="), "执行参数格式错误");
-
-        // 转换执行参数为 Map
-        Map<String, Object> dataMap = new HashMap<>();
-
-        // 判断是多个参数还是单个参数
-        if (execParams.contains(";")) {
-            // 多个参数
-            final String[] params = StringUtils.split(execParams, ";");
-            if (ArrayUtils.isEmpty(params)) {
-                return null;
-            }
-            for (String param : params) {
-                final String[] p = StringUtils.split(param, "=");
-                if (ArrayUtils.isEmpty(p)) {
-                    continue;
-                }
-                dataMap.put(p[0], p[1]);
-            }
-        } else {
-            final String[] params = StringUtils.split(execParams, "=");
-            if (ArrayUtils.isEmpty(params)) {
-                return null;
-            }
-            dataMap.put(params[0], params[1]);
-        }
-        return dataMap;
-    }
 }
