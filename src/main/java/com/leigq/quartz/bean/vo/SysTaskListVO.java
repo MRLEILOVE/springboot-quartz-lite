@@ -61,6 +61,11 @@ public class SysTaskListVO {
     private Boolean enabled;
 
     /**
+     * 是否允许并发，0(false)：不允许 1（true）：允许
+     */
+    private Boolean concurrent;
+
+    /**
      * 时区
      */
     private String timeZoneId;
