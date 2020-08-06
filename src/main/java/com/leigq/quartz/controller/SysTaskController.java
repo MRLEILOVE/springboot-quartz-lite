@@ -143,9 +143,9 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@DeleteMapping("/tasks/{job_class_name}/{job_group_Name}")
-	public Response deleteTask(@PathVariable("job_class_name") String jobClassName, @PathVariable("job_group_Name") String jobGroupName) {
-		sysTaskService.deleteTask(jobClassName, jobGroupName);
+	@DeleteMapping("/tasks/{task_name}/{task_group}")
+	public Response deleteTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
+		sysTaskService.deleteTask(taskName, taskGroup);
 		return response.success("删除任务成功！");
 	}
 

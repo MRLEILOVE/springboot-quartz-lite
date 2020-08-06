@@ -150,12 +150,18 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:53 <br>
      *
-     * @param jobSimpleName 任务类名
-     * @param jobGroupName  类组名
+     * @param taskName 任务类名
+     * @param taskGroup 类组名
      */
-    public void deleteTask(String jobSimpleName, String jobGroupName) {
+    public void deleteTask(String taskName, String taskGroup) {
         try {
-            quartzJobService.deleteJob(jobSimpleName, jobGroupName);
+            final SysTask sysTask = this.getOne(Wrappers.<SysTask>lambdaUpdate()
+                    .eq(SysTask::getTaskName, taskName)
+                    .eq(SysTask::getTaskGroup, taskGroup)
+            );
+            // 删除自定义任务表
+            this.removeById(sysTask.getId());
+            quartzJobService.deleteJob(taskName, taskGroup);
         } catch (SchedulerException e) {
             throw new ServiceException("删除任务失败", e);
         }

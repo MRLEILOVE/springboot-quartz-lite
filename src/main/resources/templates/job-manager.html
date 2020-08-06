@@ -45,39 +45,39 @@
     <div style="margin-top:15px">
         <el-table :data="tableData" border ref="testTable">
             <el-table-column
-                    prop="jobName"
-                    label="任务名称"
+                    prop="taskName"
+                    label="任务名"
                     sortable
                     show-overflow-tooltip>
             </el-table-column>
 
             <el-table-column
-                    prop="jobGroup"
-                    label="任务所在组"
+                    prop="taskGroup"
+                    label="任务组"
                     sortable>
             </el-table-column>
 
             <el-table-column
-                    prop="jobDescription"
-                    label="任务描述"
+                    prop="note"
+                    label="任务说明"
                     sortable>
             </el-table-column>
 
             <el-table-column
-                    prop="jobClassName"
-                    label="任务类名"
+                    prop="taskClass"
+                    label="执行类"
                     sortable>
             </el-table-column>
 
             <el-table-column
-                    prop="triggerName"
-                    label="触发器名称"
+                    prop="execParams"
+                    label="执行参数"
                     sortable>
             </el-table-column>
 
             <el-table-column
-                    prop="triggerGroup"
-                    label="触发器所在组"
+                    prop="cron"
+                    label="定时规则"
                     sortable>
             </el-table-column>
 
@@ -92,6 +92,19 @@
                     width="160"
                     prop="nextFireTime"
                     label="下次执行时间"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    width="160"
+                    prop="execResult"
+                    label="最近一次执行结果"
+                    sortable>
+            </el-table-column>
+
+            <el-table-column
+                    prop="timeZoneId"
+                    label="时区"
                     sortable>
             </el-table-column>
 
@@ -117,18 +130,6 @@
                         错误
                     </p>
                 </template>
-            </el-table-column>
-
-            <el-table-column
-                    prop="cronExpression"
-                    label="表达式"
-                    sortable>
-            </el-table-column>
-
-            <el-table-column
-                    prop="timeZoneId"
-                    label="时区"
-                    sortable>
             </el-table-column>
 
             <el-table-column label="操作" width="400">
@@ -378,7 +379,7 @@
 
             //单行删除
             handleDelete: function (index, row) {
-                this.$http.delete('tasks/' + row.jobName + '/' + row.jobGroup).then(function (res) {
+                this.$http.delete('tasks/' + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
                     if (meta.code === 200) {

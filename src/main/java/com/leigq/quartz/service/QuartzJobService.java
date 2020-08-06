@@ -70,11 +70,11 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param jobSimpleName 类名
-     * @param jobGroupName  类组名
+     * @param jobName 类名
+     * @param jobGroup  类组名
      */
-    public void executeJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
-        scheduler.triggerJob(JobKey.jobKey(jobSimpleName, jobGroupName));
+    public void executeJob(String jobName, String jobGroup) throws SchedulerException {
+        scheduler.triggerJob(JobKey.jobKey(jobName, jobGroup));
     }
 
 
@@ -84,11 +84,11 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param jobSimpleName 类名
-     * @param jobGroupName  类组名
+     * @param jobName 类名
+     * @param jobGroup  类组名
      */
-    public void pauseJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
-        scheduler.pauseJob(JobKey.jobKey(jobSimpleName, jobGroupName));
+    public void pauseJob(String jobName, String jobGroup) throws SchedulerException {
+        scheduler.pauseJob(JobKey.jobKey(jobName, jobGroup));
     }
 
 
@@ -98,11 +98,11 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:00 <br>
      *
-     * @param jobSimpleName 类名
-     * @param jobGroupName  类组名
+     * @param jobName 类名
+     * @param jobGroup  类组名
      */
-    public void resumeJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
-        scheduler.resumeJob(JobKey.jobKey(jobSimpleName, jobGroupName));
+    public void resumeJob(String jobName, String jobGroup) throws SchedulerException {
+        scheduler.resumeJob(JobKey.jobKey(jobName, jobGroup));
     }
 
     /**
@@ -111,18 +111,18 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:50 <br>
      *
-     * @param jobClassName   任务全类名
-     * @param jobGroupName   类组名
-     * @param cronExpression 任务表达式
+     * @param jobClass 任务全类名
+     * @param jobGroup 类组名
+     * @param cron     任务表达式
      * @throws SchedulerException the scheduler exception
      */
-    public void rescheduleJob(String jobClassName, String jobGroupName, String cronExpression) throws SchedulerException {
-        TriggerKey triggerKey = TriggerKey.triggerKey(jobClassName, jobGroupName);
+    public void rescheduleJob(String jobClass, String jobGroup, String cron) throws SchedulerException {
+        TriggerKey triggerKey = TriggerKey.triggerKey(jobClass, jobGroup);
         // 表达式调度构建器
         // 增加：withMisfireHandlingInstructionDoNothing()方法 参考：https://blog.csdn.net/zhouhao1256/article/details/53486748?tdsourcetag=s_pctim_aiomsg
         // 1，不触发立即执行
         // 2，等待下次Cron触发频率到达时刻开始按照Cron频率依次执行
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing();
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing();
         CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
         // 按新的cronExpression表达式重新构建trigger
         trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
@@ -137,12 +137,12 @@ public class QuartzJobService {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:53 <br>
      *
-     * @param jobSimpleName 任务类名
-     * @param jobGroupName  类组名
+     * @param jobName  任务类名
+     * @param jobGroup 类组名
      */
-    public void deleteJob(String jobSimpleName, String jobGroupName) throws SchedulerException {
-        scheduler.pauseTrigger(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
-        scheduler.unscheduleJob(TriggerKey.triggerKey(jobSimpleName, jobGroupName));
-        scheduler.deleteJob(JobKey.jobKey(jobSimpleName, jobGroupName));
+    public void deleteJob(String jobName, String jobGroup) throws SchedulerException {
+        scheduler.pauseTrigger(TriggerKey.triggerKey(jobName, jobGroup));
+        scheduler.unscheduleJob(TriggerKey.triggerKey(jobName, jobGroup));
+        scheduler.deleteJob(JobKey.jobKey(jobName, jobGroup));
     }
 }
