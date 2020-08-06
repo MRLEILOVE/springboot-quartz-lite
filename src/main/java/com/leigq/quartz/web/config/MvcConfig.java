@@ -32,7 +32,7 @@ public class MvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("job-manager.html")
+        registry.addResourceHandler("task-manager.html", "task-log.html")
                 .addResourceLocations("classpath:/templates/");
     }
 }

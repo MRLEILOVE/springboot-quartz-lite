@@ -18,7 +18,7 @@
 
 </head>
 <body>
-<div id="test">
+<div id="task">
 
     <div id="top">
         <el-button @click="refresh">刷新</el-button>
@@ -43,7 +43,14 @@
     <br/>
 
     <div style="margin-top:15px">
-        <el-table :data="tableData" border ref="testTable">
+        <el-table :data="sysTaskList" border ref="testTable" stripe>
+            <el-table-column
+                    width="50"
+                    prop="taskId"
+                    sortable
+                    show-overflow-tooltip>
+            </el-table-column>
+
             <el-table-column
                     width="120"
                     prop="taskName"
@@ -110,7 +117,7 @@
             </el-table-column>
 
             <el-table-column
-                    width="80"
+                    width="60"
                     prop="triggerState"
                     label="状态"
                     sortable>
@@ -133,7 +140,7 @@
                 </template>
             </el-table-column>
 
-            <el-table-column label="操作" width="400">
+            <el-table-column label="操作" width="460" fixed="right">
                 <template scope="scope">
                     <el-button
                             size="small"
@@ -164,6 +171,12 @@
                             type="success"
                             @click="showUpdateTaskFrom(scope.$index, scope.row)">修改
                     </el-button>
+
+                    <el-button
+                            size="small"
+                            type="success"
+                            @click="showTaskLogForm(scope.$index, scope.row)">日志
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -174,7 +187,7 @@
                     @current-change="handleCurrentChange"
                     :current-page="currentPage"
                     :page-sizes="[10, 20, 30, 40]"
-                    :page-size="pagesize"
+                    :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="totalCount">
             </el-pagination>
@@ -183,38 +196,37 @@
 
     <!--添加弹框-->
     <el-dialog title="添加任务" :visible.sync="addTaskFormVisible">
-        <el-form :model="addTaskFormData">
-            <el-form-item label="任务名" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.taskName" auto-complete="off"></el-input>
+        <el-form :model="addTaskFormData" style="width:80%">
+            <el-form-item label="任务名" label-width="120px" >
+                <el-input clearable v-model="addTaskFormData.taskName" auto-complete="off" placeholder="最好用英文"></el-input>
             </el-form-item>
 
-            <el-form-item label="任务组" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.taskGroup" auto-complete="off"></el-input>
+            <el-form-item label="任务组" label-width="120px">
+                <el-input v-model="addTaskFormData.taskGroup" auto-complete="off" placeholder="可用中文，推荐按业务类型分组"></el-input>
             </el-form-item>
 
-            <el-form-item label="任务说明" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.note" auto-complete="off"></el-input>
+            <el-form-item label="任务说明" label-width="120px">
+                <el-input v-model="addTaskFormData.note" auto-complete="off" type="textarea" autosize placeholder="50字以内" maxlength="50" show-word-limit></el-input>
             </el-form-item>
 
-            <el-form-item label="执行类" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.taskClass" auto-complete="off"></el-input>
+            <el-form-item label="执行类" label-width="120px" >
+                <el-input v-model="addTaskFormData.taskClass" auto-complete="off" placeholder="执行任务全类名"></el-input>
             </el-form-item>
 
-            <el-form-item label="执行参数" label-width="120px" style="width:50%">
-                <el-input v-model="addTaskFormData.execParams" auto-complete="off"></el-input>
+            <el-form-item label="执行参数" label-width="120px">
+                <el-input type="textarea" v-model="addTaskFormData.execParams" auto-complete="off" autosize placeholder="格式：aaa=hello;bbb=world,多个参数用;隔开"></el-input>
             </el-form-item>
 
-            <el-form-item label="定时规则" label-width="120px" style="width:50%">
+            <el-form-item label="定时规则" label-width="120px">
                 <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="允许并发？" label-width="120px" style="width:50%">
+            <el-form-item label="允许并发？" label-width="120px">
                 <el-radio-group v-model="addTaskFormData.concurrent">
                     <el-radio :label="1">允许</el-radio>
                     <el-radio :label="0">不允许</el-radio>
                 </el-radio-group>
             </el-form-item>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="addTaskFormVisible = false">取 消</el-button>
@@ -225,32 +237,32 @@
     <!--修改弹框-->
     <el-dialog title="修改任务" :visible.sync="updateTaskFormVisible">
 
-        <el-form :model="updateTaskFormData">
-            <el-form-item label="任务名" label-width="120px" style="width:50%">
+        <el-form :model="updateTaskFormData" style="width:80%">
+            <el-form-item label="任务名" label-width="120px" >
                 <el-input v-model="updateTaskFormData.taskName" disabled auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="任务组" label-width="120px" style="width:50%">
+            <el-form-item label="任务组" label-width="120px" >
                 <el-input v-model="updateTaskFormData.taskGroup" disabled auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="任务说明" label-width="120px" style="width:35%">
-                <el-input v-model="updateTaskFormData.note" auto-complete="off"></el-input>
+            <el-form-item label="任务说明" label-width="120px" >
+                <el-input v-model="updateTaskFormData.note" auto-complete="off" type="textarea" autosize placeholder="50字以内" maxlength="50" show-word-limit></el-input>
             </el-form-item>
 
-            <el-form-item label="执行类" label-width="120px" style="width:50%">
-                <el-input v-model="updateTaskFormData.taskClass" auto-complete="off"></el-input>
+            <el-form-item label="执行类" label-width="120px" >
+                <el-input v-model="updateTaskFormData.taskClass" auto-complete="off" placeholder="执行任务全类名"></el-input>
             </el-form-item>
 
-            <el-form-item label="执行参数" label-width="120px" style="width:50%">
-                <el-input v-model="updateTaskFormData.execParams" auto-complete="off"></el-input>
+            <el-form-item label="执行参数" label-width="120px" >
+                <el-input v-model="updateTaskFormData.execParams" auto-complete="off" type="textarea" autosize placeholder="格式：aaa=hello;bbb=world,多个参数用;隔开"></el-input>
             </el-form-item>
 
-            <el-form-item label="定时规则" label-width="120px" style="width:50%">
+            <el-form-item label="定时规则" label-width="120px" >
                 <el-input v-model="updateTaskFormData.cron" auto-complete="off"></el-input>
             </el-form-item>
 
-            <el-form-item label="允许并发？" label-width="120px" style="width:50%">
+            <el-form-item label="允许并发？" label-width="120px" >
                 <el-radio-group v-model="updateTaskFormData.concurrent">
                     <el-radio :label="true">允许</el-radio>
                     <el-radio :label="false">不允许</el-radio>
@@ -282,16 +294,16 @@
 <script>
     Vue.http.headers.common['language'] = 'en';
     var vue = new Vue({
-        el: "#test",
+        el: "#task",
         data: {
             //表格当前页数据
-            tableData: [],
+            sysTaskList: [],
 
             //请求的URL
             url: 'tasks',
 
             //默认每页数据量
-            pagesize: 10,
+            pageSize: 10,
 
             //当前页码
             currentPage: 1,
@@ -370,7 +382,7 @@
         },
         mounted() {
             this.timer = setInterval(function () {
-                vue.initData(vue.currentPage, vue.pagesize);
+                vue.initData(vue.currentPage, vue.pageSize);
             }, this.value * 1000);
 
             setInterval(function () {
@@ -387,7 +399,7 @@
                 } else {
                     var time = cycleTime * 1000;
                     this.timer = setInterval(function () {
-                        vue.initData(vue.currentPage, vue.pagesize);
+                        vue.initData(vue.currentPage, vue.pageSize);
                     }, time);
                 }
             },
@@ -396,7 +408,7 @@
             initData(pageNum, pageSize) {
                 this.$http.get('tasks/' + pageNum + '/' + pageSize).then(function (res) {
                     var data = res.body.data;
-                    this.tableData = data.records;
+                    this.sysTaskList = data.records;
                     this.totalCount = data.total;
                 }, function () {
                     console.log('failed');
@@ -414,7 +426,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.initData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pageSize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -423,7 +435,7 @@
                             type: 'warning'
                         });
                     }
-                    this.initData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pageSize);
                 }, function () {
                     var body = res.body;
                     var meta = body.meta;
@@ -445,7 +457,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.initData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pageSize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -454,7 +466,7 @@
                             type: 'warning'
                         });
                     }
-                    this.initData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pageSize);
                 }, function () {
                     var body = res.body;
                     var meta = body.meta;
@@ -476,7 +488,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.initData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pageSize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -485,7 +497,7 @@
                             type: 'warning'
                         });
                     }
-                    this.initData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pageSize);
                 }, function () {
                     var body = res.body;
                     var meta = body.meta;
@@ -507,7 +519,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.initData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pageSize);
                         this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
                     } else {
                         this.$notify({
@@ -516,7 +528,7 @@
                             type: 'warning'
                         });
                     }
-                    this.initData(this.currentPage, this.pagesize);
+                    this.initData(this.currentPage, this.pageSize);
                 }, function (res) {
                     var body = res.body;
                     var meta = body.meta;
@@ -557,7 +569,7 @@
 
             //刷新
             refresh: function () {
-                this.initData(this.currentPage, this.pagesize);
+                this.initData(this.currentPage, this.pageSize);
             },
 
             //弹出添加对话框
@@ -589,7 +601,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.initData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pageSize);
                         this.addTaskFormVisible = false;
                     } else {
                         this.$notify({
@@ -620,6 +632,11 @@
                 this.updateTaskFormData.concurrent = row.concurrent;
             },
 
+            // 弹出查看日志表格
+            showTaskLogForm: function (index, row) {
+               this.windowOpen('/task-log.html?taskId=' + row.taskId);
+            },
+
             //更新任务
             updateTaskSubmit: function () {
                 this.$http.put('tasks',
@@ -641,7 +658,7 @@
                             message: meta.msg,
                             type: 'success'
                         });
-                        this.initData(this.currentPage, this.pagesize);
+                        this.initData(this.currentPage, this.pageSize);
                         this.updateTaskFormVisible = false;
                     } else {
                         this.$notify({
@@ -660,21 +677,21 @@
 
             //每页显示数据量变更
             handleSizeChange: function (val) {
-                this.pagesize = val;
-                this.initData(this.currentPage, this.pagesize);
+                this.pageSize = val;
+                this.initData(this.currentPage, this.pageSize);
             },
 
             //页码变更
             handleCurrentChange: function (val) {
                 this.currentPage = val;
-                this.initData(this.currentPage, this.pagesize);
+                this.initData(this.currentPage, this.pageSize);
             },
 
         },
     });
 
     //载入数据
-    vue.initData(vue.currentPage, vue.pagesize);
+    vue.initData(vue.currentPage, vue.pageSize);
 </script>
 </body>
 </html>

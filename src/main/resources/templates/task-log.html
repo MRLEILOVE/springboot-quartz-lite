@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quartz任务管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.0.5/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.js"></script>
+    <script src="https://unpkg.com/element-ui@2.0.5/lib/index.js"></script>
+</head>
+<body>
+<div id="log">
+    <div>
+        <el-table :data="sysTaskLogList" border style="width: 100%" stripe>
+            <el-table-column
+                    width="100"
+                    prop="id"
+                    label=""
+                    sortable
+                    show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+                    width="150"
+                    prop="taskName"
+                    label="任务名"
+                    sortable
+                    show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+                    width="300"
+                    prop="execDate"
+                    label="执行时间"
+                    sortable
+                    show-overflow-tooltip>
+            </el-table-column>
+
+            <el-table-column
+                    width="150"
+                    sortable prop="execResult"
+                    label="执行结果"
+                    align="center">
+                    <template slot-scope="scope">
+                        <div>{{scope.row.execResult === 1 ? '成功' : '失败'}}</div>
+                    </template>
+            </el-table-column>
+
+            <el-table-column
+                    width="800"
+                    prop="execResultText"
+                    label="成功|异常信息"
+                    sortable
+                    show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <el-input v-model="scope.row.execResultText" auto-complete="off" type="textarea" autosize disable></el-input>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <div align="center">
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[10, 20, 30, 40]"
+                    :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="totalCount">
+            </el-pagination>
+        </div>
+    </div>
+
+</div>
+
+<footer align="center">
+    <p>&copy; Quartz 任务管理</p>
+</footer>
+
+<script>
+    Vue.http.headers.common['language'] = 'en';
+    var vue = new Vue({
+        el: "#log",
+        data: {
+            //表格当前页数据
+            sysTaskLogList: [],
+
+            //请求的URL
+            url: 'logs',
+
+            //默认每页数据量
+            pageSize: 10,
+
+            //当前页码
+            currentPage: 1,
+
+            //查询的页码
+            start: 1,
+
+            //默认数据总数
+            totalCount: 1000,
+        },
+        mounted() {
+
+        },
+        methods: {
+
+            getUrlKey(name, url){
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url) || [, ""])[1].replace(/\+/g, '%20')) || null
+            },
+
+            initData(pageNum, pageSize) {
+                var url = window.location.href
+                const taskId = this.getUrlKey('taskId', url);
+
+                this.$http.get('logs/' + taskId + '/' + pageNum + '/' + pageSize).then(function (res) {
+                    var data = res.body.data;
+                    this.sysTaskLogList = data.records;
+                    this.totalCount = data.total;
+                }, function () {
+                    console.log('failed');
+                });
+            },
+
+            //打开新页面
+            windowOpen: function (url) {
+                window.open(url, "_blank");
+            },
+
+            // 弹出查看日志表格
+            showTaskLogForm: function (index, row) {
+
+            },
+
+            //每页显示数据量变更
+            handleSizeChange: function (val) {
+                this.pageSize = val;
+                this.initData(this.currentPage, this.pageSize);
+            },
+
+            //页码变更
+            handleCurrentChange: function (val) {
+                this.currentPage = val;
+                this.initData(this.currentPage, this.pageSize);
+            },
+        },
+    });
+
+    //载入数据
+    vue.initData(vue.currentPage, vue.pageSize);
+</script>
+</body>
+</html>

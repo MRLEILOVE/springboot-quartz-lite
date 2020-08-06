@@ -3,7 +3,8 @@
 <mapper namespace="com.leigq.quartz.domain.mapper.SysTaskMapper">
     <!-- 获取任务列表 -->
     <select id="taskList" resultType="com.leigq.quartz.bean.vo.SysTaskListVO">
-        SELECT `sys_task`.`task_name`,
+        SELECT `sys_task`.`id` as taskId,
+               `sys_task`.`task_name`,
                `sys_task`.`task_group`,
                `sys_task`.`note`,
                `sys_task`.`task_class`,

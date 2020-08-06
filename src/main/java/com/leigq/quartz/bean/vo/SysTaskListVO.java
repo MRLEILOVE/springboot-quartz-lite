@@ -11,6 +11,12 @@ import lombok.Data;
  */
 @Data
 public class SysTaskListVO {
+
+    /**
+     * The Task id.
+     */
+    private Long taskId;
+
     /**
      * 任务名
      */
