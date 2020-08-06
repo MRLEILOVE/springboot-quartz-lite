@@ -5,7 +5,6 @@ import com.leigq.quartz.bean.common.Response;
 import com.leigq.quartz.bean.vo.AddSysTaskVO;
 import com.leigq.quartz.bean.vo.SysTaskListVO;
 import com.leigq.quartz.bean.vo.UpdateSysTaskVO;
-import com.leigq.quartz.bean.vo.SysTaskSimpleVO;
 import com.leigq.quartz.service.SysTaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronExpression;
@@ -90,9 +89,9 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/tasks/action/execute")
-	public Response executeTask(@Valid SysTaskSimpleVO sysTaskSimpleVO) {
-		sysTaskService.executeTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
+	@PostMapping("/tasks/action/execute/{task_name}/{task_group}")
+	public Response executeTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
+		sysTaskService.executeTask(taskName, taskGroup);
 		return response.success("执行任务成功！");
 	}
 
@@ -108,9 +107,9 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/tasks/action/pause")
-	public Response pauseTask(@Valid SysTaskSimpleVO sysTaskSimpleVO) {
-		sysTaskService.pauseTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
+	@PostMapping("/tasks/action/pause/{task_name}/{task_group}")
+	public Response pauseTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
+		sysTaskService.pauseTask(taskName, taskGroup);
 		return response.success("暂停任务成功！");
 	}
 
@@ -125,9 +124,9 @@ public class SysTaskController {
 	 * 修改备注： <br>
 	 * </p>
 	 */
-	@PostMapping("/tasks/action/resume")
-	public Response resumeTask(@Valid SysTaskSimpleVO sysTaskSimpleVO) {
-		sysTaskService.resumeTask(sysTaskSimpleVO.getJobClassName(), sysTaskSimpleVO.getJobGroupName());
+	@PostMapping("/tasks/action/resume/{task_name}/{task_group}")
+	public Response resumeTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
+		sysTaskService.resumeTask(taskName, taskGroup);
 		return response.success("恢复任务成功！");
 	}
 

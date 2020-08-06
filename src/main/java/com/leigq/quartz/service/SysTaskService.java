@@ -111,12 +111,12 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param jobSimpleName 类名
-     * @param jobGroupName  类组名
+     * @param taskName  类名
+     * @param taskGroup 类组名
      */
-    public void executeTask(String jobSimpleName, String jobGroupName) {
+    public void executeTask(String taskName, String taskGroup) {
         try {
-            quartzJobService.executeJob(jobSimpleName, jobGroupName);
+            quartzJobService.executeJob(taskName, taskGroup);
         } catch (SchedulerException e) {
             throw new ServiceException("执行任务失败", e);
         }
@@ -129,12 +129,12 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 2:57 <br>
      *
-     * @param jobSimpleName 类名
-     * @param jobGroupName  类组名
+     * @param taskName  类名
+     * @param taskGroup 类组名
      */
-    public void pauseTask(String jobSimpleName, String jobGroupName) {
+    public void pauseTask(String taskName, String taskGroup) {
         try {
-            quartzJobService.pauseJob(jobSimpleName, jobGroupName);
+            quartzJobService.pauseJob(taskName, taskGroup);
         } catch (SchedulerException e) {
             throw new ServiceException("暂停任务失败", e);
         }
@@ -147,12 +147,12 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/28 3:00 <br>
      *
-     * @param jobSimpleName 类名
-     * @param jobGroupName  类组名
+     * @param taskName  类名
+     * @param taskGroup 类组名
      */
-    public void resumeTask(String jobSimpleName, String jobGroupName) {
+    public void resumeTask(String taskName, String taskGroup) {
         try {
-            quartzJobService.resumeJob(jobSimpleName, jobGroupName);
+            quartzJobService.resumeJob(taskName, taskGroup);
         } catch (SchedulerException e) {
             throw new ServiceException("恢复任务失败", e);
         }
@@ -174,6 +174,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
                     .eq(SysTask::getTaskName, taskName)
                     .eq(SysTask::getTaskGroup, taskGroup)
             );
+            ValidUtils.isNull(sysTask, "查询不到此任务！");
             // 删除自定义任务表
             this.removeById(sysTask.getId());
             quartzJobService.deleteJob(taskName, taskGroup);

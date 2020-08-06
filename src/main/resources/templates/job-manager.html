@@ -452,10 +452,7 @@
 
             //暂停任务
             handlePause: function (index, row) {
-                this.$http.post('tasks/action/pause', {
-                    "jobClassName": row.jobName,
-                    "jobGroupName": row.jobGroup,
-                }, {emulateJSON: true}).then(function (res) {
+                this.$http.post('tasks/action/pause/'  + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
                     if (meta.code === 200) {
@@ -486,10 +483,7 @@
 
             //恢复任务
             handleResume: function (index, row) {
-                this.$http.post('tasks/action/resume', {
-                    "jobClassName": row.jobName,
-                    "jobGroupName": row.jobGroup,
-                }, {emulateJSON: true}).then(function (res) {
+                this.$http.post('tasks/action/resume/' + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
                     if (meta.code === 200) {
@@ -520,10 +514,7 @@
 
             // 执行任务
             handleExecute: function (index, row) {
-                this.$http.post('tasks/action/execute', {
-                    "jobClassName": row.jobName,
-                    "jobGroupName": row.jobGroup,
-                }, {emulateJSON: true}).then(function (res) {
+                this.$http.post('tasks/action/execute/' + row.taskName + "/" + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
                     if (meta.code === 200) {
