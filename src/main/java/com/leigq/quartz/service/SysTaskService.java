@@ -82,8 +82,13 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      */
     public void updateTask(UpdateSysTaskVO updateSysTaskVO) {
 
-        final SysTask sysTask = getSysTask(updateSysTaskVO.getTaskName(), updateSysTaskVO.getTaskGroup());
+        final String taskName = updateSysTaskVO.getTaskName();
+        final String taskGroup = updateSysTaskVO.getTaskGroup();
+
+        final SysTask sysTask = getSysTask(taskName, taskGroup);
         ValidUtils.isNull(sysTask, "查询不到此任务！");
+
+        this.checkTaskClassAlreadyExists(updateSysTaskVO.getTaskClass());
 
         try {
             BeanUtils.copyProperties(updateSysTaskVO, sysTask);
@@ -92,7 +97,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
             this.updateById(sysTask);
 
             // 更新 Quartz 框架表，只能先删除旧任务，在添加一个新任务
-            quartzJobService.deleteJob(updateSysTaskVO.getTaskName(), updateSysTaskVO.getTaskGroup());
+            quartzJobService.deleteJob(taskName, taskGroup);
 
             AddQuartzJobDTO addQuartzJobDTO = AddQuartzJobDTO.builder().build();
             BeanUtils.copyProperties(updateSysTaskVO, addQuartzJobDTO);
