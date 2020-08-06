@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
 import com.leigq.quartz.bean.vo.AddSysTaskVO;
-import com.leigq.quartz.bean.vo.JobAndTriggerVO;
+import com.leigq.quartz.bean.vo.SysTaskListVO;
 import com.leigq.quartz.bean.vo.UpdateSysTaskVO;
 import com.leigq.quartz.domain.entity.SysTask;
 import com.leigq.quartz.domain.mapper.SysTaskMapper;
@@ -28,9 +28,11 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
      * Quartz自带表的任务服务
      */
     private final QuartzJobService quartzJobService;
+    private final SysTaskMapper sysTaskMapper;
 
-    public SysTaskService(QuartzJobService quartzJobService) {
+    public SysTaskService(QuartzJobService quartzJobService, SysTaskMapper sysTaskMapper) {
         this.quartzJobService = quartzJobService;
+        this.sysTaskMapper = sysTaskMapper;
     }
 
     /**
@@ -160,15 +162,13 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
 
 
     /**
-     * 获取任务与触发器详细信息
+     * 获取任务列表
      * <p>
      * 创建人：LeiGQ <br>
      * 创建时间：2019/5/19 1:18 <br>
      */
-    public IPage<JobAndTriggerVO> taskList(int pageNum, int pageSize) {
-        // TODO 查询自定义的任务表，和 Quartz 表连接查询
-//        return quartzJobService.getJobAndTriggerDetails(pageNum, pageSize);
-        return null;
+    public IPage<SysTaskListVO> taskList(int pageNum, int pageSize) {
+        return sysTaskMapper.taskList(pageNum, pageSize);
     }
 
 }
