@@ -1,4 +1,5 @@
-<center>
+
+<div style="align: center">
 
 [![Fork me on Gitee](https://gitee.com/leiguoqing/springboot-quartz-lite/widgets/widget_4.svg)](https://gitee.com/leiguoqing/springboot-quartz-lite)
 
@@ -10,7 +11,7 @@
 <a href='https://mp.baomidou.com/'>![mybatis-plus-version](https://img.shields.io/badge/MybatisPlus-3.2.0-lightgrey?link=http://left&link=http://right)</a>
 <a href='https://www.apache.org/licenses/LICENSE-2.0'>![apache](https://img.shields.io/badge/license-Apache2-red?link=http://left&link=http://right)</a>
 
-</center>
+</div>
 
 
 ## 功能展示
