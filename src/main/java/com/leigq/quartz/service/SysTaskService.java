@@ -66,7 +66,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
             AddQuartzJobDTO addQuartzJobDTO = AddQuartzJobDTO.builder().build();
             BeanUtils.copyProperties(addSysTaskVO, addQuartzJobDTO);
             // 转换执行参数为 Map
-            addQuartzJobDTO.setDataMap(addQuartzJobDTO.transExecParams(addSysTaskVO.getExecParams()));
+            addQuartzJobDTO.transExecParams(addSysTaskVO.getExecParams());
             addQuartzJobDTO.setTaskId(sysTask.getId());
             quartzJobService.addJob(addQuartzJobDTO);
         } catch (SchedulerException e) {
@@ -111,7 +111,7 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
             AddQuartzJobDTO addQuartzJobDTO = AddQuartzJobDTO.builder().build();
             BeanUtils.copyProperties(updateSysTaskVO, addQuartzJobDTO);
             // 转换执行参数为 Map
-            addQuartzJobDTO.setDataMap(addQuartzJobDTO.transExecParams(updateSysTaskVO.getExecParams()));
+            addQuartzJobDTO.transExecParams(updateSysTaskVO.getExecParams());
             addQuartzJobDTO.setTaskId(sysTask.getId());
             quartzJobService.addJob(addQuartzJobDTO);
         } catch (SchedulerException e) {

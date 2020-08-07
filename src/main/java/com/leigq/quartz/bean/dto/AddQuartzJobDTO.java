@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,6 +21,10 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class AddQuartzJobDTO implements Serializable {
+
+
+    private static final long serialVersionUID = 4414838499534519605L;
+
     private Long taskId;
     private String taskName;
     private String taskGroup;
@@ -44,24 +47,22 @@ public class AddQuartzJobDTO implements Serializable {
      * 执行参数转换为 Map
      *
      * @param execParams the exec params
-     * @return the map
      */
-    public Map<String, Object> transExecParams(String execParams) {
+    public void transExecParams(String execParams) {
         if (StringUtils.isEmpty(execParams)) {
-            return null;
+            return;
         }
 
         ValidUtils.checkArg(!execParams.contains("="), "执行参数格式错误");
 
-        // 转换执行参数为 Map
-        Map<String, Object> dataMap = Maps.newHashMapWithExpectedSize(5);
+        dataMap = Maps.newHashMapWithExpectedSize(5);
 
         // 判断是多个参数还是单个参数
         if (execParams.contains(";")) {
             // 多个参数
             final String[] params = StringUtils.split(execParams, ";");
             if (ArrayUtils.isEmpty(params)) {
-                return null;
+                return;
             }
             for (String param : params) {
                 final String[] p = StringUtils.split(param, "=");
@@ -73,10 +74,9 @@ public class AddQuartzJobDTO implements Serializable {
         } else {
             final String[] params = StringUtils.split(execParams, "=");
             if (ArrayUtils.isEmpty(params)) {
-                return null;
+                return;
             }
             dataMap.put(params[0], params[1]);
         }
-        return dataMap;
     }
 }
