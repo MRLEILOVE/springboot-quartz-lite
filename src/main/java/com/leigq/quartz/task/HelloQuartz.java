@@ -10,14 +10,14 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * 最简单的Quartz
+ * 简单的任务示例
  *
  * @author leigq <br>
- * @date 2019-03-05 16:28 <br>
+ * @date ：2019-03-05 16:28 <br>
  */
 @Slf4j
 @Component
-public class HelloQuartz2 extends BaseTaskExecute implements Serializable {
+public class HelloQuartz extends BaseTaskExecute implements Serializable {
 
     /**
      * 实现序列化接口、防止重启应用出现quartz Couldn't retrieve job because a required class was not found 的问题
@@ -28,15 +28,17 @@ public class HelloQuartz2 extends BaseTaskExecute implements Serializable {
     private QuartzJobService quartzJobService;
 
     /**
-     * Execute.
+     * 每隔 2 秒钟执行一次
      *
      * @param dataMap the data map
      */
     @Override
     public void execute(Map<String, Object> dataMap) {
         // */2 * * * * ?
-        log.warn(">>>>>>>>>Hello Quartz2 start!");
-        final String value = dataMap.get("aaa") + "";
-        log.warn("value:{}", value);
+        log.warn(">>>>>>>>>Hello Quartz1 start!");
+        // 测试依赖注入
+        log.warn("quartzJobService = {}", quartzJobService);
+        // 测试获取任务参数
+        log.warn("参数aaa的值 = [{}]", dataMap.get("aaa") + "");
     }
 }
