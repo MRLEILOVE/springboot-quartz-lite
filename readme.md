@@ -1,17 +1,31 @@
 
-<div style="align: center">
+<p align="center">
+<a href='https://gitee.com/leiguoqing/springboot-quartz-lite'>
+    <img alt="Fork me on Gitee" src="https://gitee.com/leiguoqing/springboot-quartz-lite/widgets/widget_4.svg">
+</a>
+</p>
 
-[![Fork me on Gitee](https://gitee.com/leiguoqing/springboot-quartz-lite/widgets/widget_4.svg)](https://gitee.com/leiguoqing/springboot-quartz-lite)
+<p align="center">
+基于Quartz的可视化任务系统
+</p>
 
-<h3>基于Quartz的可视化任务系统</h3>
-
-<a href='https://spring.io/projects/spring-boot'>![springboot-version](https://img.shields.io/badge/SpringBoot-2.0.8.RELEASE-orange)</a>
-<a href='http://www.quartz-scheduler.org/'>![Quartz-version](https://img.shields.io/badge/Quartz-2.3.0-blue)</a>
-<a href='http://druid.apache.org/'>![druid-spring-boot](https://img.shields.io/badge/Druid-1.1.10-green)</a>
-<a href='https://mp.baomidou.com/'>![mybatis-plus-version](https://img.shields.io/badge/MybatisPlus-3.2.0-lightgrey?link=http://left&link=http://right)</a>
-<a href='https://www.apache.org/licenses/LICENSE-2.0'>![apache](https://img.shields.io/badge/license-Apache2-red?link=http://left&link=http://right)</a>
-
-</div>
+<p align="center">
+    <a href='https://spring.io/projects/spring-boot'>
+        <img alt="springboot-version" src="https://img.shields.io/badge/SpringBoot-2.0.8.RELEASE-orange">
+    </a>
+    <a href='http://www.quartz-scheduler.org/'>
+        <img alt="Quartz-version" src="https://img.shields.io/badge/Quartz-2.3.0-blue">
+    </a>
+    <a href='http://druid.apache.org/'>
+        <img alt="druid-spring-boot" src="https://img.shields.io/badge/Druid-1.1.10-green">
+    </a>
+    <a href='https://mp.baomidou.com/'>
+        <img alt="mybatis-plus-version" src="https://img.shields.io/badge/MybatisPlus-3.2.0-lightgrey?link=http://left&link=http://right">
+    </a>
+    <a href='https://www.apache.org/licenses/LICENSE-2.0'>
+        <img alt="apache" src="https://img.shields.io/badge/license-Apache2-red?link=http://left&link=http://right">
+    </a>
+</p>
 
 
 ## 功能展示
