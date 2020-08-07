@@ -57,6 +57,9 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
             sysTask.setCreateTime(new Date());
             // 创建人根据自己的系统确定，这里默认写死
             sysTask.setCreator(1L);
+            sysTask.setUpdateTime(new Date());
+            // 修改人根据自己的系统确定，这里默认写死
+            sysTask.setModifier(1L);
             this.save(sysTask);
 
             // 添加 Quartz 任务表
@@ -96,7 +99,9 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
 
         try {
             BeanUtils.copyProperties(updateSysTaskVO, sysTask);
-
+            // 修改人这里先写死，可以自己根据系统更改
+            sysTask.setModifier(1L);
+            sysTask.setUpdateTime(new Date());
             // 更新自定义任务表
             this.updateById(sysTask);
 

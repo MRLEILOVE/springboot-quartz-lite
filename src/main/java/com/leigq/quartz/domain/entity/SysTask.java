@@ -95,5 +95,17 @@ public class SysTask implements Serializable {
     @TableField(value = "creator")
     private Long creator;
 
+    /**
+     * 修改时间
+     */
+    @TableField(value = "update_time")
+    private Date updateTime;
+
+    /**
+     * 修改人
+     */
+    @TableField(value = "modifier")
+    private Long modifier;
+
     private static final long serialVersionUID = 1L;
 }
