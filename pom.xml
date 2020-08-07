@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.leigq</groupId>
-    <artifactId>springboot-quartz</artifactId>
+    <artifactId>springboot-quartz-lite</artifactId>
     <version>0.0.1</version>
-    <name>quartz</name>
+    <name>quartz-lite</name>
     <description>Quartz demo project for Spring Boot</description>
 
     <properties>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <!--必须排除掉默认的logback 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，排除logback，防止jar包冲突，如不需要，请忽略-->
+            <!--必须排除掉默认的logback 日志使用 log4j2-->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -99,118 +99,19 @@
             <version>1.5.4</version>
         </dependency>
 
-        <!-- mongodb driver 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
-        <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.10.1</version>
-        </dependency>
-
-        <!-- log4j2 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
+        <!-- log4j2-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
-        <!-- 必需，否则报错 Springboot 1.5.x 使用 2.7版本-->
-        <!--log4j-core 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-
-        <!--需要使用log4j2的AsyncLogger需要包含disruptor-->
-        <!--<dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.3.7</version>
-        </dependency>-->
-
-        <!-- 必需，否则报错 Springboot 1.5.x 使用 2.7版本 此项目为了在测试、生产环境使用 log4j2 + Mongodb 记录日志，故加入 Mongodb、log4j2 依赖，如不需要，请忽略-->
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-nosql -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-nosql</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-web -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-web</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-
     </dependencies>
-
-    <!--此项目使用了 docker，如不需要，请忽略-->
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <!--自定义字段-->
-            <properties>
-                <profiles.active>dev</profiles.active>
-            </properties>
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <profiles.active>test</profiles.active>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <profiles.active>prod</profiles.active>
-            </properties>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <!--docker 插件，将项目打包成镜像，推送至阿里镜像仓库， 此项目使用了 docker，如不需要，请忽略-->
-            <!-- docker 插件使用参考：https://www.jianshu.com/p/3b91b8958c3e -->
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.12</version>
-                <configuration>
-                    <!-- 注意imageName一定要是符合正则[a-z0-9-_.]的，否则构建不会成功 -->
-                    <!-- 详见：https://github.com/spotify/docker-maven-plugin    Invalid repository name ... only [a-z0-9-_.] are allowed-->
-                    <imageName>registry.cn-shenzhen.aliyuncs.com/leigq/${project.build.finalName}-${profiles.active}</imageName>
-                    <baseImage>java:8-alpine</baseImage>
-                    <entryPoint>["java", "-jar","-Dspring.profiles.active=${profiles.active}", "/${project.build.finalName}.jar"]</entryPoint>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
-                    <!--对应 Maven 的 setting.xml 中的 server-id -->
-                    <!-- Maven 的 setting.xml 密码加密参考：https://blog.csdn.net/taiyangdao/article/details/79500507-->
-                    <serverId>docker-hub-leigq</serverId>
-                    <registryUrl>https://registry.cn-shenzhen.aliyuncs.com</registryUrl>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>build-image</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
