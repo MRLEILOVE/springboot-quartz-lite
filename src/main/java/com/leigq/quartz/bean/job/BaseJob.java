@@ -8,7 +8,6 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
 
 /**
  * 任务基类，所有任务都继承此类

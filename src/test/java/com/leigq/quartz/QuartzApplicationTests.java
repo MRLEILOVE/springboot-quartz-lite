@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class QuartzApplicationTests {
 
     @Test
-    public void contextLoads() throws InterruptedException {
+    public void contextLoads() {
 
     }
 
