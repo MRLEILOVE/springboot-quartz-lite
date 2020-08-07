@@ -44,11 +44,11 @@ public class SysTaskLogService extends ServiceImpl<SysTaskLogMapper, SysTaskLog>
                 Wrappers.<SysTaskLog>lambdaQuery().eq(SysTaskLog::getTaskId, taskId)
         );
         final MapperFacade mapperFacade = mapperFactory.getMapperFacade();
-        final List<SysTaskLogListVO> sysTaskLogListVOS = mapperFacade.mapAsList(page.getRecords(), SysTaskLogListVO.class);
+        final List<SysTaskLogListVO> sysTaskLogList = mapperFacade.mapAsList(page.getRecords(), SysTaskLogListVO.class);
 
         IPage<SysTaskLogListVO> pageResult = new Page<>();
         BeanUtils.copyProperties(page, pageResult);
-        pageResult.setRecords(sysTaskLogListVOS);
+        pageResult.setRecords(sysTaskLogList);
         return pageResult;
     }
 
