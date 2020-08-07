@@ -2,7 +2,7 @@ package com.leigq.quartz.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.leigq.quartz.bean.common.Response;
-import com.leigq.quartz.domain.entity.SysTaskLog;
+import com.leigq.quartz.bean.vo.SysTaskLogListVO;
 import com.leigq.quartz.service.SysTaskLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ public class SysTaskLogController {
      */
     @GetMapping("/logs/{task_id}/{page_num}/{page_size}")
     public Response queryTaskLogList(@PathVariable("task_id") Long taskId, @PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
-        final IPage<SysTaskLog> sysTaskLogList = sysTaskLogService.taskLogList(taskId, pageNum, pageSize);
+        final IPage<SysTaskLogListVO> sysTaskLogList = sysTaskLogService.taskLogList(taskId, pageNum, pageSize);
         return response.success(sysTaskLogList);
     }
 
