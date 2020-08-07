@@ -170,8 +170,8 @@
 
 ### 源码
 
- - 码云：<https://gitee.com/leiguoqing/springboot-quartz>
- - Github：<https://github.com/MRLEILOVE/springboot-quartz.git>
+ - 码云：<https://gitee.com/leiguoqing/springboot-quartz-lite>
+ - Github：<https://github.com/MRLEILOVE/springboot-quartz-lite.git>
 
 ### 其它
 
