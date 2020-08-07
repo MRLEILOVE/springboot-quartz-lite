@@ -63,7 +63,8 @@ public abstract class BaseTaskExecute {
             // 调用子类的任务
             execute(dataMap);
         } catch (Exception e) {
-            log.error("任务：[" + taskExecuteDTO.getTaskName() + "] 执行异常：[{}]", e);
+            final String errorMsg = String.format("任务：[ %s ] 执行异常：", taskExecuteDTO.getTaskName());
+            log.error(errorMsg, e);
             // 将执行结果改为失败并记录异常信息
             sysTaskLogService.update(Wrappers.<SysTaskLog>lambdaUpdate()
                     .set(SysTaskLog::getExecResult, SysTaskExecResultEnum.FAILURE.getValue())
