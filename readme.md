@@ -1,31 +1,19 @@
-## 主要框架
+<center>
 
-<a href='https://spring.io/projects/spring-boot'> 
+[![Fork me on Gitee](https://gitee.com/leiguoqing/springboot-quartz-lite/widgets/widget_4.svg)](https://gitee.com/leiguoqing/springboot-quartz-lite)
 
-![springboot-version](https://img.shields.io/badge/SpringBoot-2.0.8.RELEASE-orange) 
+<h3>基于Quartz的可视化任务系统</h3>
 
-</a>
+<a href='https://spring.io/projects/spring-boot'>![springboot-version](https://img.shields.io/badge/SpringBoot-2.0.8.RELEASE-orange)</a>
+<a href='http://www.quartz-scheduler.org/'>![Quartz-version](https://img.shields.io/badge/Quartz-2.3.0-blue)</a>
+<a href='http://druid.apache.org/'>![druid-spring-boot](https://img.shields.io/badge/Druid-1.1.10-green)</a>
+<a href='https://mp.baomidou.com/'>![mybatis-plus-version](https://img.shields.io/badge/MybatisPlus-3.2.0-lightgrey?link=http://left&link=http://right)</a>
+<a href='https://www.apache.org/licenses/LICENSE-2.0'>![apache](https://img.shields.io/badge/license-Apache2-red?link=http://left&link=http://right)</a>
 
-<a href='http://www.quartz-scheduler.org/'>
-
-​![Quartz-version](https://img.shields.io/badge/Quartz-2.3.0-blue)
-
-</a>
-
-<a href='http://druid.apache.org/'>
-
-​![druid-spring-boot](https://img.shields.io/badge/Druid-1.1.10-green)
-
-</a>
-
-<a href='https://mp.baomidou.com/'>
-
-![mybatis-plus-version](https://img.shields.io/badge/MybatisPlus-3.2.0-lightgrey?link=http://left&link=http://right)
-
-</a>
+</center>
 
 
-## 效果
+## 功能展示
 
 ### 任务列表
 
@@ -77,7 +65,7 @@
 │              │  ├─job
 │              │  │      BaseJob.java
 │              │  │      BaseJobDisallowConcurrent.java
-│              │  │      BaseTaskExecute.java  -- 任务基础抽象类，其他任务继承此类，实现其
+│              │  │      BaseTaskExecute.java  -- 任务基础抽象类，其他任务继承此类，实现其execute方法执行任务
 │              │  │
 │              │  └─vo
 │              │          AddSysTaskVO.java
@@ -104,11 +92,7 @@
 │              │      SysTaskService.java
 │              │
 │              ├─task
-│              │  │  HelloQuartz1.java  -- 测试任务，继承BaseTaskExecute
-│              │  │  HelloQuartz2.java  -- 测试任务，继承BaseTaskExecute
-│              │  │
-│              │  └─simple
-│              │          SchedulerTest.java
+│              │      HelloQuartz.java
 │              │
 │              ├─util
 │              │      SpringContextHolder.java
@@ -126,18 +110,9 @@
 │                          ServiceException.java
 │
 └─resources
-    │  rebel.xml
-    │
     ├─config
-    │  │  application-dev.yml
-    │  │  application-prod.yml
-    │  │  application-test.yml
-    │  │  application.yml
-    │  │
-    │  └─log4j2
-    │          log4j2-dev.xml
-    │          log4j2-prod.xml
-    │          log4j2-test.xml
+    │      application.yml
+    │      log4j2-config.xml
     │
     ├─mapper
     │      SysTaskLogMapper.xml
@@ -148,13 +123,24 @@
     │      自定义任务和任务日志表.sql
     │
     └─templates
-            task-log.html
-            task-manager.html
+            task-log.html      -- 任务列表页面
+            task-manager.html  -- 任务日志列表页面
 ```
 
 结构很简单就不多说了。
 
 建议直接把源码克隆下来运行，源码里面注释很清晰，然后结合下面的几篇文章看，就可以很快理解了。
+
+## 运行项目
+
+1. 新建一个数据库，执行项目中 resource/sql 下面的SQL语句，先执行 `Quartz官方建表.sql`，再执行 `自定义任务和任务日志表.sql`。
+2. 将项目中 `application.yml` 中的 `datasource.password` 、 `datasource.url`、`datasource.username` 改为对应你自己的。
+3. 运行项目，项目启动后，在浏览器输入：<http://localhost:8080/task-manager.html> 即可进入任务管理页面。
+4. 此时是一个任务都没有的，项目的 src\main\java\com\leigq\quartz\task 目录下有一个任务示例，你可以把他添加进去看看效果。
+
+![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200807145627.png)
+
+![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200807145658.png)
 
 ## 其它资料
 
