@@ -408,11 +408,20 @@
             //从服务器读取数据
             initData(pageNum, pageSize) {
                 this.$http.get('tasks/' + pageNum + '/' + pageSize).then(function (res) {
-                    var data = res.body.data;
-                    this.sysTaskList = data.records;
-                    this.totalCount = data.total;
+                    var body = res.body;
+                    var meta = body.meta;
+                    var data = body.data;
+                    if (meta.code === 0) {
+                        this.sysTaskList = data.records;
+                        this.totalCount = data.total;
+                    }
                 }, function () {
-                    console.log('failed');
+                    var body = res.body;
+                    var meta = body.meta;
+                    this.$notify.error({
+                        title: '错误',
+                        message: meta.msg
+                    });
                 });
             },
 
@@ -421,7 +430,7 @@
                 this.$http.delete('tasks/' + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 200) {
+                    if (meta.code === 0) {
                         this.$notify({
                             title: '成功',
                             message: meta.msg,
@@ -452,7 +461,7 @@
                 this.$http.post('tasks/action/pause/'  + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 200) {
+                    if (meta.code === 0) {
                         this.$notify({
                             title: '成功',
                             message: meta.msg,
@@ -483,7 +492,7 @@
                 this.$http.post('tasks/action/resume/' + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 200) {
+                    if (meta.code === 0) {
                         this.$notify({
                             title: '成功',
                             message: meta.msg,
@@ -514,7 +523,7 @@
                 this.$http.post('tasks/action/execute/' + row.taskName + "/" + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 200) {
+                    if (meta.code === 0) {
                         this.$notify({
                             title: '成功',
                             message: meta.msg,
@@ -596,7 +605,7 @@
                 }, {emulateJSON: true}).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 200) {
+                    if (meta.code === 0) {
                         this.$notify({
                             title: '成功',
                             message: meta.msg,
@@ -653,7 +662,7 @@
                 ).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 200) {
+                    if (meta.code === 0) {
                         this.$notify({
                             title: '成功',
                             message: meta.msg,

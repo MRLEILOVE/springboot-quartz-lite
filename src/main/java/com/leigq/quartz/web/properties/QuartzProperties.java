@@ -11,8 +11,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.quartz.task-view")
 public class QuartzProperties {
 
+    /**
+     * 登录用户名
+     */
     private String loginUsername = "admin";
 
+    /**
+     * 登录密码
+     */
     private String loginPassword = "admin";
 
 

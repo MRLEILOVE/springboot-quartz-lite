@@ -129,18 +129,6 @@ public class GlobalExceptionHand {
         return new Response().failure(msg);
     }
 
-
-    /**
-     * 登录超时异常处理
-     */
-    @ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(LoginTimeOutException.class)
-    public Response handLoginTimeOutException(LoginTimeOutException e) {
-        String msg = e.getMessage();
-        return new Response().failure(1000, msg);
-    }
-
-
     /**
      * 405 - Method Not Allowed
      */

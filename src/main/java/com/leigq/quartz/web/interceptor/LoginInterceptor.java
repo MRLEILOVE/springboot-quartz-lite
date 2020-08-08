@@ -1,7 +1,6 @@
 package com.leigq.quartz.web.interceptor;
 
 import com.leigq.quartz.bean.constant.SysUserConstant;
-import com.leigq.quartz.web.exception.LoginTimeOutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -9,6 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -22,13 +22,14 @@ import java.util.Objects;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         // 获取 session
         HttpSession session = request.getSession();
         Object userKey = session.getAttribute(SysUserConstant.USER_SESSION_KEY);
         if (Objects.isNull(userKey)) {
-            // 前后端分离的做法，应该是返回一个执行错误码给前端，让前端去做跳转
-            throw new LoginTimeOutException("登录超时，请重新登录");
+            // 前后端分离的做法，应该是返回一个执行错误码给前端，让前端去做跳转，这里偷下懒
+            response.sendRedirect("/login.html");
+            return false;
         }
         return true;
     }
