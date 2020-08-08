@@ -34,6 +34,14 @@
             </exclusions>
         </dependency>
 
+        <!--使用注解处理器来生成自己的元数据:参考：https://www.jianshu.com/p/57fec884c017-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
         <!--quartz定时任务-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

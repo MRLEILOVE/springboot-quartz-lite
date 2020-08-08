@@ -69,6 +69,12 @@ spring:
 
   # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ quartz配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
   quartz:
+    ## 任务页面配置
+    task-view:
+      # 帐号
+      login-username: admin
+      # 密码
+      login-password: 123456
     #相关属性配置
     properties:
       org:
