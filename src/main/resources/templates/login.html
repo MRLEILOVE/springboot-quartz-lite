@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quartz任务管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.0.5/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.js"></script>
+    <script src="https://unpkg.com/element-ui@2.0.5/lib/index.js"></script>
+</head>
+<body>
+<div>
+    <!--flex弹性盒子模型，justify-content：主抽 -->
+    <div id="login" style="display: flex;justify-content: center; margin-top: 150px">
+        <el-card style="width: 350px">
+            <div slot="header" class="clearfix">
+                <span>登录</span>
+            </div>
+            <table>
+                <tr>
+                    <td>用户名</td>
+                    <td>
+                        <el-input v-model="loginFormData.username" placeholder="请输入用户名"></el-input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>密码</td>
+                    <td>
+                        <el-input type="password" v-model="loginFormData.password" placeholder="请输入密码" @keydown.enter.native="login"></el-input>
+                        <!-- @keydown.enter.native="doLogin"当按下enter键的时候也会执行doLogin方法-->
+                    </td>
+                </tr>
+                <tr>
+                    <!-- 占两行-->
+                    <td colspan="2">
+                        <!-- 点击事件的两种不同的写法v-on:click和 @click-->
+                        <!--<el-button style="width: 300px" type="primary" v-on:click="doLogin">登录</el-button>-->
+                        <el-button style="width: 300px" type="primary" @click="login">登录</el-button>
+                    </td>
+                </tr>
+            </table>
+        </el-card>
+    </div>
+</div>
+
+<!--</div>-->
+<footer align="center">
+    <p>&copy; Quartz 任务管理</p>
+</footer>
+
+<script>
+    Vue.http.headers.common['language'] = 'en';
+    var vue = new Vue({
+        el: "#login",
+        data: {
+
+            //请求的URL
+            url: 'user',
+
+            //登录的表单
+            loginFormData: {
+                username: 'admin',
+                password: '123456',
+            },
+        },
+        mounted() {
+
+        },
+        methods: {
+
+            // 登录
+            login() {
+                this.$http.post('/user/login', {"username": this.loginFormData.username, "password": this.loginFormData.password}, {emulateJSON: true})
+                    .then(function (res) {
+                        var body = res.body;
+                        var meta = body.meta;
+                        if (meta.code === 0) {
+                            this.$notify({
+                                title: '成功',
+                                message: meta.msg,
+                                type: 'success'
+                            });
+                            // 跳转至任务列表页面
+                            window.location.href = "task-manager.html";
+                        } else {
+                            this.$notify({
+                                title: '警告',
+                                message: meta.msg,
+                                type: 'warning'
+                            });
+                        }
+                    }, function () {
+                        var body = res.body;
+                        var meta = body.meta;
+                        this.$notify.error({
+                            title: '错误',
+                            message: meta.msg
+                        });
+                    });
+            },
+        },
+    });
+</script>
+</body>
+</html>

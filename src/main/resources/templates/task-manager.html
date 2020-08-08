@@ -26,7 +26,7 @@
         <el-button @click="windowOpen('http://cron.qqe2.com')">在线Cron表达式生成
         </el-button>
 
-        <div style="position:absolute; right: 16px; top: 13px">
+        <div style="position:absolute; right: 130px; top: 13px">
             <span style="color: white">自动刷新时间：</span>
             <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime" size="3">
                 <el-option
@@ -38,6 +38,7 @@
             </el-select>
         </div>
 
+        <el-button style="position:absolute; right: 20px; top: 13px" type="danger" @click="logout">退出登录</el-button>
     </div>
 
     <br/>
@@ -667,6 +668,34 @@
                             type: 'warning'
                         });
                     }
+                }, function () {
+                    this.$notify.error({
+                        title: '错误',
+                        message: meta.msg
+                    });
+                });
+            },
+
+            // 登出
+            logout() {
+                this.$http.post('/user/logout').then(function (res) {
+                    var body = res.body;
+                    var meta = body.meta;
+                    if (meta.code === 0) {
+                        this.$notify({
+                            title: '成功',
+                            message: meta.msg,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: meta.msg,
+                            type: 'warning'
+                        });
+                    }
+                    // 跳转至登录页面
+                    window.location.href = "login.html";
                 }, function () {
                     this.$notify.error({
                         title: '错误',
