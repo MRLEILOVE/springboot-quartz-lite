@@ -1,6 +1,8 @@
 package com.leigq.quartz.web.config;
 
+import com.leigq.quartz.web.interceptor.LoginInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -23,6 +25,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
+    private final LoginInterceptor loginInterceptor;
+
+    public MvcConfig(LoginInterceptor loginInterceptor) {
+        this.loginInterceptor = loginInterceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        /* 添加自定义拦截器 */
+        // 登录拦截器
+        registry.addInterceptor(loginInterceptor)
+                // 添加拦截规则，先把所有路径都加入拦截，再一个个排除
+                .addPathPatterns("/**")
+                // 排除拦截，表示该路径不用拦截，除了登录不拦截，其他都拦截
+                .excludePathPatterns("/user/login", "/login.html", "/static/**", "/templates/**");
+    }
+
     /**
      * 添加资源处理程序
      *
@@ -32,7 +51,12 @@ public class MvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("task-manager.html", "task-log.html")
+        registry.addResourceHandler("/**/*.html")
                 .addResourceLocations("classpath:/templates/");
+
+        // 这是请求url的匹配模式，匹配url根路径下的所有路径（包括子路径，如果只有一个*，那就不包括子路径）
+        registry.addResourceHandler("/static/**")
+                // 这是文件路径的匹配模式，值上面匹配的路径在这个文件夹下面找文件
+                .addResourceLocations("classpath:/static/");
     }
 }
