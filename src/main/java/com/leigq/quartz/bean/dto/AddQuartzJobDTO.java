@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -79,4 +79,5 @@ public class AddQuartzJobDTO implements Serializable {
             dataMap.put(params[0], params[1]);
         }
     }
+
 }
