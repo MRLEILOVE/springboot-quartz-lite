@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.js"></script>
     <script src="https://unpkg.com/element-ui@2.0.5/lib/index.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jsencrypt/3.0.0-rc.1/jsencrypt.min.js"></script>
 </head>
 <body>
 <div>
@@ -62,16 +63,25 @@
                 username: '',
                 password: '',
             },
+
+            // 公钥
+            publicKey: 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCV+cJIYadGdhQc84MlxsCOTZuyaeKAwImBkY23j4PdVaXh/8bRaz/KXI6V1ArgO1Q2vrDc177xfXVNgQZQz2SIApdJtXZzn/shZ73kT5xXqsUxE4L0bg9gF5IJ259ggQzG8S+OmzfJB4SUOrXvwIe8vJJXsHdxD136A0RGezC8QwIDAQAB',
         },
         mounted() {
-
         },
         methods: {
 
             // 登录
             login() {
-                this.$http.post('/user/login', {"username": this.loginFormData.username, "password": this.loginFormData.password}, {emulateJSON: true})
-                    .then(function (res) {
+                this.$http.post('/user/login',
+                    {
+                        "username": this.loginFormData.username === '' ? '' : this.encryptedData(this.publicKey, this.loginFormData.username),
+                        "password": this.loginFormData.password === '' ? '' : this.encryptedData(this.publicKey, this.loginFormData.password),
+                    },
+                    {
+                        emulateJSON: true
+                    }
+                ).then(function (res) {
                         var body = res.body;
                         var meta = body.meta;
                         if (meta.code === 0) {
@@ -98,6 +108,16 @@
                         });
                     });
             },
+
+            // 加密
+            encryptedData(publicKey, data) {
+                // 新建JSEncrypt对象
+                let encryptor = new JSEncrypt();
+                // 设置公钥
+                encryptor.setPublicKey(publicKey);
+                // 加密数据
+                return encryptor.encrypt(data);
+            }
         },
     });
 </script>

@@ -3,16 +3,22 @@ package com.leigq.quartz.controller;
 import com.leigq.quartz.bean.common.Response;
 import com.leigq.quartz.bean.constant.SysUserConstant;
 import com.leigq.quartz.bean.vo.SysUserVO;
+import com.leigq.quartz.util.RSACoder;
 import com.leigq.quartz.web.properties.QuartzProperties;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**
@@ -54,13 +60,29 @@ public class LoginController {
      */
     @PostMapping("/login")
     public Response login(@Valid SysUserVO sysUserVO, HttpServletRequest request) {
-        var username = sysUserVO.getUsername();
-        if (!Objects.equals(username, quartzProperties.getLoginUsername())) {
-            return response.failure("用户名错误");
+        String username;
+        try {
+            username = RSACoder.decryptByPriKey(sysUserVO.getUsername());
+        } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException |
+                IllegalBlockSizeException | UnsupportedEncodingException | InvalidKeyException e) {
+            log.error("用户名解密异常：", e);
+            return response.failure("用户名解密失败");
         }
-        var password = sysUserVO.getPassword();
-        if (!Objects.equals(password, quartzProperties.getLoginPassword())) {
-            return response.failure("密码错误");
+
+        String password;
+        try {
+            password = RSACoder.decryptByPriKey(sysUserVO.getPassword());
+        } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException |
+                IllegalBlockSizeException | UnsupportedEncodingException | InvalidKeyException e) {
+            log.error("密码解密异常：", e);
+            return response.failure("密码解密失败");
+        }
+
+        boolean usernameIsTrue = Objects.equals(username, quartzProperties.getTaskView().getLoginUsername());
+        boolean passwordIsTrue = Objects.equals(password, quartzProperties.getTaskView().getLoginPassword());
+
+        if (!usernameIsTrue || !passwordIsTrue) {
+            return response.failure("用户名或密码错误，请重试");
         }
         // 将用户保存至 session 中
         HttpSession session = request.getSession();
