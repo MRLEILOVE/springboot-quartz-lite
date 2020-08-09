@@ -19,30 +19,31 @@
 </head>
 <body>
 <div id="task">
+    <template>
+        <div id="top">
+            <el-button @click="refresh">刷新</el-button>
+            <el-button @click="showAddTaskForm">添加</el-button>
+            <el-button @click="windowOpen('http://cron.qqe2.com')">在线Cron表达式生成
+            </el-button>
 
-    <div id="top">
-        <el-button @click="refresh">刷新</el-button>
-        <el-button @click="showAddTaskForm">添加</el-button>
-        <el-button @click="windowOpen('http://cron.qqe2.com')">在线Cron表达式生成
-        </el-button>
+            <div style="position:absolute; right: 130px; top: 13px">
+                <span style="color: white">自动刷新时间：</span>
+                <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime" size="3">
+                    <el-option
+                            v-for="item in cycleTime"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
 
-        <div style="position:absolute; right: 130px; top: 13px">
-            <span style="color: white">自动刷新时间：</span>
-            <el-select v-model="value" placeholder="自动刷新时间" @change="autoRefreshTime" size="3">
-                <el-option
-                        v-for="item in cycleTime"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                </el-option>
-            </el-select>
+            <el-button style="position:absolute; right: 20px; top: 13px" type="danger" @click="logout">退出登录</el-button>
         </div>
-
-        <el-button style="position:absolute; right: 20px; top: 13px" type="danger" @click="logout">退出登录</el-button>
-    </div>
-
+    </template>
     <br/>
 
+    <template>
     <div style="margin-top:15px">
         <el-table :data="sysTaskList" border ref="testTable" stripe>
             <el-table-column
@@ -194,97 +195,104 @@
             </el-pagination>
         </div>
     </div>
+    </template>
 
-    <!--添加弹框-->
-    <el-dialog title="添加任务" :visible.sync="addTaskFormVisible">
-        <el-form :model="addTaskFormData" style="width:80%">
-            <el-form-item label="任务名" label-width="120px" >
-                <el-input clearable v-model="addTaskFormData.taskName" auto-complete="off" placeholder="最好用英文"></el-input>
-            </el-form-item>
+    <template>
+        <!--添加弹框-->
+        <el-dialog title="添加任务" :visible.sync="addTaskFormVisible">
+            <el-form :model="addTaskFormData" style="width:80%">
+                <el-form-item label="任务名" label-width="120px" >
+                    <el-input clearable v-model="addTaskFormData.taskName" auto-complete="off" placeholder="最好用英文"></el-input>
+                </el-form-item>
 
-            <el-form-item label="任务组" label-width="120px">
-                <el-input v-model="addTaskFormData.taskGroup" auto-complete="off" placeholder="可用中文，推荐按业务类型分组"></el-input>
-            </el-form-item>
+                <el-form-item label="任务组" label-width="120px">
+                    <el-input v-model="addTaskFormData.taskGroup" auto-complete="off" placeholder="可用中文，推荐按业务类型分组"></el-input>
+                </el-form-item>
 
-            <el-form-item label="任务说明" label-width="120px">
-                <el-input v-model="addTaskFormData.note" auto-complete="off" type="textarea" autosize placeholder="50字以内" maxlength="50" show-word-limit></el-input>
-            </el-form-item>
+                <el-form-item label="任务说明" label-width="120px">
+                    <el-input v-model="addTaskFormData.note" auto-complete="off" type="textarea" autosize placeholder="50字以内" maxlength="50" show-word-limit></el-input>
+                </el-form-item>
 
-            <el-form-item label="执行类" label-width="120px" >
-                <el-input v-model="addTaskFormData.taskClass" auto-complete="off" placeholder="执行任务全类名"></el-input>
-            </el-form-item>
+                <el-form-item label="执行类" label-width="120px" >
+                    <el-input v-model="addTaskFormData.taskClass" auto-complete="off" placeholder="执行任务全类名"></el-input>
+                </el-form-item>
 
-            <el-form-item label="执行参数" label-width="120px">
-                <el-input type="textarea" v-model="addTaskFormData.execParams" auto-complete="off" autosize placeholder="格式：aaa=hello;bbb=world,多个参数用;隔开"></el-input>
-            </el-form-item>
+                <el-form-item label="执行参数" label-width="120px">
+                    <el-input type="textarea" v-model="addTaskFormData.execParams" auto-complete="off" autosize placeholder="格式：aaa=hello;bbb=world,多个参数用;隔开"></el-input>
+                </el-form-item>
 
-            <el-form-item label="定时规则" label-width="120px">
-                <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
-            </el-form-item>
+                <el-form-item label="定时规则" label-width="120px">
+                    <el-input v-model="addTaskFormData.cron" auto-complete="off"></el-input>
+                </el-form-item>
 
-            <el-form-item label="允许并发？" label-width="120px">
-                <el-radio-group v-model="addTaskFormData.concurrent">
-                    <el-radio :label="1">允许</el-radio>
-                    <el-radio :label="0">不允许</el-radio>
-                </el-radio-group>
-            </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="addTaskFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="addTaskSubmit">确 定</el-button>
-        </div>
-    </el-dialog>
+                <el-form-item label="允许并发？" label-width="120px">
+                    <el-radio-group v-model="addTaskFormData.concurrent">
+                        <el-radio :label="1">允许</el-radio>
+                        <el-radio :label="0">不允许</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="addTaskFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addTaskSubmit">确 定</el-button>
+            </div>
+        </el-dialog>
+    </template>
 
-    <!--修改弹框-->
-    <el-dialog title="修改任务" :visible.sync="updateTaskFormVisible">
+    <template>
+        <!--修改弹框-->
+        <el-dialog title="修改任务" :visible.sync="updateTaskFormVisible">
 
-        <el-form :model="updateTaskFormData" style="width:80%">
-            <el-form-item label="任务名" label-width="120px" >
-                <el-input v-model="updateTaskFormData.taskName" disabled auto-complete="off"></el-input>
-            </el-form-item>
+            <el-form :model="updateTaskFormData" style="width:80%">
+                <el-form-item label="任务名" label-width="120px" >
+                    <el-input v-model="updateTaskFormData.taskName" disabled auto-complete="off"></el-input>
+                </el-form-item>
 
-            <el-form-item label="任务组" label-width="120px" >
-                <el-input v-model="updateTaskFormData.taskGroup" disabled auto-complete="off"></el-input>
-            </el-form-item>
+                <el-form-item label="任务组" label-width="120px" >
+                    <el-input v-model="updateTaskFormData.taskGroup" disabled auto-complete="off"></el-input>
+                </el-form-item>
 
-            <el-form-item label="任务说明" label-width="120px" >
-                <el-input v-model="updateTaskFormData.note" auto-complete="off" type="textarea" autosize placeholder="50字以内" maxlength="50" show-word-limit></el-input>
-            </el-form-item>
+                <el-form-item label="任务说明" label-width="120px" >
+                    <el-input v-model="updateTaskFormData.note" auto-complete="off" type="textarea" autosize placeholder="50字以内" maxlength="50" show-word-limit></el-input>
+                </el-form-item>
 
-            <el-form-item label="执行类" label-width="120px" >
-                <el-input v-model="updateTaskFormData.taskClass" auto-complete="off" placeholder="执行任务全类名"></el-input>
-            </el-form-item>
+                <el-form-item label="执行类" label-width="120px" >
+                    <el-input v-model="updateTaskFormData.taskClass" auto-complete="off" placeholder="执行任务全类名"></el-input>
+                </el-form-item>
 
-            <el-form-item label="执行参数" label-width="120px" >
-                <el-input v-model="updateTaskFormData.execParams" auto-complete="off" type="textarea" autosize placeholder="格式：aaa=hello;bbb=world,多个参数用;隔开"></el-input>
-            </el-form-item>
+                <el-form-item label="执行参数" label-width="120px" >
+                    <el-input v-model="updateTaskFormData.execParams" auto-complete="off" type="textarea" autosize placeholder="格式：aaa=hello;bbb=world,多个参数用;隔开"></el-input>
+                </el-form-item>
 
-            <el-form-item label="定时规则" label-width="120px" >
-                <el-input v-model="updateTaskFormData.cron" auto-complete="off"></el-input>
-            </el-form-item>
+                <el-form-item label="定时规则" label-width="120px" >
+                    <el-input v-model="updateTaskFormData.cron" auto-complete="off"></el-input>
+                </el-form-item>
 
-            <el-form-item label="允许并发？" label-width="120px" >
-                <el-radio-group v-model="updateTaskFormData.concurrent">
-                    <el-radio :label="true">允许</el-radio>
-                    <el-radio :label="false">不允许</el-radio>
-                </el-radio-group>
-            </el-form-item>
-        </el-form>
+                <el-form-item label="允许并发？" label-width="120px" >
+                    <el-radio-group v-model="updateTaskFormData.concurrent">
+                        <el-radio :label="true">允许</el-radio>
+                        <el-radio :label="false">不允许</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
 
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="updateTaskFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="updateTaskSubmit">确 定</el-button>
-        </div>
-    </el-dialog>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="updateTaskFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="updateTaskSubmit">确 定</el-button>
+            </div>
+        </el-dialog>
+    </template>
 
-    <!--暂停 恢复 删除 立即执行 提示弹框-->
-    <el-dialog title="操作确认" :visible.sync="pauseOrResumeOrDeleteOrExecuteFormVisible">
-        <span>您确定要进行此操作吗？</span>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="pauseOrResumeOrDeleteOrExecuteFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="commitPauseOrResumeOrDeleteOrExecuteForm">确 定</el-button>
-        </span>
-    </el-dialog>
+    <template>
+        <!--暂停 恢复 删除 立即执行 提示弹框-->
+        <el-dialog title="操作确认" :visible.sync="pauseOrResumeOrDeleteOrExecuteFormVisible">
+            <span>您确定要进行此操作吗？</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="pauseOrResumeOrDeleteOrExecuteFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="commitPauseOrResumeOrDeleteOrExecuteForm">确 定</el-button>
+            </span>
+        </el-dialog>
+    </template>
 
 </div>
 
