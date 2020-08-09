@@ -41,7 +41,9 @@ public class SysTaskLogService extends ServiceImpl<SysTaskLogMapper, SysTaskLog>
      */
     public IPage<SysTaskLogListVO> taskLogList(Long taskId, Integer pageNum, Integer pageSize) {
         IPage<SysTaskLog> page = this.page(new Page<>(pageNum, pageSize),
-                Wrappers.<SysTaskLog>lambdaQuery().eq(SysTaskLog::getTaskId, taskId)
+                Wrappers.<SysTaskLog>lambdaQuery()
+                        .eq(SysTaskLog::getTaskId, taskId)
+                        .orderByDesc(SysTaskLog::getExecDate)
         );
         final MapperFacade mapperFacade = mapperFactory.getMapperFacade();
         final List<SysTaskLogListVO> sysTaskLogList = mapperFacade.mapAsList(page.getRecords(), SysTaskLogListVO.class);
