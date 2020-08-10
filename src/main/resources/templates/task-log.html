@@ -107,6 +107,32 @@
         },
         methods: {
 
+            // 提醒通知
+            notifyWarning(msg){
+                this.$notify({
+                    title: '警告',
+                    message: msg,
+                    type: 'warning'
+                });
+            },
+
+            // 成功通知
+            notifySuccess(msg){
+                this.$notify({
+                    title: '成功',
+                    message: msg,
+                    type: 'success'
+                });
+            },
+
+            // 失败通知
+            notifyError(msg){
+                this.$notify.error({
+                    title: '错误',
+                    message: msg,
+                });
+            },
+
             getUrlKey(name, url){
                 return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(url) || [, ""])[1].replace(/\+/g, '%20')) || null
             },
@@ -117,23 +143,28 @@
 
                 this.$http.get('logs/' + taskId + '/' + pageNum + '/' + pageSize).then(function (res) {
                     var data = res.body.data;
-                    if (data) {
-                        this.sysTaskLogList = data.records;
-                        this.totalCount = data.total;
+                    var meta = res.body.meta;
+                    switch (meta.code) {
+                        case 0:
+                            this.sysTaskLogList = data.records;
+                            this.totalCount = data.total;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
                 }, function () {
-                    console.log('failed');
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
             //打开新页面
             windowOpen: function (url) {
                 window.open(url, "_blank");
-            },
-
-            // 弹出查看日志表格
-            showTaskLogForm: function (index, row) {
-
             },
 
             //每页显示数据量变更

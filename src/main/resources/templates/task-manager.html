@@ -404,6 +404,31 @@
             }, 1000)
         },
         methods: {
+            // 提醒通知
+            notifyWarning(msg){
+                this.$notify({
+                    title: '警告',
+                    message: msg,
+                    type: 'warning'
+                });
+            },
+
+            // 成功通知
+            notifySuccess(msg){
+                this.$notify({
+                    title: '成功',
+                    message: msg,
+                    type: 'success'
+                });
+            },
+
+            // 失败通知
+            notifyError(msg){
+                this.$notify.error({
+                    title: '错误',
+                    message: msg,
+                });
+            },
 
             // 自动刷新页面
             autoRefreshTime(cycleTime) {
@@ -424,48 +449,44 @@
                     var body = res.body;
                     var meta = body.meta;
                     var data = body.data;
-                    if (meta.code === 0) {
-                        this.sysTaskList = data.records;
-                        this.totalCount = data.total;
+                    switch (meta.code) {
+                        case 0:
+                            this.sysTaskList = data.records;
+                            this.totalCount = data.total;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
                 }, function () {
-                    var body = res.body;
-                    var meta = body.meta;
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
             //单行删除
             handleDelete: function (index, row) {
                 this.$http.delete('tasks/' + row.taskName + '/' + row.taskGroup).then(function (res) {
-                    var body = res.body;
-                    var meta = body.meta;
-                    if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
-                        this.initData(this.currentPage, this.pageSize);
-                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
-                    } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                    var meta = res.body.meta;
+                    switch (meta.code) {
+                        case 0:
+                            this.notifySuccess(meta.msg);
+                            this.initData(this.currentPage, this.pageSize);
+                            this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
-                    this.initData(this.currentPage, this.pageSize);
                 }, function () {
-                    var body = res.body;
-                    var meta = body.meta;
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
@@ -474,29 +495,22 @@
                 this.$http.post('tasks/action/pause/'  + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
-                        this.initData(this.currentPage, this.pageSize);
-                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
-                    } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                    switch (meta.code) {
+                        case 0:
+                            this.notifySuccess(meta.msg);
+                            this.initData(this.currentPage, this.pageSize);
+                            this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
-                    this.initData(this.currentPage, this.pageSize);
                 }, function () {
-                    var body = res.body;
-                    var meta = body.meta;
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
@@ -505,29 +519,22 @@
                 this.$http.post('tasks/action/resume/' + row.taskName + '/' + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
-                        this.initData(this.currentPage, this.pageSize);
-                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
-                    } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                    switch (meta.code) {
+                        case 0:
+                            this.notifySuccess(meta.msg);
+                            this.initData(this.currentPage, this.pageSize);
+                            this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
-                    this.initData(this.currentPage, this.pageSize);
                 }, function () {
-                    var body = res.body;
-                    var meta = body.meta;
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
@@ -536,29 +543,22 @@
                 this.$http.post('tasks/action/execute/' + row.taskName + "/" + row.taskGroup).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
-                        this.initData(this.currentPage, this.pageSize);
-                        this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
-                    } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                    switch (meta.code) {
+                        case 0:
+                            this.notifySuccess(meta.msg);
+                            this.initData(this.currentPage, this.pageSize);
+                            this.pauseOrResumeOrDeleteOrExecuteFormVisible = false;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
-                    this.initData(this.currentPage, this.pageSize);
                 }, function (res) {
-                    var body = res.body;
-                    var meta = body.meta;
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
@@ -618,28 +618,22 @@
                 }, {emulateJSON: true}).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
-                        this.initData(this.currentPage, this.pageSize);
-                        this.addTaskFormVisible = false;
-                    } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                    switch (meta.code) {
+                        case 0:
+                            this.notifySuccess(meta.msg);
+                            this.initData(this.currentPage, this.pageSize);
+                            this.addTaskFormVisible = false;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
                 }, function (res) {
-                    var body = res.body;
-                    var meta = body.meta;
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
@@ -675,26 +669,22 @@
                 ).then(function (res) {
                     var body = res.body;
                     var meta = body.meta;
-                    if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
-                        this.initData(this.currentPage, this.pageSize);
-                        this.updateTaskFormVisible = false;
-                    } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                    switch (meta.code) {
+                        case 0:
+                            this.notifySuccess(meta.msg);
+                            this.initData(this.currentPage, this.pageSize);
+                            this.updateTaskFormVisible = false;
+                            break;
+                        case 1000:
+                            // 跳转至登录页面
+                            window.location.href = "login.html";
+                            break;
+                        default:
+                            this.notifyWarning(meta.msg);
+                            break;
                     }
                 }, function () {
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
@@ -704,25 +694,14 @@
                     var body = res.body;
                     var meta = body.meta;
                     if (meta.code === 0) {
-                        this.$notify({
-                            title: '成功',
-                            message: meta.msg,
-                            type: 'success'
-                        });
+                        this.notifySuccess(meta.msg);
+                        // 跳转至登录页面
+                        window.location.href = "login.html";
                     } else {
-                        this.$notify({
-                            title: '警告',
-                            message: meta.msg,
-                            type: 'warning'
-                        });
+                        this.notifyWarning(meta.msg);
                     }
-                    // 跳转至登录页面
-                    window.location.href = "login.html";
                 }, function () {
-                    this.$notify.error({
-                        title: '错误',
-                        message: meta.msg
-                    });
+                    this.notifyError(res.body.meta.msg);
                 });
             },
 
