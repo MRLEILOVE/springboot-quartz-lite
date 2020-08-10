@@ -21,11 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class SysTaskLogController {
 
     private final SysTaskLogService sysTaskLogService;
-    private final Response response;
 
-    public SysTaskLogController(SysTaskLogService sysTaskLogService, Response response) {
+    public SysTaskLogController(SysTaskLogService sysTaskLogService) {
         this.sysTaskLogService = sysTaskLogService;
-        this.response = response;
     }
 
 
@@ -37,7 +35,7 @@ public class SysTaskLogController {
     @GetMapping("/logs/{task_id}/{page_num}/{page_size}")
     public Response queryTaskLogList(@PathVariable("task_id") Long taskId, @PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
         final IPage<SysTaskLogListVO> sysTaskLogList = sysTaskLogService.taskLogList(taskId, pageNum, pageSize);
-        return response.success(sysTaskLogList);
+        return Response.success(sysTaskLogList);
     }
 
 

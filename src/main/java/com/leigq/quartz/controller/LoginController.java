@@ -9,6 +9,7 @@ import com.leigq.quartz.web.properties.QuartzProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -39,20 +42,14 @@ public class LoginController {
      * The Quartz properties.
      */
     private final QuartzProperties quartzProperties;
-    /**
-     * The Response.
-     */
-    private final Response response;
 
     /**
      * Instantiates a new Login controller.
      *
      * @param quartzProperties the quartz properties
-     * @param response         the response
      */
-    public LoginController(QuartzProperties quartzProperties, Response response) {
+    public LoginController(QuartzProperties quartzProperties) {
         this.quartzProperties = quartzProperties;
-        this.response = response;
     }
 
     /**
@@ -73,26 +70,26 @@ public class LoginController {
                 username, password, timestamp, signKey));
 
         if (!Objects.equals(sign, splicingSign)) {
-            return response.failure("签名验证失败");
+            return Response.fail("签名验证失败");
         }
 
         // 验证时间，5秒中之内
         if (System.currentTimeMillis() - Long.parseLong(timestamp) > (5 * 1000)) {
-            return response.failure("登录超时，请重试");
+            return Response.fail("登录超时，请重试");
         }
 
         boolean usernameIsTrue = Objects.equals(username, quartzProperties.getTaskView().getLoginUsername());
         boolean passwordIsTrue = Objects.equals(password, quartzProperties.getTaskView().getLoginPassword());
 
         if (!usernameIsTrue || !passwordIsTrue) {
-            return response.failure("用户名或密码错误，请重试");
+            return Response.fail("用户名或密码错误，请重试");
         }
         // 将用户保存至 session 中
         HttpSession session = request.getSession();
         session.setAttribute(SysUserConstant.USER_SESSION_KEY, username);
         // 设置30分钟有效期
         session.setMaxInactiveInterval(30 * 60);
-        return response.success("登录成功");
+        return Response.success("登录成功");
     }
 
     /**
@@ -107,7 +104,7 @@ public class LoginController {
         if (Objects.nonNull(userKey)) {
             session.removeAttribute(SysUserConstant.USER_SESSION_KEY);
         }
-        return response.success("退出成功");
+        return Response.success("退出成功");
     }
 
 
@@ -120,4 +117,26 @@ public class LoginController {
         }
     }
 
+
+    @PostMapping("/test1")
+    public void test1(@RequestBody Book book) {
+        System.out.println(1);
+    }
+
+
+    @RequestMapping("/test2")
+    public void test2(@Valid Book name) {
+        System.out.println(1);
+    }
+
 }
+
+
+class Book {
+
+    @NotEmpty
+    @Size(min = 6, max = 20, message = "最小6最大20长度")
+    private String name;
+
+}
+

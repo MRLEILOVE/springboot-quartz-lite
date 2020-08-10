@@ -1,8 +1,6 @@
 package com.leigq.quartz.bean.common;
 
-import lombok.*;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.io.Serializable;
 
 /**
  * 响应对象。包含处理结果（Meta）和返回数据（Data）两部分，在 Controller 处理完请求后将此对象转换成 json 返回给前台。注意：
@@ -15,12 +13,60 @@ import org.springframework.stereotype.Component;
  * 创建时间：2017年10月9日 下午3:26:17 <br>
  * <p>
  */
-@SuppressWarnings(value = "all")
-@Component
-@Scope("prototype")
-@AllArgsConstructor
-@NoArgsConstructor
-public final class Response {
+public final class Response implements Serializable {
+
+    private static final long serialVersionUID = -3839826779450485786L;
+
+    /**
+     * 默认成功响应码
+     */
+    private static final Integer DEFAULT_SUCCESS_CODE = 0;
+
+    /**
+     * 默认成功响应信息
+     */
+    private static final String DEFAULT_SUCCESS_MSG = "请求/成功！";
+
+    /**
+     * 默认失败响应码
+     */
+    private static final Integer DEFAULT_FAIL_CODE = -1;
+
+    /**
+     * 默认失败响应信息
+     */
+    private static final String DEFAULT_FAIL_MSG = "请求/处理失败！";
+
+
+
+    /**
+     * 元数据，包含响应码和信息。
+     * <p>
+     * 创建人：leigq <br>
+     * 创建时间：2017年10月9日 下午3:31:17 <br>
+     */
+    private Meta meta;
+
+    /**
+     * 返回数据
+     */
+    private Object data;
+
+
+    public Response() {
+    }
+
+    /**
+     * Instantiates a new Response.
+     *
+     * @param meta 元数据，包含响应码和信息。
+     * @param data 返回数据
+     */
+    public Response(Meta meta, Object data) {
+        this.meta = meta;
+        this.data = data;
+    }
+
     /**
      * 处理成功响应，默认(0)响应码，默认信息，无返回数据
      *
@@ -29,10 +75,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:25 <br>
      */
-    public Response success() {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG);
-        this.data = null;
-        return this;
+    public static Response success() {
+        Meta meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG);
+        return new Response(meta, null);
     }
 
     /**
@@ -44,10 +89,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:25 <br>
      */
-    public Response success(String msg) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg);
-        this.data = null;
-        return this;
+    public static Response success(String msg) {
+        Meta meta = new Meta(DEFAULT_SUCCESS_CODE, msg);
+        return new Response(meta, null);
     }
 
 
@@ -60,10 +104,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:25 <br>
      */
-    public Response success(Object data) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG);
-        this.data = data;
-        return this;
+    public static Response success(Object data) {
+        Meta meta = new Meta(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG);
+        return new Response(meta, data);
     }
 
 
@@ -77,10 +120,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:25 <br>
      */
-    public Response success(String msg, Object data) {
-        this.meta = new Meta(DEFAULT_SUCCESS_CODE, msg);
-        this.data = data;
-        return this;
+    public static Response success(String msg, Object data) {
+        Meta meta = new Meta(DEFAULT_SUCCESS_CODE, msg);
+        return new Response(meta, data);
     }
 
 
@@ -95,10 +137,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:25 <br>
      */
-    public Response success(Integer code, String msg, Object data) {
-        this.meta = new Meta(code, msg);
-        this.data = data;
-        return this;
+    public static Response success(Integer code, String msg, Object data) {
+        Meta meta = new Meta(code, msg);
+        return new Response(meta, data);
     }
 
 
@@ -110,10 +151,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:22 <br>
      */
-    public Response failure() {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG);
-        this.data = null;
-        return this;
+    public static Response fail() {
+        Meta meta = new Meta(DEFAULT_FAIL_CODE, DEFAULT_FAIL_MSG);
+        return new Response(meta, null);
     }
 
 
@@ -126,10 +166,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:22 <br>
      */
-    public Response failure(String msg) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg);
-        this.data = null;
-        return this;
+    public static Response fail(String msg) {
+        Meta meta = new Meta(DEFAULT_FAIL_CODE, msg);
+        return new Response(meta, null);
     }
 
 
@@ -142,10 +181,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:22 <br>
      */
-    public Response failure(Object data) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, DEFAULT_FAILURE_MSG);
-        this.data = data;
-        return this;
+    public static Response fail(Object data) {
+        Meta meta = new Meta(DEFAULT_FAIL_CODE, DEFAULT_FAIL_MSG);
+        return new Response(meta, data);
     }
 
 
@@ -159,10 +197,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:22 <br>
      */
-    public Response failure(Integer code, String msg) {
-        this.meta = new Meta(code, msg);
-        this.data = null;
-        return this;
+    public static Response fail(Integer code, String msg) {
+        Meta meta = new Meta(code, msg);
+        return new Response(meta, null);
     }
 
     /**
@@ -175,10 +212,9 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:22 <br>
      */
-    public Response failure(String msg, Object data) {
-        this.meta = new Meta(DEFAULT_FAILURE_CODE, msg);
-        this.data = data;
-        return this;
+    public static Response fail(String msg, Object data) {
+        Meta meta = new Meta(DEFAULT_FAIL_CODE, msg);
+        return new Response(meta, data);
     }
 
 
@@ -193,56 +229,26 @@ public final class Response {
      * @author ：LeiGQ <br>
      * @date ：2019-05-20 15:22 <br>
      */
-    public Response failure(Integer code, String msg, Object data) {
-        this.meta = new Meta(code, msg);
-        this.data = data;
-        return this;
+    public static Response fail(Integer code, String msg, Object data) {
+        Meta meta = new Meta(code, msg);
+        return new Response(meta, data);
     }
-
-    /**
-     * 默认成功响应码
-     */
-    private static final Integer DEFAULT_SUCCESS_CODE = 0;
-
-    /**
-     * 默认成功响应信息
-     */
-    private static final String DEFAULT_SUCCESS_MSG = "请求/处理成功！";
-
-    /**
-     * 默认失败响应码
-     */
-    private static final Integer DEFAULT_FAILURE_CODE = -1;
-
-    /**
-     * 默认失败响应信息
-     */
-    private static final String DEFAULT_FAILURE_MSG = "请求/处理失败！";
-
-    @Getter
-    @Setter
-    private Meta meta;
-
-    @Getter
-    @Setter
-    private Object data;
-
 
     /**
      * 元数据，包含响应码和信息。
      * <p>
      * 创建人：leigq <br>
      * 创建时间：2017年10月9日 下午3:31:17 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      */
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private class Meta {
+    private static class Meta {
+
+        public Meta() {
+        }
+
+        public Meta(Integer code, String msg) {
+            this.code = code;
+            this.msg = msg;
+        }
 
         /**
          * 处理结果代码
@@ -253,6 +259,39 @@ public final class Response {
          * 处理结果信息
          */
         private String msg;
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public void setCode(Integer code) {
+            this.code = code;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+    }
+
+    public Meta getMeta() {
+        return meta;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setMeat(Meta meta) {
+        this.meta = meta;
+    }
+
+
+    public void setData(Object data) {
+        this.data = data;
     }
 
 }

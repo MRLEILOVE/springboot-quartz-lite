@@ -28,11 +28,8 @@ public class SysTaskController {
 	 */
 	private final SysTaskService sysTaskService;
 
-	private final Response response;
-
-	public SysTaskController(SysTaskService sysTaskService, Response response) {
+	public SysTaskController(SysTaskService sysTaskService) {
 		this.sysTaskService = sysTaskService;
-		this.response = response;
 	}
 
 	/**
@@ -50,10 +47,10 @@ public class SysTaskController {
 	public Response addTask(@Valid AddSysTaskVO addSysTaskVO) {
 		// 验证表达式格式
 		if (!CronExpression.isValidExpression(addSysTaskVO.getCron())) {
-			return response.failure("表达式格式错误！");
+			return Response.fail("表达式格式错误！");
 		}
 		sysTaskService.addTask(addSysTaskVO);
-		return response.success("创建定时任务成功！");
+		return Response.success("创建定时任务成功！");
 	}
 
 
@@ -72,10 +69,10 @@ public class SysTaskController {
 	public Response updateTask(@Valid UpdateSysTaskVO updateSysTaskVO) {
 		// 验证表达式格式
 		if (!CronExpression.isValidExpression(updateSysTaskVO.getCron())) {
-			return response.failure("表达式格式错误！");
+			return Response.fail("表达式格式错误！");
 		}
 		sysTaskService.updateTask(updateSysTaskVO);
-		return response.success("更新任务成功！");
+		return Response.success("更新任务成功！");
 	}
 
 	/**
@@ -92,7 +89,7 @@ public class SysTaskController {
 	@PostMapping("/tasks/action/execute/{task_name}/{task_group}")
 	public Response executeTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
 		sysTaskService.executeTask(taskName, taskGroup);
-		return response.success("执行任务成功！");
+		return Response.success("执行任务成功！");
 	}
 
 
@@ -110,7 +107,7 @@ public class SysTaskController {
 	@PostMapping("/tasks/action/pause/{task_name}/{task_group}")
 	public Response pauseTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
 		sysTaskService.pauseTask(taskName, taskGroup);
-		return response.success("暂停任务成功！");
+		return Response.success("暂停任务成功！");
 	}
 
 	/**
@@ -127,7 +124,7 @@ public class SysTaskController {
 	@PostMapping("/tasks/action/resume/{task_name}/{task_group}")
 	public Response resumeTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
 		sysTaskService.resumeTask(taskName, taskGroup);
-		return response.success("恢复任务成功！");
+		return Response.success("恢复任务成功！");
 	}
 
 
@@ -145,7 +142,7 @@ public class SysTaskController {
 	@DeleteMapping("/tasks/{task_name}/{task_group}")
 	public Response deleteTask(@PathVariable("task_name") String taskName, @PathVariable("task_group") String taskGroup) {
 		sysTaskService.deleteTask(taskName, taskGroup);
-		return response.success("删除任务成功！");
+		return Response.success("删除任务成功！");
 	}
 
 	/**
@@ -162,6 +159,6 @@ public class SysTaskController {
 	@GetMapping("/tasks/{page_num}/{page_size}")
 	public Response queryTaskList(@PathVariable("page_num") Integer pageNum, @PathVariable("page_size") Integer pageSize) {
 		final IPage<SysTaskListVO> sysTaskList = sysTaskService.taskList(pageNum, pageSize);
-		return response.success(sysTaskList);
+		return Response.success(sysTaskList);
 	}
 }
