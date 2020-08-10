@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Quartz任务管理</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.0.5/lib/theme-chalk/index.css">
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.js"></script>
-    <script src="https://unpkg.com/element-ui@2.0.5/lib/index.js"></script>
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-resource.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
 <div id="log">
@@ -115,8 +117,10 @@
 
                 this.$http.get('logs/' + taskId + '/' + pageNum + '/' + pageSize).then(function (res) {
                     var data = res.body.data;
-                    this.sysTaskLogList = data.records;
-                    this.totalCount = data.total;
+                    if (data) {
+                        this.sysTaskLogList = data.records;
+                        this.totalCount = data.total;
+                    }
                 }, function () {
                     console.log('failed');
                 });
