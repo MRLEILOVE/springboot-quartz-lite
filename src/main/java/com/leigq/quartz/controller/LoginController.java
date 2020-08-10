@@ -9,7 +9,6 @@ import com.leigq.quartz.web.properties.QuartzProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +18,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -88,7 +85,7 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SysUserConstant.USER_SESSION_KEY, username);
         // 设置30分钟有效期
-        session.setMaxInactiveInterval(30 * 60);
+        session.setMaxInactiveInterval(10 * 60);
         return Response.success("登录成功");
     }
 
@@ -117,26 +114,6 @@ public class LoginController {
         }
     }
 
-
-    @PostMapping("/test1")
-    public void test1(@RequestBody Book book) {
-        System.out.println(1);
-    }
-
-
-    @RequestMapping("/test2")
-    public void test2(@Valid Book name) {
-        System.out.println(1);
-    }
-
 }
 
-
-class Book {
-
-    @NotEmpty
-    @Size(min = 6, max = 20, message = "最小6最大20长度")
-    private String name;
-
-}
 
