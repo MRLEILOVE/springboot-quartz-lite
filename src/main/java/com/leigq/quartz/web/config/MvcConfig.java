@@ -35,11 +35,11 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         /* 添加自定义拦截器 */
         // 登录拦截器
-        registry.addInterceptor(loginInterceptor)
-                // 添加拦截规则，先把所有路径都加入拦截，再一个个排除
-                .addPathPatterns("/**")
-                // 排除拦截，表示该路径不用拦截，除了登录、静态资源不拦截，其他都拦截
-                .excludePathPatterns("/user/login", "/login.html", "/templates/**", "/static/**");
+//        registry.addInterceptor(loginInterceptor)
+//                // 添加拦截规则，先把所有路径都加入拦截，再一个个排除
+//                .addPathPatterns("/**")
+//                // 排除拦截，表示该路径不用拦截，除了登录、静态资源不拦截，其他都拦截
+//                .excludePathPatterns("/user/login", "/login.html", "/templates/**", "/static/**");
     }
 
     /**

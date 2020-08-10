@@ -1,8 +1,9 @@
 package com.leigq.quartz.web.exception;
 
 import com.leigq.quartz.bean.common.Response;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -15,10 +16,10 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.management.ServiceNotFoundException;
-import javax.security.auth.login.LoginException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -33,9 +34,79 @@ import java.util.stream.Collectors;
  * @author leigq <br>
  * @date 2019-05-14 17:09 <br>
  */
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHand {
+
+    private final Logger log = LoggerFactory.getLogger(GlobalExceptionHand.class);
+
+    /**
+     * 400 - 缺少请求参数：前端少传了参数给后端
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public Response handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        String msg = "缺少请求参数";
+        log.warn(msg, e);
+        return Response.fail(msg);
+    }
+
+
+    /**
+     * 400 - 参数类型不匹配：前端页面传过来的参数与你controller接收的参数类型不匹配
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public Response handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String msg = "参数类型不匹配";
+        log.warn(msg, e);
+        return Response.fail(msg);
+    }
+
+    /**
+     * 400 - Http消息不可读：参数类型与页面的contentType类型不匹配
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Response handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        String msg = "Http消息不可读";
+        log.warn(msg, e);
+        return Response.fail(msg);
+    }
+
+
+    /**
+     * 405 - 不支持当前请求方法
+     */
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public Response handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        String msg = "不支持当前请求方法";
+        log.error(msg, e);
+        return Response.fail(msg);
+    }
+
+    /**
+     * 415 - Http媒体类型不支持
+     */
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public Response handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+        String msg = "不支持当前媒体类型";
+        log.error(msg, e);
+        return Response.fail(msg);
+    }
+
+    /**
+     * 422 - UNPROCESSABLE_ENTITY
+     */
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Response handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        String msg = "所上传文件大小超过最大限制，上传失败";
+        log.warn(msg, e);
+        return Response.fail(msg);
+    }
+
 
     /**
      * 自定义业务异常处理
@@ -44,144 +115,78 @@ public class GlobalExceptionHand {
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ServiceException.class)
-    public Response handleMissingServletRequestParameterException(ServiceException e) {
+    public Response handleServiceException(ServiceException e) {
         String msg = e.getMessage();
         log.warn(msg, e);
-        return new Response().failure(msg);
-    }
-
-
-    /**
-     * 400 - Bad Request TODO
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Response handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        String msg = "缺少请求参数！";
-        log.warn(msg, e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
     /**
-     * 400 - Bad Request TODO
-     */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public Response handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        String msg = e.getMessage();
-        log.warn("参数解析失败：", e);
-        return new Response().failure(msg);
-    }
-
-    /**
-     * 400 - Bad Request
+     * 方法参数无效，当对用@Valid注释的参数进行验证失败时，将引发异常
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String msg = handleBindingResult(e.getBindingResult());
         log.warn("方法参数无效: ", e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
     /**
-     * 400 - Bad Request
+     * 参数绑定失败
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(BindException.class)
     public Response handleBindException(BindException e) {
         String msg = handleBindingResult(e.getBindingResult());
         log.warn("参数绑定失败:", e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
     /**
-     * 400 - Bad Request
+     * 参数验证失败
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ConstraintViolationException.class)
-    public Response handleServiceException(ConstraintViolationException e) {
+    public Response handleConstraintViolationException(ConstraintViolationException e) {
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
         String msg = violations.iterator().next().getMessage();
         log.warn("参数验证失败:", e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
     /**
-     * 400 - Bad Request
+     * 参数验证失败
      */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(ValidationException.class)
     public Response handleValidationException(ValidationException e) {
         String msg = e.getMessage();
         log.warn("参数验证失败：", e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
-    /**
-     * 401 - Unauthorized
-     */
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(LoginException.class)
-    public Response handleLoginException(LoginException e) {
-        String msg = e.getMessage();
-        log.warn("登录异常：", e);
-        return new Response().failure(msg);
-    }
-
-    /**
-     * 405 - Method Not Allowed
-     */
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Response handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        String msg = "不支持当前请求方法！";
-        log.warn(msg, e);
-        return new Response().failure(msg);
-    }
-
-    /**
-     * 415 - Unsupported Media Type
-     */
-    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public Response handleHttpMediaTypeNotSupportedException(Exception e) {
-        String msg = "不支持当前媒体类型！";
-        log.warn(msg, e);
-        return new Response().failure(msg);
-    }
-
-    /**
-     * 422 - UNPROCESSABLE_ENTITY
-     */
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public Response handleMaxUploadSizeExceededException(Exception e) {
-        String msg = "所上传文件大小超过最大限制，上传失败！";
-        log.warn(msg, e);
-        return new Response().failure(msg);
-    }
 
     /**
      * 500 - Internal Server Error
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ServiceNotFoundException.class)
-    public Response handleServiceException(ServiceNotFoundException e) {
-        String msg = "服务内部异常！";
+    public Response handleServiceNotFoundException(ServiceNotFoundException e) {
+        String msg = "服务内部异常";
         log.error(msg, e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
     /**
-     * 500 - Internal Server Error
+     * 500 - 娄底异常
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public Response handleException(Exception e) {
-        String msg = "服务内部异常！";
+        String msg = "服务内部异常";
         log.error(msg, e);
-        return new Response().failure(msg);
+        return Response.fail(msg);
     }
 
     /**
