@@ -4,8 +4,10 @@ import com.leigq.quartz.bean.common.Response;
 import com.leigq.quartz.bean.constant.SysUserConstant;
 import com.leigq.quartz.bean.vo.SysUserVO;
 import com.leigq.quartz.util.RSACoder;
+import com.leigq.quartz.web.exception.ServiceException;
 import com.leigq.quartz.web.properties.QuartzProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,22 +62,23 @@ public class LoginController {
      */
     @PostMapping("/login")
     public Response login(@Valid SysUserVO sysUserVO, HttpServletRequest request) {
-        String username;
-        try {
-            username = RSACoder.decryptByPriKey(sysUserVO.getUsername());
-        } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException |
-                IllegalBlockSizeException | UnsupportedEncodingException | InvalidKeyException e) {
-            log.error("用户名解密异常：", e);
-            return response.failure("用户名解密失败");
+        String username = decrypt(sysUserVO.getUsername());
+        String password = decrypt(sysUserVO.getPassword());
+        String timestamp = decrypt(sysUserVO.getTimestamp());
+        String signKey = decrypt(sysUserVO.getSignKey());
+        String sign = sysUserVO.getSign();
+
+        // 验证签名
+        String splicingSign = DigestUtils.md5Hex(String.format("username=%s&password=%s&timestamp=%s&signKey=%s",
+                username, password, timestamp, signKey));
+
+        if (!Objects.equals(sign, splicingSign)) {
+            return response.failure("签名验证失败");
         }
 
-        String password;
-        try {
-            password = RSACoder.decryptByPriKey(sysUserVO.getPassword());
-        } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException |
-                IllegalBlockSizeException | UnsupportedEncodingException | InvalidKeyException e) {
-            log.error("密码解密异常：", e);
-            return response.failure("密码解密失败");
+        // 验证时间，5秒中之内
+        if (System.currentTimeMillis() - Long.parseLong(timestamp) > (5 * 1000)) {
+            return response.failure("登录超时，请重试");
         }
 
         boolean usernameIsTrue = Objects.equals(username, quartzProperties.getTaskView().getLoginUsername());
@@ -92,7 +95,6 @@ public class LoginController {
         return response.success("登录成功");
     }
 
-
     /**
      * 登出
      *
@@ -106,6 +108,16 @@ public class LoginController {
             session.removeAttribute(SysUserConstant.USER_SESSION_KEY);
         }
         return response.success("退出成功");
+    }
+
+
+    private String decrypt(String data) {
+        try {
+            return RSACoder.decryptByPriKey(data);
+        } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | UnsupportedEncodingException | InvalidKeyException e) {
+            log.error("RSA解密异常：", e);
+            throw new ServiceException("RSA解密失败");
+        }
     }
 
 }

@@ -6,6 +6,7 @@
     <script src="/static/js/vue.js"></script>
     <script src="/static/js/vue-resource.js"></script>
     <script src="/static/js/jsencrypt.min.js"></script>
+    <script src="/static/js/md5.js"></script>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- 引入组件库 -->
@@ -64,6 +65,11 @@
             loginFormData: {
                 username: '',
                 password: '',
+                timestamp: '',
+                // 参数签名的key，使用随机数
+                signKey: '',
+                // 参数签名
+                sign: '',
             },
 
             // 公钥
@@ -72,55 +78,97 @@
         mounted() {
         },
         methods: {
-
             // 登录
             login() {
+                // 参数校验
+                if (!this.loginFormData.username) {
+                    this.$notify({
+                        title: '警告',
+                        message: '用户名不能为空',
+                        type: 'warning'
+                    });
+                    return;
+                }
+
+                if (!this.loginFormData.password) {
+                    this.$notify({
+                        title: '警告',
+                        message: '密码不能为空',
+                        type: 'warning'
+                    });
+                    return;
+                }
+
+                // 参数构建
+                this.loginFormData.timestamp = new Date().getTime() + '';
+                this.loginFormData.signKey = this.randomNum(8);
+                this.loginFormData.sign = hex_md5('username' + "=" + this.loginFormData.username + '&' + 'password' + '=' + this.loginFormData.password +
+                        '&' + 'timestamp' + '=' + this.loginFormData.timestamp + '&' + 'signKey' + '=' + this.loginFormData.signKey);
                 this.$http.post('/user/login',
+                    // 生成签名后将各个参数用公钥加密传输
                     {
-                        "username": this.loginFormData.username === '' ? '' : this.encryptedData(this.publicKey, this.loginFormData.username),
-                        "password": this.loginFormData.password === '' ? '' : this.encryptedData(this.publicKey, this.loginFormData.password),
+                        "username": this.encrypBypubkey(this.loginFormData.username),
+                        "password": this.encrypBypubkey(this.loginFormData.password),
+                        "timestamp": this.encrypBypubkey(this.loginFormData.timestamp),
+                        "signKey": this.encrypBypubkey(this.loginFormData.signKey),
+                        "sign": this.loginFormData.sign,
                     },
                     {
                         emulateJSON: true
                     }
                 ).then(function (res) {
-                        var body = res.body;
-                        var meta = body.meta;
-                        if (meta.code === 0) {
-                            this.$notify({
-                                title: '成功',
-                                message: meta.msg,
-                                type: 'success'
-                            });
-                            // 跳转至任务列表页面
-                            window.location.href = "task-manager.html";
-                        } else {
-                            this.$notify({
-                                title: '警告',
-                                message: meta.msg,
-                                type: 'warning'
-                            });
-                        }
-                    }, function () {
-                        var body = res.body;
-                        var meta = body.meta;
-                        this.$notify.error({
-                            title: '错误',
-                            message: meta.msg
+                    var body = res.body;
+                    var meta = body.meta;
+                    if (meta.code === 0) {
+                        this.$notify({
+                            title: '成功',
+                            message: meta.msg,
+                            type: 'success'
                         });
+                        // 跳转至任务列表页面
+                        window.location.href = "task-manager.html";
+                    } else {
+                        this.$notify({
+                            title: '警告',
+                            message: meta.msg,
+                            type: 'warning'
+                        });
+                    }
+                }, function () {
+                    var body = res.body;
+                    var meta = body.meta;
+                    this.$notify.error({
+                        title: '错误',
+                        message: meta.msg
                     });
+                });
             },
 
             // 加密
-            encryptedData(publicKey, data) {
+            encrypBypubkey(data) {
                 // 新建JSEncrypt对象
                 let encryptor = new JSEncrypt();
                 // 设置公钥
-                encryptor.setPublicKey(publicKey);
+                encryptor.setPublicKey(this.publicKey);
                 // 加密数据
                 return encryptor.encrypt(data);
+            },
+
+            // 参数签名
+            getSign(data) {
+
+            },
+            /**
+             * js产生随机数函数
+             * n int 需要产生的随机数位数
+             */
+            randomNum(n) {
+                let rnd = "";
+                for (var i = 0; i < n; i++)
+                    rnd += Math.floor(Math.random() * 10);
+                return rnd;
             }
-        },
+        }
     });
 </script>
 </body>
