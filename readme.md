@@ -38,6 +38,8 @@
 
 默认帐号、密码均为：admin。
 
+登录接口添加 `参数签名+时间戳` 机制，时间戳用于防止DDOS工具，参数签名防止被抓包恶意修改参数。
+
 ![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200810125259.png)
 
 ### 任务列表
