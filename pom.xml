@@ -34,6 +34,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!--使用注解处理器来生成自己的元数据:参考：https://www.jianshu.com/p/57fec884c017-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,9 +53,10 @@
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
 
+        <!--邮件-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
         <dependency>
@@ -79,12 +85,6 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
             <version>1.18.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <!--编写更少量的代码：使用apache commons工具类库:
