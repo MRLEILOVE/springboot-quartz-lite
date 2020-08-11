@@ -372,10 +372,10 @@ public class RSACoder {
 
             /* 公钥、私钥用 encryptBase64 还是 encryptBase64Sun 加密都可以，后者的 Base64 是多行的，比较适合保存到文件的方式储存 */
             RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-            log.info("新公钥：{}", Base64Utils.encodeToString(publicKey.getEncoded()));
+            log.error("新公钥：{}", Base64Utils.encodeToString(publicKey.getEncoded()));
 
             RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-            log.info("新私钥：{}", Base64Utils.encodeToString(privateKey.getEncoded()));
+            log.error("新私钥：{}", Base64Utils.encodeToString(privateKey.getEncoded()));
 
         } catch (NoSuchAlgorithmException e) {
             log.error("生成密钥对异常：", e);
