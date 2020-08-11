@@ -6,6 +6,7 @@ import com.leigq.quartz.service.SysTaskLogService;
 import com.leigq.quartz.service.SysTaskService;
 import com.leigq.quartz.util.EmailSender;
 import com.leigq.quartz.util.ExceptionDetailUtils;
+import com.leigq.quartz.util.ThreadPoolUtils;
 import com.leigq.quartz.web.properties.QuartzProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +104,8 @@ public abstract class BaseTaskExecute {
         }
         final String errorMsg = String.format("任务：[ %s ] 执行异常：", taskExecuteDTO.getTaskName());
         final String[] usernames = receiveUsername.toArray(new String[0]);
-        emailSender.sendSimpleMail("任务执行异常", errorMsg + ExceptionDetailUtils.getThrowableDetail(e), usernames);
+
+        ThreadPoolUtils.execute(() -> emailSender.sendSimpleMail("任务执行异常", errorMsg + ExceptionDetailUtils.getThrowableDetail(e), usernames));
     }
 
     /**
