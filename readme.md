@@ -34,13 +34,13 @@
 
 用户需要正常登录后，方可进入系统，若不登陆直接访问列表或日志页面，则会自动跳转至登录页面。每次登录有效时长为30分钟，过期后任何操作，也会跳转至登录页面。
 
-帐号、密码均使用 RSA 加密，帐号、密码、RSA公钥、私钥可在application.yml中进行配置。
+帐号、密码、验证码均使用 RSA 加密，帐号、密码、RSA公钥、私钥可在application.yml中进行配置。
 
 默认帐号、密码均为：admin。
 
 登录接口添加 `参数签名+时间戳` 机制，时间戳用于防止DDOS工具，参数签名防止被抓包恶意修改参数。
 
-![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200810125259.png)
+![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200811200010.png)
 
 ### 任务列表
 
@@ -62,9 +62,13 @@
 
 任务的日志，按执行时间倒序排序。
 
+任务执行失败时，可以配置是否需要发送邮件到指定邮箱，后面会讲如何配置。
+
 ![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200810125714.png)
 
 ![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200810125956.png)
+
+![](https://leigq-blog.oss-cn-shenzhen.aliyuncs.com/csdn/20200811200212.png)
 
 ## 项目结构
 
@@ -79,7 +83,7 @@
 │              │
 │              ├─bean
 │              │  ├─common
-│              │  │      Response.java  -- 统一返回结果
+│              │  │      Response.java -- 统一返回结果
 │              │  │
 │              │  ├─constant
 │              │  │      QuartzTriggerConstant.java
@@ -124,12 +128,16 @@
 │              │      SysTaskService.java
 │              │
 │              ├─task
-│              │      HelloQuartz.java
+│              │      HelloQuartz.java  --简单的任务示例
 │              │
 │              ├─util
-│              │      JacksonUtils.java
-│              │      RSACoder.java  -- RSA加密工具类
+│              │      EmailSender.java            -- 邮件发送
+│              │      ExceptionDetailUtils.java
+│              │      ImageCode.java              -- 图形验证码
+│              │      JacksonUtils.java           -- JSON工具
+│              │      RSACoder.java               -- RSA加密工具
 │              │      SpringContextHolder.java
+│              │      ThreadPoolUtils.java        -- 线程池工具
 │              │      ValidUtils.java
 │              │
 │              └─web
@@ -145,7 +153,7 @@
 │                  │
 │                  ├─exception
 │                  │      GlobalExceptionHand.java  -- 全局异常处理
-│                  │      ServiceException.java
+│                  │      ServiceException.java     -- 自定义Service异常
 │                  │
 │                  ├─interceptor
 │                  │      LoginInterceptor.java  --登录拦截器
@@ -189,10 +197,23 @@
 
 1. 新建一个数据库或在已存在的数据库中，执行项目中 resource/sql 下面的SQL语句，先执行 `Quartz官方建表.sql`，再执行 `自定义任务和任务日志表.sql`。
 2. 将项目中 `application.yml` 中的 `datasource.password` 、 `datasource.url`、`datasource.username` 改为对应你自己的。
-3. 可以在 `application.yml` 中配置登录帐号、密码，不配置则默认均为：admin，RSA的公钥、私钥也可在此配置。
-4. 运行项目，项目启动后，在浏览器输入：<http://localhost:8080/login.html> 即可进入登录页面。
-5. 此时是一个任务都没有的，项目的 src\main\java\com\leigq\quartz\task 目录下有一个任务示例，你可以把他添加进去看看效果。
-6. 怎么集成到已存在的系统中？？目前有两种方法：
+3. 可以在 `application.yml` 中配置登录帐号、密码，不配置则默认均为：admin，RSA的公钥、私钥也可在此配置。公钥、私钥可通过RSACoder生成。
+    - quartz.task-view.login-username -- 配置登录帐号，默认admin
+    - quartz.task-view.login-password -- 配置登录密码，默认admin
+    - lite.security.auth.pubKey       -- 配置 RSA公钥，默认已配置
+    - lite.security.auth.priKey       -- 配置 RSA私钥，默认已配置
+
+4. 可以在 `application.yml` 中配置执行任务失败时，是否需要发送邮件到指定邮箱，下面的spring.mail配置根据自己邮件服务自行配置，每家邮件服务都不一样，测试时我是用的QQ的。
+    - spring.mail.username          -- 发送邮件的帐号    
+    - spring.mail.password          -- 发送邮件的密码[授权码]   
+    - spring.mail.host              -- host
+    - spring.mail.port              -- 端口
+    - quartz.mail.enable            -- 配置为true时，启用邮箱，默认false
+    - quartz.mail.receive-username  -- 配置接收邮件地址，可配置多个，若不配置不会发邮件
+
+5. 运行项目，项目启动后，在浏览器输入：<http://localhost:8080/login.html> 即可进入登录页面。
+6. 此时是一个任务都没有的，项目的 src\main\java\com\leigq\quartz\task 目录下有一个任务示例，你可以把他添加进去看看效果。
+7. 怎么集成到已存在的系统中？？目前有两种方法：
     1. 把项目源码拉下来，将核心实现类，复制到已存在的系统中，根据自己的项目改改，就能用了。
     2. 按照上面说的步骤，将此项目作为一个单独的系统进行部署，将执行任务所需的Mapper，Service从已有系统复制进此项目，然后就可以编写任务相关代码了。这样做的好处是：当主系统停止运行，也不影响任务系统的运行。
     3. 如果你的项目是用的SpringCloud，那你可以自己把此项目改成Cloud版本，执行任务就得去用 Feign 调用其他服务的接口了。
