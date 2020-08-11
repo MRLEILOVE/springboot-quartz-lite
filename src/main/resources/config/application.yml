@@ -69,6 +69,13 @@ spring:
 
   # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ quartz配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
   quartz:
+    ## 任务执行异常发送邮件配置
+    mail:
+      ## 是否启用
+      enable: true
+      ## 接收邮件的邮箱，可配至多个
+      receive-username:
+        - '191789784@qq.com'
     ## 任务页面配置
     task-view:
       # 帐号
