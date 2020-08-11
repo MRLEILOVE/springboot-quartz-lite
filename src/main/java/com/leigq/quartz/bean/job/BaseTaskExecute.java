@@ -7,6 +7,9 @@ import com.leigq.quartz.domain.entity.SysTask;
 import com.leigq.quartz.domain.entity.SysTaskLog;
 import com.leigq.quartz.service.SysTaskLogService;
 import com.leigq.quartz.service.SysTaskService;
+import com.leigq.quartz.util.EmailSender;
+import com.leigq.quartz.util.ExceptionDetailUtils;
+import com.leigq.quartz.web.properties.QuartzProperties;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,7 @@ import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +38,12 @@ public abstract class BaseTaskExecute {
 
     @Autowired
     private SysTaskLogService sysTaskLogService;
+
+    @Autowired
+    private QuartzProperties quartzProperties;
+
+    @Autowired
+    private EmailSender emailSender;
 
 
     public void setTaskExecuteDTO(TaskExecuteDTO taskExecuteDTO) {
@@ -76,6 +86,12 @@ public abstract class BaseTaskExecute {
                     .set(SysTask::getExecResult, SysTaskExecResultEnum.FAILURE.getValue())
                     .eq(SysTask::getId, taskExecuteDTO.getTaskId())
             );
+            // 发送邮件
+            if (quartzProperties.getMail().getEnable()) {
+                final List<String> receiveUsername = quartzProperties.getMail().getReceiveUsername();
+                final String[] usernames = receiveUsername.toArray(new String[0]);
+                emailSender.sendSimpleMail("任务执行异常", errorMsg + ExceptionDetailUtils.getThrowableDetail(e), usernames);
+            }
             // 回滚事务
             try {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
