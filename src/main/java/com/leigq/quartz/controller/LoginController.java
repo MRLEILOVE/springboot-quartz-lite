@@ -3,11 +3,13 @@ package com.leigq.quartz.controller;
 import com.leigq.quartz.bean.common.Response;
 import com.leigq.quartz.bean.constant.SysUserConstant;
 import com.leigq.quartz.bean.vo.SysUserVO;
+import com.leigq.quartz.util.ImageCode;
 import com.leigq.quartz.util.RSACoder;
 import com.leigq.quartz.web.exception.ServiceException;
 import com.leigq.quartz.web.properties.QuartzProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -85,7 +92,7 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SysUserConstant.USER_SESSION_KEY, username);
         // 设置30分钟有效期
-        session.setMaxInactiveInterval(10 * 60);
+        session.setMaxInactiveInterval(30 * 60);
         return Response.success("登录成功");
     }
 
@@ -102,6 +109,38 @@ public class LoginController {
             session.removeAttribute(SysUserConstant.USER_SESSION_KEY);
         }
         return Response.success("退出成功");
+    }
+
+
+    /**
+     * 获取图形验证码
+     *
+     * @param request  the request
+     * @param response the response
+     */
+    @GetMapping("/imgCode")
+    public void getImgCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ImageCode imageCode = new ImageCode();
+        // 验证码图片
+        final BufferedImage image = imageCode.getImage();
+
+        // 验证码字符
+        final String validCodeText = imageCode.getValidCodeText();
+
+        // 将验证码保存到Session中。
+        HttpSession session = request.getSession();
+        session.setAttribute(SysUserConstant.USER_IMG_VALID_CODE_KEY, validCodeText);
+
+        // 禁止图像缓存
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/jpeg");
+
+        // 将图像输出到Servlet输出流中
+        try (ServletOutputStream sos = response.getOutputStream()){
+            ImageIO.write(image, "jpeg", sos);
+        }
     }
 
 

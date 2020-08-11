@@ -11,4 +11,9 @@ public interface SysUserConstant {
      */
     String USER_SESSION_KEY = "userKey";
 
+    /**
+     * 用户图形验证码保存在 session 中的 key
+     */
+    String USER_IMG_VALID_CODE_KEY = "userImgValidCodeKey";
+
 }
