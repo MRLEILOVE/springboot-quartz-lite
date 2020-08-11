@@ -2,7 +2,7 @@ package com.leigq.quartz.web.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * description
@@ -66,19 +66,19 @@ public class QuartzProperties {
         /**
          * 是否启用
          */
-        private Boolean enable;
+        private boolean enable = false;
 
         /**
          * 接受异常信息的邮箱
          */
-        private List<String> receiveUsername;
+        private Set<String> receiveUsername;
 
         /**
          * Gets enable.
          *
          * @return the enable
          */
-        public Boolean getEnable() {
+        public boolean getEnable() {
             return enable;
         }
 
@@ -87,7 +87,7 @@ public class QuartzProperties {
          *
          * @param enable the enable
          */
-        public void setEnable(Boolean enable) {
+        public void setEnable(boolean enable) {
             this.enable = enable;
         }
 
@@ -96,7 +96,7 @@ public class QuartzProperties {
          *
          * @return the receive username
          */
-        public List<String> getReceiveUsername() {
+        public Set<String> getReceiveUsername() {
             return receiveUsername;
         }
 
@@ -105,7 +105,7 @@ public class QuartzProperties {
          *
          * @param receiveUsername the receive username
          */
-        public void setReceiveUsername(List<String> receiveUsername) {
+        public void setReceiveUsername(Set<String> receiveUsername) {
             this.receiveUsername = receiveUsername;
         }
     }
