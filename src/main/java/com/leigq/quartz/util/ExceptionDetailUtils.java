@@ -13,6 +13,10 @@ import java.io.*;
  */
 public final class ExceptionDetailUtils {
 
+    private ExceptionDetailUtils() {
+
+    }
+
     private static final Logger log = LoggerFactory.getLogger(ExceptionDetailUtils.class);
 
 
