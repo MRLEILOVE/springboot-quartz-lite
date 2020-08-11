@@ -66,12 +66,13 @@ public class LoginController {
         String username = decrypt(sysUserVO.getUsername());
         String password = decrypt(sysUserVO.getPassword());
         String timestamp = decrypt(sysUserVO.getTimestamp());
+        String validCode = decrypt(sysUserVO.getValidCode());
         String signKey = decrypt(sysUserVO.getSignKey());
         String sign = sysUserVO.getSign();
 
         // 验证签名
-        String splicingSign = DigestUtils.md5Hex(String.format("username=%s&password=%s&timestamp=%s&signKey=%s",
-                username, password, timestamp, signKey));
+        String splicingSign = DigestUtils.md5Hex(String.format("username=%s&password=%s&timestamp=%s&validCode=%s&signKey=%s",
+                username, password, timestamp, validCode, signKey));
 
         if (!Objects.equals(sign, splicingSign)) {
             return Response.fail("签名验证失败");
@@ -82,17 +83,24 @@ public class LoginController {
             return Response.fail("登录超时，请重试");
         }
 
+        HttpSession session = request.getSession();
+        // 验证验证码
+        final Object sessionValidCode = session.getAttribute(SysUserConstant.USER_IMG_VALID_CODE_KEY);
+        if (!Objects.equals(sessionValidCode, validCode)) {
+            return Response.fail("验证码错误");
+        }
+
         boolean usernameIsTrue = Objects.equals(username, quartzProperties.getTaskView().getLoginUsername());
         boolean passwordIsTrue = Objects.equals(password, quartzProperties.getTaskView().getLoginPassword());
-
         if (!usernameIsTrue || !passwordIsTrue) {
             return Response.fail("用户名或密码错误，请重试");
         }
         // 将用户保存至 session 中
-        HttpSession session = request.getSession();
         session.setAttribute(SysUserConstant.USER_SESSION_KEY, username);
         // 设置30分钟有效期
         session.setMaxInactiveInterval(30 * 60);
+        // 删除 session 中保存的图形验证码
+        session.removeAttribute(SysUserConstant.USER_IMG_VALID_CODE_KEY);
         return Response.success("登录成功");
     }
 

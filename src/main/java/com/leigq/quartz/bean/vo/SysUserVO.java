@@ -34,6 +34,12 @@ public class SysUserVO {
     private String timestamp;
 
     /**
+     * 图像验证码
+     */
+    @NotEmpty(message = "验证码不能为空")
+    private String validCode;
+
+    /**
      * 签名的 Key，前端 RSA 加密传输的，采用8位随机数
      */
     @NotEmpty

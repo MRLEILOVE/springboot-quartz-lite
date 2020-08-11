@@ -151,13 +151,15 @@
                 this.loginFormData.timestamp = new Date().getTime() + '';
                 this.loginFormData.signKey = this.randomNum(8);
                 this.loginFormData.sign = hex_md5('username' + "=" + this.loginFormData.username + '&' + 'password' + '=' + this.loginFormData.password +
-                    '&' + 'timestamp' + '=' + this.loginFormData.timestamp + '&' + 'signKey' + '=' + this.loginFormData.signKey);
+                    '&' + 'timestamp' + '=' + this.loginFormData.timestamp + '&' + 'validCode' + '=' + this.loginFormData.validCode
+                    + '&' + 'signKey' + '=' + this.loginFormData.signKey);
                 this.$http.post('/user/login',
                     // 生成签名后将各个参数用公钥加密传输
                     {
                         "username": this.encrypBypubkey(this.loginFormData.username),
                         "password": this.encrypBypubkey(this.loginFormData.password),
                         "timestamp": this.encrypBypubkey(this.loginFormData.timestamp),
+                        "validCode": this.encrypBypubkey(this.loginFormData.validCode),
                         "signKey": this.encrypBypubkey(this.loginFormData.signKey),
                         "sign": this.loginFormData.sign,
                     },
@@ -172,6 +174,8 @@
                         window.location.href = "task-manager.html";
                     } else {
                         this.notifyWarning(meta.msg);
+                        // 刷新验证码
+                        this.refreshValidCode();
                     }
                 }, function () {
                     this.notifyError(res.body.meta.msg);
