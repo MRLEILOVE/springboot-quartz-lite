@@ -72,10 +72,10 @@ spring:
     ## 任务执行异常发送邮件配置
     mail:
       ## 是否启用
-      enable: true
+      enable: false
       ## 接收邮件的邮箱，可配至多个
       receive-username:
-        - '191789784@qq.com'
+        - 'xxxxxxxxxx@qq.com'
     ## 任务页面配置
     task-view:
       # 帐号
@@ -125,9 +125,9 @@ spring:
   # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 邮件 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
   mail:
     # 账户
-    username: 191789784@qq.com
+    username: xxxxxxxx@qq.com
     # 密码[授权码]
-    password: zdxwvfzkizqocabf
+    password: xxxxxxxxxxxxxx
     # host
     host: smtp.qq.com
     # 协议
