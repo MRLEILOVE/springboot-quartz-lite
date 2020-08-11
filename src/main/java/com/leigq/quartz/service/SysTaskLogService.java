@@ -4,15 +4,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.leigq.quartz.bean.enumeration.SysTaskExecResultEnum;
 import com.leigq.quartz.bean.vo.SysTaskLogListVO;
 import com.leigq.quartz.domain.entity.SysTaskLog;
 import com.leigq.quartz.domain.mapper.SysTaskLogMapper;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -52,6 +55,42 @@ public class SysTaskLogService extends ServiceImpl<SysTaskLogMapper, SysTaskLog>
         BeanUtils.copyProperties(page, pageResult);
         pageResult.setRecords(sysTaskLogList);
         return pageResult;
+    }
+
+
+    /**
+     * 添加一条任务执行成功日志
+     *
+     * @param taskName the task name
+     * @param taskId   the task id
+     * @return 日志ID
+     */
+    public Long addSuccessLog(String taskName, Long taskId) {
+        // 添加任务执行日志
+        SysTaskLog sysTaskLog = SysTaskLog.builder()
+                .taskName(taskName)
+                .execDate(new Date())
+                .execResult(SysTaskExecResultEnum.SUCCESS.getValue())
+                .execResultText("任务执行成功")
+                .taskId(taskId)
+                .build();
+        this.save(sysTaskLog);
+        return sysTaskLog.getId();
+    }
+
+    /**
+     * 将执行结果改为失败并记录异常信息
+     *
+     * @param logId the log id
+     * @param e     the e
+     * @return the boolean
+     */
+    public boolean updateExecResultToFail(Long logId, Throwable e) {
+        return this.update(Wrappers.<SysTaskLog>lambdaUpdate()
+                .set(SysTaskLog::getExecResult, SysTaskExecResultEnum.FAILURE.getValue())
+                .set(SysTaskLog::getExecResultText, ExceptionUtils.getStackTrace(e))
+                .eq(SysTaskLog::getId, logId)
+        );
     }
 
 }

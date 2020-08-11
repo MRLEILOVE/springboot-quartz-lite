@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leigq.quartz.bean.dto.AddQuartzJobDTO;
+import com.leigq.quartz.bean.enumeration.SysTaskExecResultEnum;
 import com.leigq.quartz.bean.vo.AddSysTaskVO;
 import com.leigq.quartz.bean.vo.SysTaskListVO;
 import com.leigq.quartz.bean.vo.UpdateSysTaskVO;
@@ -22,6 +23,7 @@ import java.util.Objects;
 
 /**
  * 系统自己创建的任务表服务
+ *
  * @author leigq
  */
 @Transactional(rollbackFor = Exception.class)
@@ -73,8 +75,6 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
             throw new ServiceException("添加任务失败", e);
         }
     }
-
-
 
 
     /**
@@ -219,6 +219,44 @@ public class SysTaskService extends ServiceImpl<SysTaskMapper, SysTask> {
     public IPage<SysTaskListVO> taskList(int pageNum, int pageSize) {
         Page<SysTaskListVO> page = new Page<>(pageNum, pageSize);
         return sysTaskMapper.taskList(page);
+    }
+
+
+    /**
+     * 将任务的最近一次执行结果更新为成功
+     *
+     * @param taskId the task id
+     * @return the boolean
+     */
+    public boolean updateLatelyExecResultToSuccess(Long taskId) {
+        return this.updateLatelyExecResult(taskId, SysTaskExecResultEnum.SUCCESS);
+    }
+
+    /**
+     * 将任务的最近一次执行结果更新为失败
+     *
+     * @param taskId the task id
+     * @return the boolean
+     */
+    public boolean updateLatelyExecResultToFail(Long taskId) {
+        // 将任务最近一次执行结果改为失败
+        return this.updateLatelyExecResult(taskId, SysTaskExecResultEnum.FAILURE);
+    }
+
+
+    /**
+     * Update lately exec result boolean.
+     *
+     * @param taskId     the task id
+     * @param resultEnum the result enum
+     * @return the boolean
+     */
+    private boolean updateLatelyExecResult(Long taskId, SysTaskExecResultEnum resultEnum) {
+        return this.update(Wrappers.<SysTask>lambdaUpdate()
+                .set(SysTask::getExecDate, new Date())
+                .set(SysTask::getExecResult, resultEnum.getValue())
+                .eq(SysTask::getId, taskId)
+        );
     }
 
     /**
