@@ -115,6 +115,33 @@ spring:
       #jdbc:
     #initialize-schema: never
 
+  # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 邮件 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
+  mail:
+    # 账户
+    username: 191789784@qq.com
+    # 密码[授权码]
+    password: zdxwvfzkizqocabf
+    # host
+    host: smtp.qq.com
+    # 协议
+    protocol: smtp
+    # 端口
+    port: 587
+    # 编码
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          # 开启认证
+          auth: true
+          # 启用TLS校验,,某些邮箱[例如QQ的企业邮箱]需要TLS安全校验,同理有SSL校验
+          startssl:
+            enable: true
+            required: true
+          starttls:
+            enable: true
+            required: true
+
 # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ MyBatis Plus 配置 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ #
 mybatis-plus:
   # mybatis mapper文件的位置
